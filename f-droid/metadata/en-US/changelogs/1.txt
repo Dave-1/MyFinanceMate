@@ -1,0 +1,9 @@
+Initial release:
+• SMS-based automatic transaction tracking
+• Smart auto-categorization engine
+• Bill reminder system with recurring schedules
+• Dashboard with income/expense analytics
+• Category-wise expense breakdown with charts
+• XML backup and restore
+• Biometric authentication
+• Material Design 3 theming

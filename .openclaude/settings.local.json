@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter emulators:*)",
+      "Bash(adb devices:*)",
+      "Read(//c/Users/Navnath/DailyWork/projects/projects-using-opencode/deepMoneyTracker/$ANDROID_HOME/emulator/**)",
+      "Bash(echo \"ANDROID_HOME=$ANDROID_HOME\")",
+      "Bash(\"C:\\\\Users\\\\Navnath\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\emulator\\\\emulator\" -list-avds 2>&1)",
+      "Bash(\"C:\\\\Users\\\\Navnath\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe\" devices:*)",
+      "Bash(\"C:\\\\Users\\\\Navnath\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe\" shell:*)",
+      "Bash(./gradlew assembleDebug)",
+      "Bash(\"C:\\\\Users\\\\Navnath\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe\" kill-server:*)",
+      "Bash(\"C:\\\\Users\\\\Navnath\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe\" start-server:*)",
+      "Bash(taskkill /F /IM \"qemu-system-x86_64.exe\")",
+      "Bash(taskkill /F /IM \"emulator.exe\")",
+      "Bash(\"C:\\\\Users\\\\Navnath\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\cmdline-tools\\\\latest\\\\bin\\\\avdmanager.bat\" list:*)",
+      "Read(//c/Users/Navnath/DailyWork/projects/projects-using-opencode/deepMoneyTracker/$LOCALAPPDATA/Android/Sdk/**)",
+      "Read(//c/Users/Navnath/AppData/Local/Android/Sdk/**)",
+      "Bash(ls -d /c/Users/Navnath/AppData/Local/Android/Sdk/*/)",
+      "Bash(ls -d \"C:/Users/Navnath/AppData/Local/Android/Sdk/\"*/)",
+      "Bash(\"C:/Users/Navnath/AppData/Local/Android/Sdk/platform-tools/adb.exe\" devices:*)",
+      "Bash(\"C:/Users/Navnath/AppData/Local/Android/Sdk/platform-tools/adb.exe\" disconnect:*)",
+      "Bash(\"C:/Users/Navnath/AppData/Local/Android/Sdk/platform-tools/adb.exe\" connect:*)",
+      "Bash(\"C:/Users/Navnath/AppData/Local/Android/Sdk/platform-tools/adb.exe\" wait-for-device:*)",
+      "Bash(\"C:/Users/Navnath/AppData/Local/Android/Sdk/platform-tools/adb.exe\" shell:*)",
+      "Bash(./gradlew installDebug)",
+      "Bash(\"C:/Users/Navnath/AppData/Local/Android/Sdk/platform-tools/adb.exe\" logcat:*)",
+      "Bash(./gradlew clean:*)",
+      "Bash(./gradlew installDebug --info)",
+      "Bash(\"C:/Users/Navnath/AppData/Local/Android/Sdk/platform-tools/adb.exe\" pull:*)",
+      "Bash(\"C:/Users/Navnath/AppData/Local/Android/Sdk/platform-tools/adb.exe\" exec-out:*)",
+      "Read(//tmp/**)",
+      "Bash(\"C:/Users/Navnath/AppData/Local/Android/Sdk/emulator/emulator\" -list-avds)",
+      "Bash(\"./C:/Users/Navnath/AppData/Local/Android/Sdk/platform-tools/adb.exe\" shell:*)",
+      "Bash(\"/c/Users/Navnath/AppData/Local/Android/Sdk/platform-tools/adb.exe\" shell:*)",
+      "Bash(ls:*)"
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+-dontwarn org.simpleframework.**
+-keep class org.simpleframework.** { *; }
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable

@@ -1,0 +1,22 @@
+DeepMoneyTracker is a privacy-focused, open-source expense tracker for Android that automatically tracks your income and expenses by parsing SMS messages from your bank.
+
+Features:
+• Automatic SMS transaction tracking from bank messages
+• Smart auto-categorization with customizable rules
+• Bill and payment reminder system with recurring schedules
+• Detailed dashboard with income/expense breakdown
+• Category-wise expense analysis with visual charts
+• XML backup and restore functionality
+• Biometric authentication for app security
+• Material Design 3 with Material You theming
+• Fully offline - no cloud dependencies
+• No Google Play Services required
+
+Supported transaction types:
+• Credit/Debit card transactions
+• UPI payments
+• NEFT/RTGS/IMPS transfers
+• Salary credits
+• Bill payments
+
+The app runs entirely on your device. Your financial data never leaves your phone.
