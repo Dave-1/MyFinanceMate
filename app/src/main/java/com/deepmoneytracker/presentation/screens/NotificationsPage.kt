@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -23,10 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,7 +39,6 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,7 +56,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.R
 import com.deepmoneytracker.data.local.entity.SmsNotificationCategory
 import com.deepmoneytracker.data.local.entity.SmsNotificationEntity
-import com.deepmoneytracker.presentation.components.getDateHeader
+import com.deepmoneytracker.presentation.components.DateAccordionList
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.NotificationsViewModel
 import java.text.SimpleDateFormat
@@ -170,89 +165,21 @@ fun NotificationsPage(
                     }
                 }
             } else {
-                val allNotifications = (state.expiredNotifications + state.notifications).sortedByDescending { it.smsDate }
-                val groupedByDate = allNotifications.groupBy { getDateHeader(it.smsDate) }
-                var expandedDates by remember { mutableStateOf(setOf<String>()) }
-
-                LaunchedEffect(groupedByDate.keys) {
-                    if (groupedByDate.isNotEmpty() && expandedDates.isEmpty()) {
-                        expandedDates = setOf(groupedByDate.keys.first())
-                    }
-                }
-
-                LazyColumn(
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    groupedByDate.forEach { (dateHeader, smsList) ->
-                        val isExpanded = dateHeader in expandedDates
-                        val hasUnread = smsList.any { !it.isRead }
-                        val hasExpired = smsList.any { it.isExpired && !it.isRead }
-
-                        item(key = "header_$dateHeader") {
-                            Card(
-                                modifier = Modifier.fillMaxWidth().clickable {
-                                    expandedDates = if (isExpanded) {
-                                        expandedDates - dateHeader
-                                    } else {
-                                        expandedDates + dateHeader
-                                    }
-                                },
-                                colors = CardDefaults.cardColors(
-                                    containerColor = if (hasExpired) Color(0xFFFFF3E0) else themeColors.primary.copy(alpha = 0.06f)
-                                ),
-                                shape = RoundedCornerShape(14.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Icon(
-                                            if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(20.dp),
-                                            tint = if (hasExpired) Color(0xFFE65100) else themeColors.primary
-                                        )
-                                        Text(
-                                            dateHeader,
-                                            style = MaterialTheme.typography.titleSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = if (hasExpired) Color(0xFFE65100) else themeColors.onSurface
-                                        )
-                                    }
-                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Text(
-                                            "${smsList.size} SMS",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = themeColors.onSurface.copy(alpha = 0.6f)
-                                        )
-                                        if (hasUnread) {
-                                            Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(themeColors.primary))
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if (isExpanded) {
-                            items(smsList, key = { "sms_${it.id}" }) { notification ->
-                                NotificationCard(
-                                    notification, dateFormat, themeColors,
-                                    isExpired = notification.isExpired && !notification.isRead,
-                                    onRead = { viewModel.markAsRead(notification.id) },
-                                    onDelete = { viewModel.deleteNotification(notification) }
-                                )
-                            }
-                        }
-                    }
-
-                    item { Spacer(modifier = Modifier.height(80.dp)) }
-                }
+                DateAccordionList(
+                    items = (state.expiredNotifications + state.notifications).sortedByDescending { it.smsDate },
+                    getDate = { it.smsDate },
+                    summaryRight = { smsList -> "${smsList.size} SMS" },
+                    itemKey = { "sms_${it.id}" },
+                    itemContent = { notification ->
+                        NotificationCard(
+                            notification, dateFormat, themeColors,
+                            isExpired = notification.isExpired && !notification.isRead,
+                            onRead = { viewModel.markAsRead(notification.id) },
+                            onDelete = { viewModel.deleteNotification(notification) }
+                        )
+                    },
+                    themeColors = themeColors
+                )
             }
         }
     }
