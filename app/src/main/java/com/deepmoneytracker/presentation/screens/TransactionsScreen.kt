@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.data.local.entity.TransactionType
+import com.deepmoneytracker.presentation.components.DateAccordionList
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.TransactionViewModel
 
@@ -202,10 +203,18 @@ fun TransactionsScreen(
                     )
                 }
             } else {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(filteredTransactions, key = { it.id }) { transaction ->
+                DateAccordionList(
+                    items = filteredTransactions,
+                    getDate = { it.date },
+                    summaryRight = { txns ->
+                        val totalIncome = txns.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
+                        val totalExpense = txns.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
+                        val net = totalIncome - totalExpense
+                        val sign = if (net >= 0) "+" else ""
+                        "${sign}₹%,.0f".format(net) + " (${txns.size})"
+                    },
+                    itemKey = { it.id },
+                    itemContent = { transaction ->
                         TransactionCard(
                             description = transaction.description,
                             merchant = transaction.merchant,
@@ -217,9 +226,10 @@ fun TransactionsScreen(
                             onDelete = { viewModel.deleteTransaction(transaction) },
                             themeColors = themeColors
                         )
-                    }
-                    item { Spacer(modifier = Modifier.height(80.dp)) }
-                }
+                    },
+                    themeColors = themeColors,
+                    footerContent = { Spacer(modifier = Modifier.height(80.dp)) }
+                )
             }
         }
     }
