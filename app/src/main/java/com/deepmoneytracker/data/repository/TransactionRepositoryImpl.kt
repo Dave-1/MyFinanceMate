@@ -17,6 +17,7 @@ class TransactionRepositoryImpl @Inject constructor(
     override suspend fun insert(transaction: TransactionEntity): Long = dao.insert(transaction)
     override suspend fun update(transaction: TransactionEntity) = dao.update(transaction)
     override suspend fun delete(transaction: TransactionEntity) = dao.delete(transaction)
+    override suspend fun existsBySmsBody(smsBody: String): Boolean = dao.existsBySmsBody(smsBody)
     override suspend fun deleteById(id: Long) = dao.deleteById(id)
     override fun getAllTransactions(): Flow<List<TransactionEntity>> = dao.getAllTransactions()
     override suspend fun getById(id: Long): TransactionEntity? = dao.getById(id)

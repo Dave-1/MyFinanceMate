@@ -170,34 +170,32 @@ fun NotificationsPage(
                     }
                 }
             } else {
+                val allNotifications = (state.expiredNotifications + state.notifications).sortedByDescending { it.smsDate }
+                val groupedByDate = allNotifications.groupBy { getDateHeader(it.smsDate) }
+                var expandedDates by remember { mutableStateOf(setOf<String>()) }
+
+                LaunchedEffect(groupedByDate.keys) {
+                    if (groupedByDate.isNotEmpty() && expandedDates.isEmpty()) {
+                        expandedDates = setOf(groupedByDate.keys.first())
+                    }
+                }
+
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Combine all and group by date
-                    val allNotifications = (state.expiredNotifications + state.notifications).sortedByDescending { it.smsDate }
-                    val groupedByDate = allNotifications.groupBy { getDateHeader(it.smsDate) }
-                    val expandedDates = remember { mutableStateOf(setOf<String>()) }
-
-                    // Auto-expand first date group
-                    LaunchedEffect(groupedByDate.keys) {
-                        if (groupedByDate.isNotEmpty() && expandedDates.value.isEmpty()) {
-                            expandedDates.value = setOf(groupedByDate.keys.first())
-                        }
-                    }
-
                     groupedByDate.forEach { (dateHeader, smsList) ->
-                        val isExpanded = dateHeader in expandedDates.value
+                        val isExpanded = dateHeader in expandedDates
                         val hasUnread = smsList.any { !it.isRead }
                         val hasExpired = smsList.any { it.isExpired && !it.isRead }
 
                         item(key = "header_$dateHeader") {
                             Card(
                                 modifier = Modifier.fillMaxWidth().clickable {
-                                    expandedDates.value = if (isExpanded) {
-                                        expandedDates.value - dateHeader
+                                    expandedDates = if (isExpanded) {
+                                        expandedDates - dateHeader
                                     } else {
-                                        expandedDates.value + dateHeader
+                                        expandedDates + dateHeader
                                     }
                                 },
                                 colors = CardDefaults.cardColors(

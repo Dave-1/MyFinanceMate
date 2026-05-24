@@ -22,6 +22,9 @@ interface TransactionDao {
     @Delete
     suspend fun delete(transaction: TransactionEntity)
 
+    @Query("SELECT EXISTS(SELECT 1 FROM transactions WHERE smsBody = :smsBody)")
+    suspend fun existsBySmsBody(smsBody: String): Boolean
+
     @Query("DELETE FROM transactions WHERE id = :id")
     suspend fun deleteById(id: Long)
 

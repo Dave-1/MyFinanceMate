@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Deep Money Tracker</string>
+
+    <!-- Notifications -->
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_clear_read">Clear Read</string>
+    <string name="notifications_empty">No notifications</string>
+    <string name="notifications_empty_desc">SMS notifications will appear here</string>
+
+    <!-- Notification categories -->
+    <string name="notif_recharge">Recharge</string>
+    <string name="notif_expiry">Expiry</string>
+    <string name="notif_promotion">Promotion</string>
+    <string name="notif_otp">OTP</string>
+    <string name="notif_delivery">Delivery</string>
+    <string name="notif_appointment">Appointment</string>
+    <string name="notif_other">Other</string>
+
+    <!-- Common labels -->
+    <string name="label_back">Back</string>
+    <string name="btn_delete">Delete</string>
+    <string name="transactions_filter_all">All</string>
 </resources>

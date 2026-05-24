@@ -9,6 +9,7 @@ interface TransactionRepository {
     suspend fun insert(transaction: TransactionEntity): Long
     suspend fun update(transaction: TransactionEntity)
     suspend fun delete(transaction: TransactionEntity)
+    suspend fun existsBySmsBody(smsBody: String): Boolean
     suspend fun deleteById(id: Long)
     fun getAllTransactions(): Flow<List<TransactionEntity>>
     suspend fun getById(id: Long): TransactionEntity?
