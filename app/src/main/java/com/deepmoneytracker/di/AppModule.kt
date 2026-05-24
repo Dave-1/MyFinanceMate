@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.deepmoneytracker.data.local.AppDatabase
 import com.deepmoneytracker.data.local.dao.CategoryDao
 import com.deepmoneytracker.data.local.dao.ReminderDao
+import com.deepmoneytracker.data.local.dao.SmsNotificationDao
 import com.deepmoneytracker.data.local.dao.SmsRuleDao
 import com.deepmoneytracker.data.local.dao.TransactionDao
 import com.deepmoneytracker.data.repository.CategoryRepositoryImpl
@@ -33,7 +34,7 @@ object AppModule {
             context,
             AppDatabase::class.java,
             "deep_money_tracker.db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides
@@ -47,6 +48,9 @@ object AppModule {
 
     @Provides
     fun provideSmsRuleDao(db: AppDatabase): SmsRuleDao = db.smsRuleDao()
+
+    @Provides
+    fun provideSmsNotificationDao(db: AppDatabase): SmsNotificationDao = db.smsNotificationDao()
 
     @Provides
     @Singleton

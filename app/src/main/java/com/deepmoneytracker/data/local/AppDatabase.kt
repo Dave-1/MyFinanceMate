@@ -6,10 +6,12 @@ import androidx.room.TypeConverters
 import com.deepmoneytracker.data.local.converter.Converters
 import com.deepmoneytracker.data.local.dao.CategoryDao
 import com.deepmoneytracker.data.local.dao.ReminderDao
+import com.deepmoneytracker.data.local.dao.SmsNotificationDao
 import com.deepmoneytracker.data.local.dao.SmsRuleDao
 import com.deepmoneytracker.data.local.dao.TransactionDao
 import com.deepmoneytracker.data.local.entity.CategoryEntity
 import com.deepmoneytracker.data.local.entity.ReminderEntity
+import com.deepmoneytracker.data.local.entity.SmsNotificationEntity
 import com.deepmoneytracker.data.local.entity.SmsRuleEntity
 import com.deepmoneytracker.data.local.entity.TransactionEntity
 
@@ -18,9 +20,10 @@ import com.deepmoneytracker.data.local.entity.TransactionEntity
         TransactionEntity::class,
         CategoryEntity::class,
         ReminderEntity::class,
-        SmsRuleEntity::class
+        SmsRuleEntity::class,
+        SmsNotificationEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -29,4 +32,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun reminderDao(): ReminderDao
     abstract fun smsRuleDao(): SmsRuleDao
+    abstract fun smsNotificationDao(): SmsNotificationDao
 }
