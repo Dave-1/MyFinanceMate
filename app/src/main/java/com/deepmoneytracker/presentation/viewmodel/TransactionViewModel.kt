@@ -6,6 +6,7 @@ import com.deepmoneytracker.data.local.entity.CategoryEntity
 import com.deepmoneytracker.data.local.entity.TransactionEntity
 import com.deepmoneytracker.data.local.entity.TransactionType
 import com.deepmoneytracker.domain.repository.CategoryRepository
+import com.deepmoneytracker.domain.repository.SmsRuleRepository
 import com.deepmoneytracker.domain.repository.TransactionRepository
 import com.deepmoneytracker.domain.service.CategorizationEngine
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +24,8 @@ import javax.inject.Inject
 class TransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
-    private val categorizationEngine: CategorizationEngine
+    private val categorizationEngine: CategorizationEngine,
+    private val smsRuleRepository: SmsRuleRepository
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -44,6 +47,14 @@ class TransactionViewModel @Inject constructor(
     )
 
     val categories: StateFlow<List<CategoryEntity>> = categoryRepository.getAllCategories()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val bankNames: StateFlow<List<String>> = smsRuleRepository.getAllRules()
+        .map { rules -> rules.map { it.senderName }.filter { it.isNotBlank() }.distinct() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

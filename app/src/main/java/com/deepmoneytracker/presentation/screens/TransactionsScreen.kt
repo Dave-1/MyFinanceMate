@@ -66,13 +66,19 @@ fun TransactionsScreen(
 ) {
     val transactions by viewModel.transactions.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val bankNames by viewModel.bankNames.collectAsStateWithLifecycle()
     val themeColors = LocalThemeColors.current
     var selectedFilter by rememberSaveable { mutableStateOf<String?>(null) }
 
     val filteredTransactions = when (selectedFilter) {
         "Income" -> transactions.filter { it.type == TransactionType.INCOME }
         "Expense" -> transactions.filter { it.type == TransactionType.EXPENSE }
-        else -> transactions
+        "SMS" -> transactions.filter { it.isFromSms }
+        null -> transactions
+        else -> {
+            // Bank name filter
+            transactions.filter { it.senderInfo.contains(selectedFilter ?: "", ignoreCase = true) }
+        }
     }
 
     Scaffold(
@@ -160,6 +166,22 @@ fun TransactionsScreen(
                         label = "Expense",
                         selected = selectedFilter == "Expense",
                         onClick = { selectedFilter = if (selectedFilter == "Expense") null else "Expense" },
+                        themeColors = themeColors
+                    )
+                }
+                item {
+                    FilterChipCustom(
+                        label = "SMS",
+                        selected = selectedFilter == "SMS",
+                        onClick = { selectedFilter = if (selectedFilter == "SMS") null else "SMS" },
+                        themeColors = themeColors
+                    )
+                }
+                items(bankNames) { bankName ->
+                    FilterChipCustom(
+                        label = bankName,
+                        selected = selectedFilter == bankName,
+                        onClick = { selectedFilter = if (selectedFilter == bankName) null else bankName },
                         themeColors = themeColors
                     )
                 }
