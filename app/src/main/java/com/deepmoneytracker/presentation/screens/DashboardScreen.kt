@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -56,6 +55,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.data.local.entity.TransactionType
+import com.deepmoneytracker.presentation.components.WelcomeSetupSheet
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.DashboardViewModel
 
@@ -70,24 +70,35 @@ fun DashboardScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val themeColors = LocalThemeColors.current
-    var showBackupModal by remember { mutableStateOf(state.showBackupReminder) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var showSetupSheet by remember { mutableStateOf(state.showBackupReminder) }
 
-    // Backup reminder modal
-    if (showBackupModal && state.showBackupReminder) {
-        AlertDialog(
-            onDismissRequest = { showBackupModal = false; viewModel.dismissBackupReminder() },
-            title = { Text(stringResource(AppStrings.backup_reminder_title), fontWeight = FontWeight.Bold) },
-            text = { Text(stringResource(AppStrings.backup_reminder_text)) },
-            confirmButton = {
-                Button(onClick = { showBackupModal = false; viewModel.dismissBackupReminder(); onNavigateToSettings() }) {
-                    Text(stringResource(AppStrings.backup_now))
-                }
+    // Welcome setup bottom sheet (first launch or backup needed)
+    if (showSetupSheet) {
+        WelcomeSetupSheet(
+            onDismiss = { showSetupSheet = false; viewModel.dismissBackupReminder() },
+            onRequestSmsPermission = {
+                // Permission is requested via the sheet's action button
+                // The actual permission launcher is in SettingsScreen
+                // For now, navigate to Settings where permission can be granted
+                showSetupSheet = false
+                viewModel.dismissBackupReminder()
+                onNavigateToSettings()
             },
-            dismissButton = {
-                TextButton(onClick = { showBackupModal = false; viewModel.dismissBackupReminder() }) {
-                    Text(stringResource(AppStrings.backup_later))
-                }
-            }
+            onBackupSms = {
+                showSetupSheet = false
+                viewModel.dismissBackupReminder()
+                onNavigateToSettings()
+            },
+            onSetupPin = {
+                showSetupSheet = false
+                viewModel.dismissBackupReminder()
+                onNavigateToSettings()
+            },
+            smsPermissionGranted = androidx.core.content.ContextCompat.checkSelfPermission(
+                context, android.Manifest.permission.READ_SMS
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED,
+            backupInProgress = state.autoBackupInProgress
         )
     }
 
