@@ -40,11 +40,11 @@ fun SetPinDialog(
         title = { Text("Set PIN") },
         text = {
             Column {
-                Text("Enter a 4-6 digit PIN for app lock", style = MaterialTheme.typography.bodyMedium)
+                Text("Enter a 5 digit PIN for app lock", style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = pin,
-                    onValueChange = { if (it.length <= 6) pin = it.filter { c -> c.isDigit() } },
+                    onValueChange = { if (it.length <= 5) pin = it.filter { c -> c.isDigit() } },
                     label = { Text("PIN") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
@@ -54,7 +54,7 @@ fun SetPinDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = confirmPin,
-                    onValueChange = { if (it.length <= 6) confirmPin = it.filter { c -> c.isDigit() } },
+                    onValueChange = { if (it.length <= 5) confirmPin = it.filter { c -> c.isDigit() } },
                     label = { Text("Confirm PIN") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
@@ -69,7 +69,7 @@ fun SetPinDialog(
         confirmButton = {
             Button(onClick = {
                 when {
-                    pin.length < 4 -> error = "PIN must be at least 4 digits"
+                    pin.length != 5 -> error = "PIN must be exactly 5 digits"
                     pin != confirmPin -> error = "PINs don't match"
                     else -> onPinSet(pin)
                 }
@@ -102,7 +102,7 @@ fun VerifyPinDialog(
             Column {
                 OutlinedTextField(
                     value = pin,
-                    onValueChange = { if (it.length <= 6) pin = it.filter { c -> c.isDigit() } },
+                    onValueChange = { if (it.length <= 5) pin = it.filter { c -> c.isDigit() } },
                     label = { Text("PIN") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
@@ -116,6 +116,10 @@ fun VerifyPinDialog(
         },
         confirmButton = {
             Button(onClick = {
+                if (pin.length != 5) {
+                    error = "PIN must be exactly 5 digits"
+                    return@Button
+                }
                 if (onVerify(pin)) {
                     onVerified()
                 } else {

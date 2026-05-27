@@ -7,12 +7,14 @@ import com.deepmoneytracker.data.local.entity.TransactionEntity
 import com.deepmoneytracker.data.local.entity.TransactionType
 import com.deepmoneytracker.domain.repository.CategoryRepository
 import com.deepmoneytracker.domain.repository.TransactionRepository
+import com.deepmoneytracker.domain.service.SmsBackupParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -22,7 +24,9 @@ data class DashboardState(
     val balance: Double = 0.0,
     val recentTransactions: List<TransactionEntity> = emptyList(),
     val categoryTotals: List<CategoryTotalUi> = emptyList(),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val showBackupReminder: Boolean = false,
+    val autoBackupInProgress: Boolean = false
 )
 
 data class CategoryTotalUi(
@@ -34,8 +38,43 @@ data class CategoryTotalUi(
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val smsBackupParser: SmsBackupParser
 ) : ViewModel() {
+
+    private val _showBackupReminder = MutableStateFlow(false)
+    private val _autoBackupInProgress = MutableStateFlow(false)
+
+    init {
+        checkBackupStatus()
+    }
+
+    private fun checkBackupStatus() {
+        viewModelScope.launch {
+            val isFirstLaunch = smsBackupParser.getLastBackupTimestamp() == 0L
+            if (isFirstLaunch) {
+                // First launch — auto-backup silently
+                _autoBackupInProgress.value = true
+                try {
+                    smsBackupParser.backupAndParse()
+                    smsBackupParser.saveBackupResult(
+                        com.deepmoneytracker.domain.service.BackupResult(
+                            totalSms = 0, bankTransactions = 0, notifications = 0,
+                            bankBreakdown = emptyMap(), filePath = "", timestamp = System.currentTimeMillis()
+                        )
+                    )
+                } catch (_: Exception) {}
+                _autoBackupInProgress.value = false
+            } else if (smsBackupParser.isBackupNeeded()) {
+                // Last backup > 2 days ago — show reminder
+                _showBackupReminder.value = true
+            }
+        }
+    }
+
+    fun dismissBackupReminder() {
+        _showBackupReminder.value = false
+    }
 
     private val calendar = Calendar.getInstance().apply {
         set(Calendar.DAY_OF_MONTH, 1)
@@ -81,6 +120,10 @@ class DashboardViewModel @Inject constructor(
             },
             isLoading = false
         )
+    }.combine(_showBackupReminder) { dashboard, showReminder ->
+        dashboard.copy(showBackupReminder = showReminder)
+    }.combine(_autoBackupInProgress) { dashboard, autoBackup ->
+        dashboard.copy(autoBackupInProgress = autoBackup)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

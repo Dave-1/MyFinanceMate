@@ -157,7 +157,8 @@ fun AppNavigation() {
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
                     onNavigateToTransactions = { navController.navigate(Screen.Transactions.route) },
-                    onNavigateToReports = { navController.navigate(Screen.Reports.route) }
+                    onNavigateToReports = { navController.navigate(Screen.Reports.route) },
+                    onNavigateToNotifications = { navController.navigate(Screen.Notifications.route) }
                 )
             }
 

@@ -20,7 +20,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -50,6 +53,7 @@ import com.deepmoneytracker.presentation.viewmodel.DashboardViewModel
 fun DashboardScreen(
     onNavigateToTransactions: () -> Unit,
     onNavigateToReports: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -74,6 +78,13 @@ fun DashboardScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onNavigateToNotifications) {
+                        Icon(
+                            Icons.Default.Notifications,
+                            contentDescription = "Notifications",
+                            tint = themeColors.primary
+                        )
+                    }
                     IconButton(onClick = onNavigateToReports) {
                         Icon(
                             Icons.Default.BarChart,
@@ -100,6 +111,55 @@ fun DashboardScreen(
             item {
                 Spacer(modifier = Modifier.height(4.dp))
             }
+
+            // Backup reminder banner
+            if (state.showBackupReminder) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = themeColors.warning.copy(alpha = 0.12f)
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Backup,
+                                contentDescription = null,
+                                tint = themeColors.warning,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    "SMS Backup Reminder",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = themeColors.onBackground
+                                )
+                                Text(
+                                    "It's been a while since your last SMS backup. Back up now to keep your data safe.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = themeColors.onBackground.copy(alpha = 0.7f)
+                                )
+                            }
+                            IconButton(onClick = { viewModel.dismissBackupReminder() }) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "Dismiss",
+                                    tint = themeColors.onBackground.copy(alpha = 0.5f)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             // Balance Card
             item {
                 Card(

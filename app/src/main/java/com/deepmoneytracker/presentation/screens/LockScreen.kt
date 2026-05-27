@@ -52,22 +52,24 @@ fun LockScreen(
 
     val isPinSet = pinAuthManager.isPinSet()
 
-    // Auto-trigger biometric on first composition if PIN is set
-    LaunchedEffect(isPinSet) {
-        if (isPinSet && pinAuthManager.isBiometricAvailable() && !biometricAttempted) {
+    // Auto-trigger biometric/PIN on every recomposition (handles app resume)
+    LaunchedEffect(isPinSet, biometricAttempted) {
+        if (isPinSet && !biometricAttempted) {
             biometricAttempted = true
-            biometricManager.authenticate(
-                activity = activity,
-                title = "Unlock Deep Money Tracker",
-                subtitle = "Verify your identity to continue",
-                onSuccess = { onAuthenticated() },
-                onError = { showVerifyPin = true },
-                onFailed = { showVerifyPin = true }
-            )
+            if (pinAuthManager.isBiometricAvailable()) {
+                biometricManager.authenticate(
+                    activity = activity,
+                    title = "Unlock Deep Money Tracker",
+                    subtitle = "Verify your identity to continue",
+                    onSuccess = { onAuthenticated() },
+                    onError = { showVerifyPin = true },
+                    onFailed = { showVerifyPin = true }
+                )
+            } else {
+                showVerifyPin = true
+            }
         } else if (!isPinSet) {
             showSetPin = true
-        } else if (!pinAuthManager.isBiometricAvailable()) {
-            showVerifyPin = true
         }
     }
 

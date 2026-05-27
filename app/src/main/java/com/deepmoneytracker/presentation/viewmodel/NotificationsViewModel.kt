@@ -14,6 +14,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// Categories shown in Notifications — excludes OTP, PROMOTION, DELIVERY (informational only)
+private val NOTIFICATION_CATEGORIES = setOf(
+    SmsNotificationCategory.RECHARGE,
+    SmsNotificationCategory.EXPIRY,
+    SmsNotificationCategory.APPOINTMENT,
+    SmsNotificationCategory.OTHER
+)
+
 data class NotificationsState(
     val notifications: List<SmsNotificationEntity> = emptyList(),
     val expiredNotifications: List<SmsNotificationEntity> = emptyList(),
@@ -35,9 +43,12 @@ class NotificationsViewModel @Inject constructor(
         smsNotificationRepository.getUnreadCount(),
         selectedCategory
     ) { allNotifications, unreadCount, filter ->
-        // Split into expired and regular first
-        val allExpired = allNotifications.filter { it.isExpired && !it.isRead }
-        val allRegular = allNotifications.filter { !(it.isExpired && !it.isRead) }
+        // Filter to actionable notification categories only (no OTP, PROMOTION, DELIVERY)
+        val actionable = allNotifications.filter { it.category in NOTIFICATION_CATEGORIES }
+
+        // Split into expired and regular
+        val allExpired = actionable.filter { it.isExpired && !it.isRead }
+        val allRegular = actionable.filter { !(it.isExpired && !it.isRead) }
 
         // Apply category filter to BOTH lists
         val expired = if (filter != null) {

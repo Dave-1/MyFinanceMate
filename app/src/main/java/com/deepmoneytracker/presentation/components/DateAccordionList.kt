@@ -100,7 +100,7 @@ fun DateAccordionHeader(
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
-            containerColor = themeColors.primary.copy(alpha = 0.06f)
+            containerColor = themeColors.cardBackground
         ),
         shape = RoundedCornerShape(14.dp)
     ) {
@@ -125,13 +125,13 @@ fun DateAccordionHeader(
                     dateHeader,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = themeColors.onSurface
+                    color = themeColors.onBackground
                 )
             }
             Text(
                 summary,
                 style = MaterialTheme.typography.bodySmall,
-                color = themeColors.onSurface.copy(alpha = 0.6f)
+                color = themeColors.onBackground.copy(alpha = 0.7f)
             )
         }
     }
