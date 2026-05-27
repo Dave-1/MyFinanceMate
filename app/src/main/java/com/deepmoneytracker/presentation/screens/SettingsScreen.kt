@@ -28,7 +28,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -307,6 +309,33 @@ fun SettingsScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             color = themeColors.error
                         )
+                    }
+                }
+            }
+
+            item {
+                OutlinedButton(
+                    onClick = { viewModel.loadBackupFiles() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.FolderOpen, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("View Backup Files")
+                }
+            }
+
+            if (state.backupFiles.isNotEmpty()) {
+                items(state.backupFiles) { file ->
+                    Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground)) {
+                        Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(file.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                                Text("${file.date} • ${file.size}", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.6f))
+                            }
+                            IconButton(onClick = { /* share via FileProvider */ }) {
+                                Icon(Icons.Default.Share, contentDescription = "Share")
+                            }
+                        }
                     }
                 }
             }

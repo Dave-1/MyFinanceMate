@@ -21,7 +21,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
+
+data class BackupFileInfo(
+    val name: String,
+    val date: String,
+    val size: String,
+    val path: String
+)
 
 data class SettingsState(
     val isBiometricAvailable: Boolean = false,
@@ -32,7 +42,8 @@ data class SettingsState(
     val message: String? = null,
     val smsBackupInProgress: Boolean = false,
     val smsBackupResult: BackupResult? = null,
-    val smsBackupError: String? = null
+    val smsBackupError: String? = null,
+    val backupFiles: List<BackupFileInfo> = emptyList()
 )
 
 @HiltViewModel
@@ -157,6 +168,30 @@ class SettingsViewModel @Inject constructor(
             } catch (e: Exception) {
                 _state.update { it.copy(smsBackupInProgress = false, smsBackupError = e.message) }
             }
+        }
+    }
+
+    fun loadBackupFiles() {
+        viewModelScope.launch {
+            val files = smsBackupParser.getBackupFiles()
+            val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+            val fileInfoList = files.map { file ->
+                BackupFileInfo(
+                    name = file.name,
+                    date = dateFormat.format(Date(file.lastModified())),
+                    size = formatFileSize(file.length()),
+                    path = file.absolutePath
+                )
+            }
+            _state.update { it.copy(backupFiles = fileInfoList) }
+        }
+    }
+
+    private fun formatFileSize(bytes: Long): String {
+        return when {
+            bytes < 1024 -> "$bytes B"
+            bytes < 1024 * 1024 -> "${bytes / 1024} KB"
+            else -> "${"%.1f".format(bytes / (1024.0 * 1024.0))} MB"
         }
     }
 
