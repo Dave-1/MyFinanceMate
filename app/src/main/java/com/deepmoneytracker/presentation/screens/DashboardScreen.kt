@@ -71,7 +71,14 @@ fun DashboardScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val themeColors = LocalThemeColors.current
     val context = androidx.compose.ui.platform.LocalContext.current
-    var showSetupSheet by remember { mutableStateOf(state.showBackupReminder) }
+    var showSetupSheet by remember { mutableStateOf(false) }
+
+    // Update showSetupSheet when state changes (handles async state loading)
+    androidx.compose.runtime.LaunchedEffect(state.showBackupReminder) {
+        if (state.showBackupReminder) {
+            showSetupSheet = true
+        }
+    }
 
     // Welcome setup bottom sheet (first launch or backup needed)
     if (showSetupSheet) {

@@ -44,7 +44,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        requestRequiredPermissions()
+        // Permission requests are now handled by the WelcomeSetupSheet on first launch
+        // requestRequiredPermissions() — removed, handled by setup flow
 
         setContent {
             val currentTheme by themeStateHolder.currentTheme.collectAsState()

@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -94,12 +95,14 @@ fun SetupBottomSheet(
     val themeColors = LocalThemeColors.current
     var currentStep by remember { mutableIntStateOf(0) }
 
-    // Check if all steps are already completed
+    // Check if all steps are already completed — use LaunchedEffect for side effect
     val allCompleted = steps.all { it.isCompleted() }
-    if (allCompleted) {
-        onAllComplete()
-        return
+    LaunchedEffect(allCompleted) {
+        if (allCompleted) {
+            onAllComplete()
+        }
     }
+    if (allCompleted) return
 
     // Find first incomplete step
     val firstIncomplete = steps.indexOfFirst { !it.isCompleted() }
