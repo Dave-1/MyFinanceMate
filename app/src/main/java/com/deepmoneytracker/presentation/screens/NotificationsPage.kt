@@ -140,7 +140,14 @@ fun NotificationsPage(
                 }
             }
 
-            if (state.notifications.isEmpty() && state.expiredNotifications.isEmpty() && !state.isLoading) {
+            val allNotifications = buildList {
+                addAll(state.expiredNotifications.filter { !it.isRead }.sortedByDescending { it.smsDate })
+                addAll(state.notifications.filter { !it.isRead }.sortedByDescending { it.smsDate })
+                addAll(state.expiredNotifications.filter { it.isRead }.sortedByDescending { it.smsDate })
+                addAll(state.notifications.filter { it.isRead }.sortedByDescending { it.smsDate })
+            }
+
+            if (allNotifications.isEmpty() && !state.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -154,7 +161,8 @@ fun NotificationsPage(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            stringResource(R.string.notifications_empty),
+                            if (state.selectedCategory != null) "No ${getCategoryLabel(state.selectedCategory!!)} notifications"
+                            else stringResource(R.string.notifications_empty),
                             style = MaterialTheme.typography.bodyLarge,
                             color = themeColors.onSurface.copy(alpha = 0.5f)
                         )
@@ -167,7 +175,7 @@ fun NotificationsPage(
                 }
             } else {
                 DateAccordionList(
-                    items = (state.expiredNotifications + state.notifications).sortedByDescending { it.smsDate },
+                    items = allNotifications,
                     getDate = { it.smsDate },
                     summaryRight = { smsList -> "${smsList.size} SMS" },
                     itemKey = { "sms_${it.id}" },
