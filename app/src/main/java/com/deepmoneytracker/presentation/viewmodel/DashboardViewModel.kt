@@ -52,6 +52,17 @@ class DashboardViewModel @Inject constructor(
         _showBackupReminder.value = false
     }
 
+    fun backupSms() {
+        viewModelScope.launch {
+            _autoBackupInProgress.value = true
+            try {
+                smsBackupParser.backupAndParse()
+                _showBackupReminder.value = false
+            } catch (_: Exception) {}
+            _autoBackupInProgress.value = false
+        }
+    }
+
     private val calendar = Calendar.getInstance().apply {
         set(Calendar.DAY_OF_MONTH, 1)
         set(Calendar.HOUR_OF_DAY, 0)

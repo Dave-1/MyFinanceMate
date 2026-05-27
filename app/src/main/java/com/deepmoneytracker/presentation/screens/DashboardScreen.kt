@@ -51,6 +51,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.presentation.theme.AppStrings
@@ -80,31 +82,46 @@ fun DashboardScreen(
         }
     }
 
+    // SMS permission launcher — handles permission request directly on Dashboard
+    val smsPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            // Permission granted — trigger backup
+            viewModel.backupSms()
+        }
+    }
+
+    val smsPermissionGranted = androidx.core.content.ContextCompat.checkSelfPermission(
+        context, android.Manifest.permission.READ_SMS
+    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
     // Welcome setup bottom sheet (first launch or backup needed)
     if (showSetupSheet) {
         WelcomeSetupSheet(
             onDismiss = { showSetupSheet = false; viewModel.dismissBackupReminder() },
             onRequestSmsPermission = {
-                // Permission is requested via the sheet's action button
-                // The actual permission launcher is in SettingsScreen
-                // For now, navigate to Settings where permission can be granted
-                showSetupSheet = false
-                viewModel.dismissBackupReminder()
-                onNavigateToSettings()
+                // Request SMS permission directly — don't navigate away
+                val perms = arrayOf(
+                    android.Manifest.permission.READ_SMS,
+                    android.Manifest.permission.RECEIVE_SMS
+                )
+                smsPermissionLauncher.launch(perms)
             },
             onBackupSms = {
+                // Backup directly on Dashboard
+                viewModel.backupSms()
                 showSetupSheet = false
                 viewModel.dismissBackupReminder()
-                onNavigateToSettings()
             },
             onSetupPin = {
+                // Navigate to Settings for PIN setup
                 showSetupSheet = false
                 viewModel.dismissBackupReminder()
                 onNavigateToSettings()
             },
-            smsPermissionGranted = androidx.core.content.ContextCompat.checkSelfPermission(
-                context, android.Manifest.permission.READ_SMS
-            ) == android.content.pm.PackageManager.PERMISSION_GRANTED,
+            smsPermissionGranted = smsPermissionGranted,
             backupInProgress = state.autoBackupInProgress
         )
     }
