@@ -22,9 +22,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import com.deepmoneytracker.R
+import com.deepmoneytracker.presentation.theme.AppStrings
 
 @Composable
 fun SetPinDialog(
@@ -34,18 +38,19 @@ fun SetPinDialog(
     var pin by remember { mutableStateOf("") }
     var confirmPin by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Set PIN") },
+        title = { Text(stringResource(AppStrings.pin_set_title)) },
         text = {
             Column {
-                Text("Enter a 5 digit PIN for app lock", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(AppStrings.pin_set_desc), style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = pin,
                     onValueChange = { if (it.length <= 5) pin = it.filter { c -> c.isDigit() } },
-                    label = { Text("PIN") },
+                    label = { Text(stringResource(AppStrings.pin_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                     visualTransformation = PasswordVisualTransformation(),
@@ -55,7 +60,7 @@ fun SetPinDialog(
                 OutlinedTextField(
                     value = confirmPin,
                     onValueChange = { if (it.length <= 5) confirmPin = it.filter { c -> c.isDigit() } },
-                    label = { Text("Confirm PIN") },
+                    label = { Text(stringResource(AppStrings.pin_confirm_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                     visualTransformation = PasswordVisualTransformation(),
@@ -69,17 +74,17 @@ fun SetPinDialog(
         confirmButton = {
             Button(onClick = {
                 when {
-                    pin.length != 5 -> error = "PIN must be exactly 5 digits"
-                    pin != confirmPin -> error = "PINs don't match"
+                    pin.length != 5 -> error = context.getString(R.string.pin_error_length)
+                    pin != confirmPin -> error = context.getString(R.string.pin_error_mismatch)
                     else -> onPinSet(pin)
                 }
             }) {
-                Text("Set PIN")
+                Text(stringResource(AppStrings.pin_set_title))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(AppStrings.label_cancel))
             }
         }
     )
@@ -94,6 +99,7 @@ fun VerifyPinDialog(
 ) {
     var pin by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -103,7 +109,7 @@ fun VerifyPinDialog(
                 OutlinedTextField(
                     value = pin,
                     onValueChange = { if (it.length <= 5) pin = it.filter { c -> c.isDigit() } },
-                    label = { Text("PIN") },
+                    label = { Text(stringResource(AppStrings.pin_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                     visualTransformation = PasswordVisualTransformation(),
@@ -117,22 +123,22 @@ fun VerifyPinDialog(
         confirmButton = {
             Button(onClick = {
                 if (pin.length != 5) {
-                    error = "PIN must be exactly 5 digits"
+                    error = context.getString(R.string.pin_error_length)
                     return@Button
                 }
                 if (onVerify(pin)) {
                     onVerified()
                 } else {
-                    error = "Incorrect PIN"
+                    error = context.getString(R.string.pin_error_wrong)
                     pin = ""
                 }
             }) {
-                Text("Verify")
+                Text(stringResource(AppStrings.pin_verify))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(AppStrings.label_cancel))
             }
         }
     )

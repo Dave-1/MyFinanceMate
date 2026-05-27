@@ -52,10 +52,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.data.local.entity.TransactionType
 import com.deepmoneytracker.presentation.components.DateAccordionList
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
@@ -101,7 +103,7 @@ fun TransactionsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Transactions",
+                        stringResource(AppStrings.transactions_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = themeColors.onBackground
@@ -120,7 +122,7 @@ fun TransactionsScreen(
                 contentColor = themeColors.onPrimary,
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Transaction")
+                Icon(Icons.Default.Add, contentDescription = stringResource(AppStrings.add_transaction_title))
             }
         },
         containerColor = themeColors.background
@@ -136,7 +138,7 @@ fun TransactionsScreen(
                 value = searchQuery,
                 onValueChange = { viewModel.setSearchQuery(it) },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search transactions...", color = themeColors.onSurface.copy(alpha = 0.5f)) },
+                placeholder = { Text(stringResource(AppStrings.transactions_search), color = themeColors.onSurface.copy(alpha = 0.5f)) },
                 leadingIcon = {
                     Icon(
                         Icons.Default.Search,
@@ -162,7 +164,7 @@ fun TransactionsScreen(
             ) {
                 item {
                     FilterChipCustom(
-                        label = "All",
+                        label = stringResource(AppStrings.label_all),
                         selected = selectedFilter == null,
                         onClick = { selectedFilter = null },
                         themeColors = themeColors
@@ -170,7 +172,7 @@ fun TransactionsScreen(
                 }
                 item {
                     FilterChipCustom(
-                        label = "Income",
+                        label = stringResource(AppStrings.label_income),
                         selected = selectedFilter == "Income",
                         onClick = { selectedFilter = if (selectedFilter == "Income") null else "Income" },
                         themeColors = themeColors
@@ -178,7 +180,7 @@ fun TransactionsScreen(
                 }
                 item {
                     FilterChipCustom(
-                        label = "Expense",
+                        label = stringResource(AppStrings.label_expense),
                         selected = selectedFilter == "Expense",
                         onClick = { selectedFilter = if (selectedFilter == "Expense") null else "Expense" },
                         themeColors = themeColors
@@ -186,7 +188,7 @@ fun TransactionsScreen(
                 }
                 item {
                     FilterChipCustom(
-                        label = "SMS",
+                        label = stringResource(AppStrings.transactions_filter_sms),
                         selected = selectedFilter == "SMS",
                         onClick = { selectedFilter = if (selectedFilter == "SMS") null else "SMS" },
                         themeColors = themeColors
@@ -194,7 +196,7 @@ fun TransactionsScreen(
                 }
                 item {
                     FilterChipCustom(
-                        label = "Past SMS",
+                        label = stringResource(AppStrings.transactions_filter_past_sms),
                         selected = selectedFilter == "Past SMS",
                         onClick = { selectedFilter = if (selectedFilter == "Past SMS") null else "Past SMS" },
                         themeColors = themeColors
@@ -236,14 +238,14 @@ fun TransactionsScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        "No transactions yet",
+                        stringResource(AppStrings.dashboard_no_transactions),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium,
                         color = themeColors.onBackground
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        "Tap + to add your first transaction",
+                        stringResource(AppStrings.dashboard_add_first),
                         style = MaterialTheme.typography.bodyMedium,
                         color = themeColors.onSurface.copy(alpha = 0.6f)
                     )
@@ -349,7 +351,7 @@ private fun TransactionCard(
             ) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(AppStrings.label_delete),
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
                 )
@@ -450,7 +452,7 @@ private fun TransactionCard(
                 ) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = stringResource(AppStrings.label_delete),
                         tint = themeColors.error.copy(alpha = 0.7f),
                         modifier = Modifier.size(18.dp)
                     )

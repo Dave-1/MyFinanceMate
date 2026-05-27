@@ -39,9 +39,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.deepmoneytracker.presentation.theme.AppStrings
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.data.local.entity.TransactionType
 import com.deepmoneytracker.presentation.theme.ExpenseRed
@@ -100,10 +102,10 @@ fun ReportsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Reports", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(AppStrings.reports_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(AppStrings.label_back))
                     }
                 }
             )
@@ -139,7 +141,7 @@ fun ReportsScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("Income", style = MaterialTheme.typography.bodySmall)
+                                Text(stringResource(AppStrings.label_income), style = MaterialTheme.typography.bodySmall)
                                 Text(
                                     "₹${"%,.2f".format(state.totalIncome)}",
                                     style = MaterialTheme.typography.titleLarge,
@@ -148,7 +150,7 @@ fun ReportsScreen(
                                 )
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("Expense", style = MaterialTheme.typography.bodySmall)
+                                Text(stringResource(AppStrings.label_expense), style = MaterialTheme.typography.bodySmall)
                                 Text(
                                     "₹${"%,.2f".format(state.totalExpense)}",
                                     style = MaterialTheme.typography.titleLarge,
@@ -164,7 +166,7 @@ fun ReportsScreen(
             // Weekly Spending Trend (Graph)
             item {
                 Text(
-                    "Weekly Spending Trend",
+                    stringResource(AppStrings.reports_weekly_trend),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -194,7 +196,7 @@ fun ReportsScreen(
             // Pie Chart
             item {
                 Text(
-                    "Expense by Category",
+                    stringResource(AppStrings.dashboard_expense_by_category),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -216,7 +218,7 @@ fun ReportsScreen(
                     )
                 } else {
                     Text(
-                        "No expense data available",
+                        stringResource(AppStrings.reports_no_data),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

@@ -2,11 +2,52 @@
 <resources>
     <string name="app_name">Deep Money Tracker</string>
 
+    <!-- Common labels (reused across screens) -->
+    <string name="label_income">Income</string>
+    <string name="label_expense">Expense</string>
+    <string name="label_categories">Categories</string>
+    <string name="label_delete">Delete</string>
+    <string name="label_cancel">Cancel</string>
+    <string name="label_add">Add</string>
+    <string name="label_save">Save</string>
+    <string name="label_close">Close</string>
+    <string name="label_yes">Yes</string>
+    <string name="label_back">Back</string>
+    <string name="label_all">All</string>
+    <string name="currency_symbol">₹</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_subtitle">Your finances at a glance</string>
+    <string name="dashboard_total_balance">Total Balance</string>
+    <string name="dashboard_recent_transactions">Recent Transactions</string>
+    <string name="dashboard_view_all">View All</string>
+    <string name="dashboard_no_transactions">No transactions yet</string>
+    <string name="dashboard_add_first">Add your first transaction</string>
+    <string name="dashboard_expense_by_category">Expense by Category</string>
+
+    <!-- Backup -->
+    <string name="backup_reminder_title">SMS Backup Reminder</string>
+    <string name="backup_reminder_text">It\'s been a while since your last SMS backup. Back up your SMS data to keep your finances in sync.</string>
+    <string name="backup_reminder_short">Back up now to keep your data safe.</string>
+    <string name="backup_now">Backup Now</string>
+    <string name="backup_later">Later</string>
+    <string name="backup_complete">Backup Complete</string>
+    <string name="backup_bank_breakdown">Bank breakdown:</string>
+    <string name="backup_parse_button">Backup &amp; Parse SMS</string>
+    <string name="backup_parse_desc">Backup and parse SMS messages</string>
+    <string name="backup_view_files">View Backup Files</string>
+    <string name="backup_total_sms">Total SMS: %d</string>
+    <string name="backup_bank_transactions">Bank transactions: %d</string>
+    <string name="backup_notifications_count">Notifications: %d</string>
+    <string name="backup_bank_entry">  %1$s: %2$d</string>
+
     <!-- Notifications -->
     <string name="notifications_title">Notifications</string>
     <string name="notifications_clear_read">Clear Read</string>
     <string name="notifications_empty">No notifications</string>
     <string name="notifications_empty_desc">SMS notifications will appear here</string>
+    <string name="notifications_empty_category">No %s notifications</string>
+    <string name="notifications_swipe_read">Read</string>
 
     <!-- Notification categories -->
     <string name="notif_recharge">Recharge</string>
@@ -17,8 +58,78 @@
     <string name="notif_appointment">Appointment</string>
     <string name="notif_other">Other</string>
 
-    <!-- Common labels -->
-    <string name="label_back">Back</string>
-    <string name="btn_delete">Delete</string>
-    <string name="transactions_filter_all">All</string>
+    <!-- Transactions -->
+    <string name="transactions_title">Transactions</string>
+    <string name="transactions_search">Search transactions...</string>
+    <string name="transactions_filter_sms">SMS</string>
+    <string name="transactions_filter_past_sms">Past SMS</string>
+
+    <!-- Transaction fields -->
+    <string name="field_type">Type</string>
+    <string name="field_amount">Amount</string>
+    <string name="field_description">Description</string>
+    <string name="field_merchant">Merchant (optional)</string>
+
+    <!-- Add/Edit Transaction -->
+    <string name="add_transaction_title">Add Transaction</string>
+    <string name="edit_transaction_title">Edit Transaction</string>
+
+    <!-- Reminders -->
+    <string name="reminders_title">Reminders</string>
+    <string name="add_reminder_title">Add Reminder</string>
+    <string name="reminder_type">Transaction Type</string>
+    <string name="reminder_details">Details</string>
+    <string name="reminder_title_label">Title</string>
+    <string name="reminder_amount_label">Amount (optional)</string>
+    <string name="reminder_desc_label">Description (optional)</string>
+    <string name="reminder_recurrence">Recurrence</string>
+    <string name="reminder_save">Save Reminder</string>
+
+    <!-- Categories -->
+    <string name="category_name_label">Category Name</string>
+    <string name="category_keywords_label">Keywords (comma separated)</string>
+
+    <!-- PIN / Auth -->
+    <string name="pin_set_title">Set PIN</string>
+    <string name="pin_set_desc">Enter a 5 digit PIN for app lock</string>
+    <string name="pin_label">PIN</string>
+    <string name="pin_confirm_label">Confirm PIN</string>
+    <string name="pin_verify">Verify</string>
+    <string name="pin_locked">App Locked</string>
+    <string name="pin_locked_desc">Authenticate to access your account</string>
+    <string name="pin_setup">Set Up Security</string>
+    <string name="pin_setup_desc">Create a PIN to secure your app</string>
+    <string name="pin_error_length">PIN must be exactly 5 digits</string>
+    <string name="pin_error_mismatch">PINs don\'t match</string>
+    <string name="pin_error_wrong">Wrong PIN</string>
+    <string name="pin_biometric_subtitle">Verify your identity to continue</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_desc">Choose your preferred theme</string>
+    <string name="settings_dark_mode">Dark Mode</string>
+    <string name="settings_data">Data</string>
+    <string name="settings_categories_desc">Manage expense categories</string>
+    <string name="settings_sms_rules">SMS Sender Rules</string>
+    <string name="settings_add_rule">Add SMS Sender Rule</string>
+    <string name="settings_add_rule_desc">Add bank sender IDs to auto-track transactions</string>
+    <string name="settings_sender_id_label">Sender ID (e.g., VM-HDFCBK)</string>
+    <string name="settings_bank_name_label">Bank Name</string>
+    <string name="settings_backup_restore">Backup &amp; Restore</string>
+    <string name="settings_export">Export Backup</string>
+    <string name="settings_import">Import Restore</string>
+    <string name="settings_sms_utilities">SMS Utilities</string>
+    <string name="settings_security">Security</string>
+    <string name="settings_app_lock">App Lock</string>
+    <string name="settings_change_pin">Change PIN</string>
+    <string name="settings_remove_pin">Remove PIN</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version 1.0.0</string>
+    <string name="settings_open_source">Open-source expense tracker with SMS parsing</string>
+
+    <!-- Reports -->
+    <string name="reports_title">Reports</string>
+    <string name="reports_weekly_trend">Weekly Spending Trend</string>
+    <string name="reports_no_data">No expense data available</string>
 </resources>

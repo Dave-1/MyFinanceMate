@@ -67,6 +67,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.data.local.entity.SmsRuleEntity
+import androidx.compose.ui.res.stringResource
+import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.presentation.components.SetPinDialog
 import com.deepmoneytracker.presentation.theme.AppTheme
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
@@ -150,7 +152,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(AppStrings.settings_title), fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = themeColors.background,
                     titleContentColor = themeColors.onBackground
@@ -166,8 +168,8 @@ fun SettingsScreen(
         ) {
             // Theme Section
             item {
-                Text("Theme", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
-                Text("Choose your preferred theme", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
+                Text(stringResource(AppStrings.settings_theme), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
+                Text(stringResource(AppStrings.settings_theme_desc), style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
             }
 
             item {
@@ -186,7 +188,7 @@ fun SettingsScreen(
                 Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground)) {
                     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Column {
-                            Text("Dark Mode", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, color = themeColors.onSurface)
+                            Text(stringResource(AppStrings.settings_dark_mode), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, color = themeColors.onSurface)
                             Text(
                                 if (isSystemTheme) "Following system" else if (isDarkMode) "Dark" else "Light",
                                 style = MaterialTheme.typography.bodySmall,
@@ -201,7 +203,7 @@ fun SettingsScreen(
             // Categories Section
             item {
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("Data", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
+                Text(stringResource(AppStrings.settings_data), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
             }
 
             item {
@@ -217,8 +219,8 @@ fun SettingsScreen(
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             Icon(Icons.Default.Category, contentDescription = null, tint = themeColors.primary)
                             Column {
-                                Text("Categories", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, color = themeColors.onSurface)
-                                Text("Manage expense categories", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
+                                Text(stringResource(AppStrings.label_categories), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, color = themeColors.onSurface)
+                                Text(stringResource(AppStrings.settings_categories_desc), style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
                             }
                         }
                         Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Go", tint = themeColors.onSurface.copy(alpha = 0.4f))
@@ -229,22 +231,22 @@ fun SettingsScreen(
             // SMS Rules Section
             item {
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("SMS Sender Rules", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
-                Text("Add bank sender IDs to auto-track transactions", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
+                Text(stringResource(AppStrings.settings_sms_rules), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
+                Text(stringResource(AppStrings.settings_add_rule_desc), style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
             }
 
             item {
                 if (showAddRule) {
                     Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground)) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            OutlinedTextField(value = senderId, onValueChange = { senderId = it }, label = { Text("Sender ID (e.g., VM-HDFCBK)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                            OutlinedTextField(value = senderId, onValueChange = { senderId = it }, label = { Text(stringResource(AppStrings.settings_sender_id_label)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
                             Spacer(modifier = Modifier.height(8.dp))
-                            OutlinedTextField(value = senderName, onValueChange = { senderName = it }, label = { Text("Bank Name") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                            OutlinedTextField(value = senderName, onValueChange = { senderName = it }, label = { Text(stringResource(AppStrings.settings_bank_name_label)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
                             Spacer(modifier = Modifier.height(8.dp))
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                                androidx.compose.material3.TextButton(onClick = { showAddRule = false; senderId = ""; senderName = "" }) { Text("Cancel") }
+                                androidx.compose.material3.TextButton(onClick = { showAddRule = false; senderId = ""; senderName = "" }) { Text(stringResource(AppStrings.label_cancel)) }
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Button(onClick = { if (senderId.isNotBlank()) { viewModel.addSmsRule(senderId, senderName); senderId = ""; senderName = ""; showAddRule = false } }) { Text("Add") }
+                                Button(onClick = { if (senderId.isNotBlank()) { viewModel.addSmsRule(senderId, senderName); senderId = ""; senderName = ""; showAddRule = false } }) { Text(stringResource(AppStrings.label_add)) }
                             }
                         }
                     }
@@ -252,7 +254,7 @@ fun SettingsScreen(
                     OutlinedButton(onClick = { showAddRule = true }, modifier = Modifier.fillMaxWidth()) {
                         Icon(Icons.Default.Add, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Add SMS Sender Rule")
+                        Text(stringResource(AppStrings.settings_add_rule))
                     }
                 }
             }
@@ -271,14 +273,14 @@ fun SettingsScreen(
             }
 
             // Backup & Restore
-            item { Spacer(modifier = Modifier.height(4.dp)); Text("Backup & Restore", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground) }
+            item { Spacer(modifier = Modifier.height(4.dp)); Text(stringResource(AppStrings.settings_backup_restore), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground) }
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Button(onClick = { val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "text/xml"; putExtra(Intent.EXTRA_TITLE, "financemate_backup.xml") }; backupLauncher.launch(intent) }, modifier = Modifier.weight(1f), enabled = !state.backupInProgress) {
-                        if (state.backupInProgress) CircularProgressIndicator(modifier = Modifier.height(20.dp).width(20.dp), strokeWidth = 2.dp) else Text("Export Backup")
+                        if (state.backupInProgress) CircularProgressIndicator(modifier = Modifier.height(20.dp).width(20.dp), strokeWidth = 2.dp) else Text(stringResource(AppStrings.settings_export))
                     }
                     OutlinedButton(onClick = { val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "*/*" }; restoreLauncher.launch(intent) }, modifier = Modifier.weight(1f), enabled = !state.restoreInProgress) {
-                        if (state.restoreInProgress) CircularProgressIndicator(modifier = Modifier.height(20.dp).width(20.dp), strokeWidth = 2.dp) else Text("Import Restore")
+                        if (state.restoreInProgress) CircularProgressIndicator(modifier = Modifier.height(20.dp).width(20.dp), strokeWidth = 2.dp) else Text(stringResource(AppStrings.settings_import))
                     }
                 }
             }
@@ -286,8 +288,8 @@ fun SettingsScreen(
             // SMS Utilities
             item {
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("SMS Utilities", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
-                Text("Backup and parse SMS messages", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
+                Text(stringResource(AppStrings.settings_sms_utilities), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
+                Text(stringResource(AppStrings.backup_parse_desc), style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
             }
 
             item {
@@ -301,7 +303,7 @@ fun SettingsScreen(
                     } else {
                         Icon(Icons.Default.Backup, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Backup & Parse SMS")
+                        Text(stringResource(AppStrings.backup_parse_button))
                     }
                 }
             }
@@ -310,16 +312,16 @@ fun SettingsScreen(
                 item {
                     Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground)) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Backup Complete", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = themeColors.primary)
+                            Text(stringResource(AppStrings.backup_complete), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = themeColors.primary)
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Total SMS: ${result.totalSms}", style = MaterialTheme.typography.bodyMedium)
-                            Text("Bank transactions: ${result.bankTransactions}", style = MaterialTheme.typography.bodyMedium)
-                            Text("Notifications: ${result.notifications}", style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(AppStrings.backup_total_sms, result.totalSms), style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(AppStrings.backup_bank_transactions, result.bankTransactions), style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(AppStrings.backup_notifications_count, result.notifications), style = MaterialTheme.typography.bodyMedium)
                             if (result.bankBreakdown.isNotEmpty()) {
                                 Spacer(modifier = Modifier.height(8.dp))
-                                Text("Bank breakdown:", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+                                Text(stringResource(AppStrings.backup_bank_breakdown), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                                 result.bankBreakdown.forEach { (bank, count) ->
-                                    Text("  $bank: $count", style = MaterialTheme.typography.bodySmall)
+                                    Text(stringResource(AppStrings.backup_bank_entry, bank, count), style = MaterialTheme.typography.bodySmall)
                                 }
                             }
                         }
@@ -347,7 +349,7 @@ fun SettingsScreen(
                 ) {
                     Icon(Icons.Default.FolderOpen, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("View Backup Files")
+                    Text(stringResource(AppStrings.backup_view_files))
                 }
             }
 
@@ -368,7 +370,7 @@ fun SettingsScreen(
             }
 
             // Security
-            item { Spacer(modifier = Modifier.height(4.dp)); Text("Security", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground) }
+            item { Spacer(modifier = Modifier.height(4.dp)); Text(stringResource(AppStrings.settings_security), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground) }
             item {
                 Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground)) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -376,7 +378,7 @@ fun SettingsScreen(
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 Icon(Icons.Default.Lock, contentDescription = null, tint = themeColors.primary)
                                 Column {
-                                    Text("App Lock", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, color = themeColors.onSurface)
+                                    Text(stringResource(AppStrings.settings_app_lock), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, color = themeColors.onSurface)
                                     Text(
                                         when {
                                             state.isBiometricAvailable -> "Biometric + PIN available"
@@ -394,10 +396,10 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.height(12.dp))
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 if (!state.isPinSet) {
-                                    Button(onClick = { showSetPin = true }, modifier = Modifier.weight(1f)) { Text("Set PIN") }
+                                    Button(onClick = { showSetPin = true }, modifier = Modifier.weight(1f)) { Text(stringResource(AppStrings.pin_set_title)) }
                                 } else {
-                                    OutlinedButton(onClick = { showSetPin = true }, modifier = Modifier.weight(1f)) { Text("Change PIN") }
-                                    OutlinedButton(onClick = { viewModel.clearPin() }, modifier = Modifier.weight(1f)) { Text("Remove PIN") }
+                                    OutlinedButton(onClick = { showSetPin = true }, modifier = Modifier.weight(1f)) { Text(stringResource(AppStrings.settings_change_pin)) }
+                                    OutlinedButton(onClick = { viewModel.clearPin() }, modifier = Modifier.weight(1f)) { Text(stringResource(AppStrings.settings_remove_pin)) }
                                 }
                             }
                         }
@@ -406,13 +408,13 @@ fun SettingsScreen(
             }
 
             // About
-            item { Spacer(modifier = Modifier.height(4.dp)); Text("About", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground) }
+            item { Spacer(modifier = Modifier.height(4.dp)); Text(stringResource(AppStrings.settings_about), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground) }
             item {
                 Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground)) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Deep Money Tracker", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = themeColors.onSurface)
-                        Text("Version 1.0.0", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
-                        Text("Open-source expense tracker with SMS parsing", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
+                        Text(stringResource(AppStrings.app_name), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = themeColors.onSurface)
+                        Text(stringResource(AppStrings.settings_version), style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
+                        Text(stringResource(AppStrings.settings_open_source), style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
                     }
                 }
             }

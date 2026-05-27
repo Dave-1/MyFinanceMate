@@ -40,9 +40,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.deepmoneytracker.presentation.theme.AppStrings
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.data.local.entity.CategoryEntity
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
@@ -63,10 +65,10 @@ fun CategoriesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Categories", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(AppStrings.label_categories), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(AppStrings.label_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -81,7 +83,7 @@ fun CategoriesScreen(
                 containerColor = themeColors.primary,
                 contentColor = themeColors.onPrimary
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Category")
+                Icon(Icons.Default.Add, contentDescription = stringResource(AppStrings.label_add))
             }
         },
         containerColor = themeColors.background
@@ -101,7 +103,7 @@ fun CategoriesScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            "Add Category",
+                            stringResource(AppStrings.label_categories),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = themeColors.onSurface
@@ -110,7 +112,7 @@ fun CategoriesScreen(
                         OutlinedTextField(
                             value = newCategoryName,
                             onValueChange = { newCategoryName = it },
-                            label = { Text("Category Name") },
+                            label = { Text(stringResource(AppStrings.category_name_label)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true
                         )
@@ -118,7 +120,7 @@ fun CategoriesScreen(
                         OutlinedTextField(
                             value = newCategoryKeywords,
                             onValueChange = { newCategoryKeywords = it },
-                            label = { Text("Keywords (comma separated)") },
+                            label = { Text(stringResource(AppStrings.category_keywords_label)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true
                         )
@@ -132,7 +134,7 @@ fun CategoriesScreen(
                                 newCategoryName = ""
                                 newCategoryKeywords = ""
                             }) {
-                                Text("Cancel")
+                                Text(stringResource(AppStrings.label_cancel))
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             androidx.compose.material3.Button(onClick = {
@@ -146,7 +148,7 @@ fun CategoriesScreen(
                                     showAddDialog = false
                                 }
                             }) {
-                                Text("Add")
+                                Text(stringResource(AppStrings.label_add))
                             }
                         }
                     }

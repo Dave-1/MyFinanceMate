@@ -51,8 +51,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.data.local.entity.TransactionType
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.DashboardViewModel
@@ -74,16 +76,16 @@ fun DashboardScreen(
     if (showBackupModal && state.showBackupReminder) {
         AlertDialog(
             onDismissRequest = { showBackupModal = false; viewModel.dismissBackupReminder() },
-            title = { Text("SMS Backup Reminder", fontWeight = FontWeight.Bold) },
-            text = { Text("It's been a while since your last SMS backup. Back up your SMS data to keep your finances in sync.") },
+            title = { Text(stringResource(AppStrings.backup_reminder_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(AppStrings.backup_reminder_text)) },
             confirmButton = {
                 Button(onClick = { showBackupModal = false; viewModel.dismissBackupReminder(); onNavigateToSettings() }) {
-                    Text("Backup Now")
+                    Text(stringResource(AppStrings.backup_now))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showBackupModal = false; viewModel.dismissBackupReminder() }) {
-                    Text("Later")
+                    Text(stringResource(AppStrings.backup_later))
                 }
             }
         )
@@ -95,13 +97,13 @@ fun DashboardScreen(
                 title = {
                     Column {
                         Text(
-                            "Deep Money Tracker",
+                            stringResource(AppStrings.app_name),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = themeColors.onBackground
                         )
                         Text(
-                            "Your finances at a glance",
+                            stringResource(AppStrings.dashboard_subtitle),
                             style = MaterialTheme.typography.bodySmall,
                             color = themeColors.onBackground.copy(alpha = 0.6f)
                         )
@@ -109,10 +111,10 @@ fun DashboardScreen(
                 },
                 actions = {
                     IconButton(onClick = onNavigateToNotifications) {
-                        Icon(Icons.Default.Notifications, contentDescription = "Notifications", tint = themeColors.onBackground)
+                        Icon(Icons.Default.Notifications, contentDescription = stringResource(AppStrings.notifications_title), tint = themeColors.onBackground)
                     }
                     IconButton(onClick = onNavigateToReports) {
-                        Icon(Icons.Default.BarChart, contentDescription = "Reports", tint = themeColors.onBackground)
+                        Icon(Icons.Default.BarChart, contentDescription = stringResource(AppStrings.reports_title), tint = themeColors.onBackground)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -145,8 +147,8 @@ fun DashboardScreen(
                         ) {
                             Icon(Icons.Default.Backup, contentDescription = null, tint = themeColors.warning, modifier = Modifier.size(24.dp))
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("SMS Backup Reminder", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
-                                Text("Back up now to keep your data safe.", style = MaterialTheme.typography.bodySmall, color = themeColors.onBackground.copy(alpha = 0.7f))
+                                Text(stringResource(AppStrings.backup_reminder_title), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
+                                Text(stringResource(AppStrings.backup_reminder_short), style = MaterialTheme.typography.bodySmall, color = themeColors.onBackground.copy(alpha = 0.7f))
                             }
                             IconButton(onClick = { viewModel.dismissBackupReminder() }) {
                                 Icon(Icons.Default.Close, contentDescription = "Dismiss", tint = themeColors.onBackground.copy(alpha = 0.5f))
@@ -169,7 +171,7 @@ fun DashboardScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            "Total Balance",
+                            stringResource(AppStrings.dashboard_total_balance),
                             style = MaterialTheme.typography.labelLarge,
                             color = themeColors.onPrimary.copy(alpha = 0.8f)
                         )
@@ -186,14 +188,14 @@ fun DashboardScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             BalanceStat(
-                                label = "Income",
+                                label = stringResource(AppStrings.label_income),
                                 amount = state.totalIncome,
                                 icon = Icons.Default.ArrowUpward,
                                 color = themeColors.incomeColor,
                                 themeColors = themeColors
                             )
                             BalanceStat(
-                                label = "Expense",
+                                label = stringResource(AppStrings.label_expense),
                                 amount = state.totalExpense,
                                 icon = Icons.Default.ArrowDownward,
                                 color = themeColors.expenseColor,
@@ -212,14 +214,14 @@ fun DashboardScreen(
                 ) {
                     QuickActionCard(
                         modifier = Modifier.weight(1f),
-                        label = "Transactions",
+                        label = stringResource(AppStrings.transactions_title),
                         icon = Icons.AutoMirrored.Filled.CompareArrows,
                         onClick = onNavigateToTransactions,
                         themeColors = themeColors
                     )
                     QuickActionCard(
                         modifier = Modifier.weight(1f),
-                        label = "Reports",
+                        label = stringResource(AppStrings.reports_title),
                         icon = Icons.Default.BarChart,
                         onClick = onNavigateToReports,
                         themeColors = themeColors
@@ -235,14 +237,14 @@ fun DashboardScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Recent Transactions",
+                        stringResource(AppStrings.dashboard_recent_transactions),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = themeColors.onBackground
                     )
                     if (state.recentTransactions.isNotEmpty()) {
                         TextButton(onClick = onNavigateToTransactions) {
-                            Text("View All", color = themeColors.primary)
+                            Text(stringResource(AppStrings.dashboard_view_all), color = themeColors.primary)
                         }
                     }
                 }
@@ -266,8 +268,8 @@ fun DashboardScreen(
                                 tint = themeColors.onBackground.copy(alpha = 0.3f)
                             )
                             Spacer(modifier = Modifier.height(12.dp))
-                            Text("No transactions yet", style = MaterialTheme.typography.bodyLarge, color = themeColors.onBackground.copy(alpha = 0.6f))
-                            Text("Add your first transaction", style = MaterialTheme.typography.bodySmall, color = themeColors.onBackground.copy(alpha = 0.4f))
+                            Text(stringResource(AppStrings.dashboard_no_transactions), style = MaterialTheme.typography.bodyLarge, color = themeColors.onBackground.copy(alpha = 0.6f))
+                            Text(stringResource(AppStrings.dashboard_add_first), style = MaterialTheme.typography.bodySmall, color = themeColors.onBackground.copy(alpha = 0.4f))
                         }
                     }
                 }
@@ -287,7 +289,7 @@ fun DashboardScreen(
             if (state.categoryTotals.isNotEmpty()) {
                 item {
                     Text(
-                        "Expense by Category",
+                        stringResource(AppStrings.dashboard_expense_by_category),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = themeColors.onBackground

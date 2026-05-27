@@ -53,7 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.deepmoneytracker.R
+import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.data.local.entity.SmsNotificationCategory
 import com.deepmoneytracker.data.local.entity.SmsNotificationEntity
 import com.deepmoneytracker.presentation.components.DateAccordionList
@@ -81,7 +81,7 @@ fun NotificationsPage(
             TopAppBar(
                 title = {
                     Text(
-                        stringResource(R.string.notifications_title),
+                        stringResource(AppStrings.notifications_title),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -92,7 +92,7 @@ fun NotificationsPage(
                     IconButton(onClick = { viewModel.clearAllRead() }) {
                         Icon(
                             Icons.Default.DeleteSweep,
-                            contentDescription = stringResource(R.string.notifications_clear_read),
+                            contentDescription = stringResource(AppStrings.notifications_clear_read),
                             tint = themeColors.onBackground.copy(alpha = 0.6f)
                         )
                     }
@@ -120,7 +120,7 @@ fun NotificationsPage(
                     FilterChip(
                         selected = state.selectedCategory == null,
                         onClick = { viewModel.setCategory(null) },
-                        label = { Text(stringResource(R.string.transactions_filter_all)) },
+                        label = { Text(stringResource(AppStrings.label_all)) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = themeColors.primary.copy(alpha = 0.15f),
                             selectedLabelColor = themeColors.primary
@@ -161,13 +161,13 @@ fun NotificationsPage(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            if (state.selectedCategory != null) "No ${getCategoryLabel(state.selectedCategory!!)} notifications"
-                            else stringResource(R.string.notifications_empty),
+                            if (state.selectedCategory != null) stringResource(AppStrings.notifications_empty_category, getCategoryLabel(state.selectedCategory!!))
+                            else stringResource(AppStrings.notifications_empty),
                             style = MaterialTheme.typography.bodyLarge,
                             color = themeColors.onSurface.copy(alpha = 0.5f)
                         )
                         Text(
-                            stringResource(R.string.notifications_empty_desc),
+                            stringResource(AppStrings.notifications_empty_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = themeColors.onSurface.copy(alpha = 0.4f)
                         )
@@ -233,13 +233,13 @@ private fun NotificationCard(
                 Box(
                     modifier = Modifier.fillMaxSize().background(Color(0xFF4CAF50), RoundedCornerShape(14.dp)).padding(start = 20.dp),
                     contentAlignment = Alignment.CenterStart
-                ) { Text("Read", color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium) }
+                ) { Text(stringResource(AppStrings.notifications_swipe_read), color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium) }
             }
             if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
                 Box(
                     modifier = Modifier.fillMaxSize().background(Color(0xFFE53935), RoundedCornerShape(14.dp)).padding(end = 20.dp),
                     contentAlignment = Alignment.CenterEnd
-                ) { Text("Delete", color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium) }
+                ) { Text(stringResource(AppStrings.label_delete), color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium) }
             }
         },
         content = {
@@ -298,7 +298,7 @@ private fun NotificationCard(
                         Spacer(modifier = Modifier.width(8.dp))
                     }
                     IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.btn_delete), modifier = Modifier.size(18.dp), tint = themeColors.onSurface.copy(alpha = 0.4f))
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(AppStrings.label_delete), modifier = Modifier.size(18.dp), tint = themeColors.onSurface.copy(alpha = 0.4f))
                     }
                 }
             }
@@ -319,13 +319,13 @@ private fun NotificationCard(
 @Composable
 private fun getCategoryLabel(category: SmsNotificationCategory): String {
     return when (category) {
-        SmsNotificationCategory.RECHARGE -> stringResource(R.string.notif_recharge)
-        SmsNotificationCategory.EXPIRY -> stringResource(R.string.notif_expiry)
-        SmsNotificationCategory.PROMOTION -> stringResource(R.string.notif_promotion)
-        SmsNotificationCategory.OTP -> stringResource(R.string.notif_otp)
-        SmsNotificationCategory.DELIVERY -> stringResource(R.string.notif_delivery)
-        SmsNotificationCategory.APPOINTMENT -> stringResource(R.string.notif_appointment)
-        SmsNotificationCategory.OTHER -> stringResource(R.string.notif_other)
+        SmsNotificationCategory.RECHARGE -> stringResource(AppStrings.notif_recharge)
+        SmsNotificationCategory.EXPIRY -> stringResource(AppStrings.notif_expiry)
+        SmsNotificationCategory.PROMOTION -> stringResource(AppStrings.notif_promotion)
+        SmsNotificationCategory.OTP -> stringResource(AppStrings.notif_otp)
+        SmsNotificationCategory.DELIVERY -> stringResource(AppStrings.notif_delivery)
+        SmsNotificationCategory.APPOINTMENT -> stringResource(AppStrings.notif_appointment)
+        SmsNotificationCategory.OTHER -> stringResource(AppStrings.notif_other)
     }
 }
 

@@ -28,9 +28,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.deepmoneytracker.presentation.theme.AppStrings
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.data.local.entity.Recurrence
 import com.deepmoneytracker.data.local.entity.ReminderEntity
@@ -47,7 +49,7 @@ fun RemindersScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Reminders", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(AppStrings.reminders_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     Icon(Icons.Default.Notifications, contentDescription = null)
                 }
@@ -55,7 +57,7 @@ fun RemindersScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onNavigateToAdd) {
-                Icon(Icons.Default.Add, contentDescription = "Add Reminder")
+                Icon(Icons.Default.Add, contentDescription = stringResource(AppStrings.add_reminder_title))
             }
         }
     ) { padding ->

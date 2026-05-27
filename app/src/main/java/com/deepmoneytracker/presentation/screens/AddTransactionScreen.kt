@@ -33,10 +33,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.data.local.entity.TransactionType
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.TransactionViewModel
@@ -58,7 +60,7 @@ fun AddTransactionScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Add Transaction",
+                        stringResource(AppStrings.add_transaction_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = themeColors.onBackground
@@ -66,7 +68,7 @@ fun AddTransactionScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = themeColors.onBackground)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(AppStrings.label_back), tint = themeColors.onBackground)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -86,7 +88,7 @@ fun AddTransactionScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Type selector
-            Text("Type", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium, color = themeColors.onBackground)
+            Text(stringResource(AppStrings.field_type), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium, color = themeColors.onBackground)
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Surface(
                     onClick = { type = TransactionType.INCOME },
@@ -100,7 +102,7 @@ fun AddTransactionScreen(
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                     ) {
                         Text(
-                            "Income",
+                            stringResource(AppStrings.label_income),
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = if (type == TransactionType.INCOME) FontWeight.Bold else FontWeight.Normal,
                             color = if (type == TransactionType.INCOME) themeColors.onPrimary else themeColors.onSurface
@@ -119,7 +121,7 @@ fun AddTransactionScreen(
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                     ) {
                         Text(
-                            "Expense",
+                            stringResource(AppStrings.label_expense),
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = if (type == TransactionType.EXPENSE) FontWeight.Bold else FontWeight.Normal,
                             color = if (type == TransactionType.EXPENSE) themeColors.onPrimary else themeColors.onSurface
@@ -132,10 +134,10 @@ fun AddTransactionScreen(
             OutlinedTextField(
                 value = amount,
                 onValueChange = { amount = it },
-                label = { Text("Amount") },
+                label = { Text(stringResource(AppStrings.field_amount)) },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                prefix = { Text("\u20B9 ", color = themeColors.onSurface.copy(alpha = 0.7f)) },
+                prefix = { Text(stringResource(AppStrings.currency_symbol) + " ", color = themeColors.onSurface.copy(alpha = 0.7f)) },
                 singleLine = true,
                 shape = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -150,7 +152,7 @@ fun AddTransactionScreen(
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Description") },
+                label = { Text(stringResource(AppStrings.field_description)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 shape = RoundedCornerShape(14.dp),
@@ -166,7 +168,7 @@ fun AddTransactionScreen(
             OutlinedTextField(
                 value = merchant,
                 onValueChange = { merchant = it },
-                label = { Text("Merchant (optional)") },
+                label = { Text(stringResource(AppStrings.field_merchant)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 shape = RoundedCornerShape(14.dp),

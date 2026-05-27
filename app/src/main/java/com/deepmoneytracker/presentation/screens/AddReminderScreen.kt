@@ -36,10 +36,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.data.local.entity.Recurrence
 import com.deepmoneytracker.data.local.entity.ReminderType
 import com.deepmoneytracker.presentation.viewmodel.ReminderViewModel
@@ -71,10 +73,10 @@ fun AddReminderScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Reminder", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(AppStrings.add_reminder_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(AppStrings.label_back))
                     }
                 }
             )
@@ -98,17 +100,17 @@ fun AddReminderScreen(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("Transaction Type", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(AppStrings.reminder_type), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         FilterChip(
                             selected = type == ReminderType.INCOME,
                             onClick = { type = ReminderType.INCOME },
-                            label = { Text("Income") }
+                            label = { Text(stringResource(AppStrings.label_income)) }
                         )
                         FilterChip(
                             selected = type == ReminderType.EXPENSE,
                             onClick = { type = ReminderType.EXPENSE },
-                            label = { Text("Expense") }
+                            label = { Text(stringResource(AppStrings.label_expense)) }
                         )
                     }
                 }
@@ -124,12 +126,12 @@ fun AddReminderScreen(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("Details", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-                    
+                    Text(stringResource(AppStrings.reminder_details), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+
                     OutlinedTextField(
                         value = title,
                         onValueChange = { title = it },
-                        label = { Text("Title") },
+                        label = { Text(stringResource(AppStrings.reminder_title_label)) },
                         modifier = Modifier.fillMaxWidth(),
                         leadingIcon = { Icon(Icons.Default.Title, contentDescription = null) },
                         singleLine = true
@@ -138,18 +140,18 @@ fun AddReminderScreen(
                     OutlinedTextField(
                         value = amount,
                         onValueChange = { amount = it },
-                        label = { Text("Amount (optional)") },
+                        label = { Text(stringResource(AppStrings.reminder_amount_label)) },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) },
-                        prefix = { Text("₹") },
+                        prefix = { Text(stringResource(AppStrings.currency_symbol)) },
                         singleLine = true
                     )
 
                     OutlinedTextField(
                         value = description,
                         onValueChange = { description = it },
-                        label = { Text("Description (optional)") },
+                        label = { Text(stringResource(AppStrings.reminder_desc_label)) },
                         modifier = Modifier.fillMaxWidth(),
                         leadingIcon = { Icon(Icons.Default.Description, contentDescription = null) },
                         minLines = 2,
@@ -168,7 +170,7 @@ fun AddReminderScreen(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("Recurrence", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(AppStrings.reminder_recurrence), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -204,7 +206,7 @@ fun AddReminderScreen(
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 enabled = title.isNotBlank()
             ) {
-                Text("Save Reminder", modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(AppStrings.reminder_save), modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.titleMedium)
             }
         }
     }
