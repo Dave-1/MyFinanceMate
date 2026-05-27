@@ -42,6 +42,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -66,7 +67,7 @@ fun TransactionsScreen(
     val transactions by viewModel.transactions.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val themeColors = LocalThemeColors.current
-    var selectedFilter by remember { mutableStateOf<String?>(null) }
+    var selectedFilter by rememberSaveable { mutableStateOf<String?>(null) }
 
     val filteredTransactions = when (selectedFilter) {
         "Income" -> transactions.filter { it.type == TransactionType.INCOME }
