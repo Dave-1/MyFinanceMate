@@ -48,14 +48,12 @@ fun LockScreen(
     val activity = context as FragmentActivity
     var showSetPin by remember { mutableStateOf(false) }
     var showVerifyPin by remember { mutableStateOf(false) }
-    var biometricAttempted by remember { mutableStateOf(false) }
 
     val isPinSet = pinAuthManager.isPinSet()
 
-    // Auto-trigger biometric/PIN on every recomposition (handles app resume)
-    LaunchedEffect(isPinSet, biometricAttempted) {
-        if (isPinSet && !biometricAttempted) {
-            biometricAttempted = true
+    // Always auto-trigger biometric/PIN when this screen appears
+    LaunchedEffect(Unit) {
+        if (isPinSet) {
             if (pinAuthManager.isBiometricAvailable()) {
                 biometricManager.authenticate(
                     activity = activity,
@@ -68,7 +66,7 @@ fun LockScreen(
             } else {
                 showVerifyPin = true
             }
-        } else if (!isPinSet) {
+        } else {
             showSetPin = true
         }
     }

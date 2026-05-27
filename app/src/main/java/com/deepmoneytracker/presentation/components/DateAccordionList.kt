@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
@@ -100,7 +101,7 @@ fun DateAccordionHeader(
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
-            containerColor = themeColors.cardBackground
+            containerColor = if (themeColors.isDark) themeColors.surface else themeColors.primary.copy(alpha = 0.06f)
         ),
         shape = RoundedCornerShape(14.dp)
     ) {
@@ -125,13 +126,13 @@ fun DateAccordionHeader(
                     dateHeader,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = themeColors.onBackground
+                    color = if (themeColors.isDark) Color.White else themeColors.onBackground
                 )
             }
             Text(
                 summary,
                 style = MaterialTheme.typography.bodySmall,
-                color = themeColors.onBackground.copy(alpha = 0.7f)
+                color = if (themeColors.isDark) Color.White.copy(alpha = 0.7f) else themeColors.onBackground.copy(alpha = 0.7f)
             )
         }
     }

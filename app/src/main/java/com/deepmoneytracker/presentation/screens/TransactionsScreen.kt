@@ -74,10 +74,21 @@ fun TransactionsScreen(
     val themeColors = LocalThemeColors.current
     var selectedFilter by rememberSaveable { mutableStateOf<String?>(null) }
 
+    val currentMonthStart = remember {
+        java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.DAY_OF_MONTH, 1)
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    }
+
     val filteredTransactions = when (selectedFilter) {
         "Income" -> transactions.filter { it.type == TransactionType.INCOME }
         "Expense" -> transactions.filter { it.type == TransactionType.EXPENSE }
         "SMS" -> transactions.filter { it.isFromSms }
+        "Past SMS" -> transactions.filter { it.isFromSms && it.date < currentMonthStart }
         null -> transactions
         else -> {
             // Bank name filter
@@ -178,6 +189,14 @@ fun TransactionsScreen(
                         label = "SMS",
                         selected = selectedFilter == "SMS",
                         onClick = { selectedFilter = if (selectedFilter == "SMS") null else "SMS" },
+                        themeColors = themeColors
+                    )
+                }
+                item {
+                    FilterChipCustom(
+                        label = "Past SMS",
+                        selected = selectedFilter == "Past SMS",
+                        onClick = { selectedFilter = if (selectedFilter == "Past SMS") null else "Past SMS" },
                         themeColors = themeColors
                     )
                 }
