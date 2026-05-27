@@ -42,7 +42,8 @@ import com.deepmoneytracker.presentation.components.VerifyPinDialog
 fun LockScreen(
     pinAuthManager: PinAuthManager,
     biometricManager: BiometricManager,
-    onAuthenticated: () -> Unit
+    onAuthenticated: () -> Unit,
+    resumeKey: Int = 0
 ) {
     val context = LocalContext.current
     val activity = context as FragmentActivity
@@ -51,8 +52,10 @@ fun LockScreen(
 
     val isPinSet = pinAuthManager.isPinSet()
 
-    // Always auto-trigger biometric/PIN when this screen appears
-    LaunchedEffect(Unit) {
+    // Re-trigger on every resume (resumeKey changes each time app comes to foreground)
+    LaunchedEffect(resumeKey) {
+        showSetPin = false
+        showVerifyPin = false
         if (isPinSet) {
             if (pinAuthManager.isBiometricAvailable()) {
                 biometricManager.authenticate(

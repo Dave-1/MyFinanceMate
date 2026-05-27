@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.CompareArrows
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -24,16 +26,16 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.automirrored.filled.CompareArrows
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -68,20 +70,14 @@ fun DashboardScreen(
     val themeColors = LocalThemeColors.current
     var showBackupModal by remember { mutableStateOf(state.showBackupReminder) }
 
-    // Show backup modal when reminder is active
+    // Backup reminder modal
     if (showBackupModal && state.showBackupReminder) {
         AlertDialog(
             onDismissRequest = { showBackupModal = false; viewModel.dismissBackupReminder() },
             title = { Text("SMS Backup Reminder", fontWeight = FontWeight.Bold) },
-            text = {
-                Text("It's been a while since your last SMS backup. Back up your SMS data to keep your finances in sync.")
-            },
+            text = { Text("It's been a while since your last SMS backup. Back up your SMS data to keep your finances in sync.") },
             confirmButton = {
-                Button(onClick = {
-                    showBackupModal = false
-                    viewModel.dismissBackupReminder()
-                    onNavigateToSettings()
-                }) {
+                Button(onClick = { showBackupModal = false; viewModel.dismissBackupReminder(); onNavigateToSettings() }) {
                     Text("Backup Now")
                 }
             },
@@ -107,24 +103,16 @@ fun DashboardScreen(
                         Text(
                             "Your finances at a glance",
                             style = MaterialTheme.typography.bodySmall,
-                            color = themeColors.onBackground.copy(alpha = 0.7f)
+                            color = themeColors.onBackground.copy(alpha = 0.6f)
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = onNavigateToNotifications) {
-                        Icon(
-                            Icons.Default.Notifications,
-                            contentDescription = "Notifications",
-                            tint = themeColors.primary
-                        )
+                        Icon(Icons.Default.Notifications, contentDescription = "Notifications", tint = themeColors.onBackground)
                     }
                     IconButton(onClick = onNavigateToReports) {
-                        Icon(
-                            Icons.Default.BarChart,
-                            contentDescription = "Reports",
-                            tint = themeColors.primary
-                        )
+                        Icon(Icons.Default.BarChart, contentDescription = "Reports", tint = themeColors.onBackground)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -138,114 +126,102 @@ fun DashboardScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(padding),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                Spacer(modifier = Modifier.height(4.dp))
-            }
-
             // Backup reminder banner
             if (state.showBackupReminder) {
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = themeColors.warning.copy(alpha = 0.12f)
-                        )
+                        colors = CardDefaults.cardColors(containerColor = themeColors.warning.copy(alpha = 0.12f))
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Icon(
-                                Icons.Default.Backup,
-                                contentDescription = null,
-                                tint = themeColors.warning,
-                                modifier = Modifier.size(24.dp)
-                            )
+                            Icon(Icons.Default.Backup, contentDescription = null, tint = themeColors.warning, modifier = Modifier.size(24.dp))
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    "SMS Backup Reminder",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    color = themeColors.onBackground
-                                )
-                                Text(
-                                    "It's been a while since your last SMS backup. Back up now to keep your data safe.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = themeColors.onBackground.copy(alpha = 0.7f)
-                                )
+                                Text("SMS Backup Reminder", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
+                                Text("Back up now to keep your data safe.", style = MaterialTheme.typography.bodySmall, color = themeColors.onBackground.copy(alpha = 0.7f))
                             }
                             IconButton(onClick = { viewModel.dismissBackupReminder() }) {
-                                Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = "Dismiss",
-                                    tint = themeColors.onBackground.copy(alpha = 0.5f)
-                                )
+                                Icon(Icons.Default.Close, contentDescription = "Dismiss", tint = themeColors.onBackground.copy(alpha = 0.5f))
                             }
                         }
                     }
                 }
             }
 
-            // Balance Card
+            // Balance Card — modern gradient style
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = themeColors.primary
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = themeColors.primary),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
+                        modifier = Modifier.fillMaxWidth().padding(28.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             "Total Balance",
-                            style = MaterialTheme.typography.titleSmall,
+                            style = MaterialTheme.typography.labelLarge,
                             color = themeColors.onPrimary.copy(alpha = 0.8f)
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             "\u20B9${"%,.2f".format(state.balance)}",
                             style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.Bold,
                             color = themeColors.onPrimary
                         )
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            BalanceStat(
+                                label = "Income",
+                                amount = state.totalIncome,
+                                icon = Icons.Default.ArrowUpward,
+                                color = themeColors.incomeColor,
+                                themeColors = themeColors
+                            )
+                            BalanceStat(
+                                label = "Expense",
+                                amount = state.totalExpense,
+                                icon = Icons.Default.ArrowDownward,
+                                color = themeColors.expenseColor,
+                                themeColors = themeColors
+                            )
+                        }
                     }
                 }
             }
 
-            // Income & Expense Summary
+            // Quick Actions
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    SummaryCard(
+                    QuickActionCard(
                         modifier = Modifier.weight(1f),
-                        title = "Income",
-                        amount = state.totalIncome,
-                        icon = Icons.Default.ArrowUpward,
-                        color = themeColors.incomeColor,
+                        label = "Transactions",
+                        icon = Icons.AutoMirrored.Filled.CompareArrows,
+                        onClick = onNavigateToTransactions,
                         themeColors = themeColors
                     )
-                    SummaryCard(
+                    QuickActionCard(
                         modifier = Modifier.weight(1f),
-                        title = "Expense",
-                        amount = state.totalExpense,
-                        icon = Icons.Default.ArrowDownward,
-                        color = themeColors.expenseColor,
+                        label = "Reports",
+                        icon = Icons.Default.BarChart,
+                        onClick = onNavigateToReports,
                         themeColors = themeColors
                     )
                 }
@@ -265,12 +241,8 @@ fun DashboardScreen(
                         color = themeColors.onBackground
                     )
                     if (state.recentTransactions.isNotEmpty()) {
-                        IconButton(onClick = onNavigateToTransactions) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.CompareArrows,
-                                contentDescription = "View All",
-                                tint = themeColors.primary
-                            )
+                        TextButton(onClick = onNavigateToTransactions) {
+                            Text("View All", color = themeColors.primary)
                         }
                     }
                 }
@@ -278,33 +250,24 @@ fun DashboardScreen(
 
             if (state.recentTransactions.isEmpty()) {
                 item {
-                    Card(
+                    OutlinedCard(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground)
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.outlinedCardColors(containerColor = themeColors.background)
                     ) {
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(32.dp),
+                            modifier = Modifier.fillMaxWidth().padding(32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
                                 Icons.AutoMirrored.Filled.CompareArrows,
                                 contentDescription = null,
                                 modifier = Modifier.size(48.dp),
-                                tint = themeColors.onSurface.copy(alpha = 0.4f)
+                                tint = themeColors.onBackground.copy(alpha = 0.3f)
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                "No transactions yet",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = themeColors.onSurface.copy(alpha = 0.6f)
-                            )
-                            Text(
-                                "Add your first transaction",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = themeColors.onSurface.copy(alpha = 0.4f)
-                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text("No transactions yet", style = MaterialTheme.typography.bodyLarge, color = themeColors.onBackground.copy(alpha = 0.6f))
+                            Text("Add your first transaction", style = MaterialTheme.typography.bodySmall, color = themeColors.onBackground.copy(alpha = 0.4f))
                         }
                     }
                 }
@@ -320,7 +283,7 @@ fun DashboardScreen(
                 }
             }
 
-            // Category Breakdown Header
+            // Category Breakdown
             if (state.categoryTotals.isNotEmpty()) {
                 item {
                     Text(
@@ -348,55 +311,58 @@ fun DashboardScreen(
 }
 
 @Composable
-private fun SummaryCard(
-    modifier: Modifier,
-    title: String,
+private fun BalanceStat(
+    label: String,
     amount: Double,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     color: androidx.compose.ui.graphics.Color,
     themeColors: com.deepmoneytracker.presentation.theme.ThemeColors
 ) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Box(
+            modifier = Modifier.size(36.dp).clip(CircleShape).background(color.copy(alpha = 0.2f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, contentDescription = label, tint = color, modifier = Modifier.size(18.dp))
+        }
+        Column {
+            Text(label, style = MaterialTheme.typography.labelSmall, color = themeColors.onPrimary.copy(alpha = 0.7f))
+            Text(
+                "\u20B9${"%,.2f".format(amount)}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = themeColors.onPrimary
+            )
+        }
+    }
+}
+
+@Composable
+private fun QuickActionCard(
+    modifier: Modifier,
+    label: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit,
+    themeColors: com.deepmoneytracker.presentation.theme.ThemeColors
+) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = themeColors.cardBackground
-        )
+        colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground),
+        onClick = onClick
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            Box(
+                modifier = Modifier.size(40.dp).clip(CircleShape).background(themeColors.primary.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(color.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        icon,
-                        contentDescription = title,
-                        tint = color,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-                Text(
-                    title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = themeColors.onSurface.copy(alpha = 0.7f)
-                )
+                Icon(icon, contentDescription = label, tint = themeColors.primary, modifier = Modifier.size(20.dp))
             }
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                "\u20B9${"%,.2f".format(amount)}",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = themeColors.onSurface
-            )
+            Text(label, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium, color = themeColors.onSurface)
         }
     }
 }
@@ -412,50 +378,38 @@ private fun TransactionItem(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(14.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (isIncome) themeColors.incomeColor.copy(alpha = 0.15f)
-                            else themeColors.expenseColor.copy(alpha = 0.15f)
-                        ),
+                    modifier = Modifier.size(44.dp).clip(CircleShape).background(
+                        if (isIncome) themeColors.incomeColor.copy(alpha = 0.12f)
+                        else themeColors.expenseColor.copy(alpha = 0.12f)
+                    ),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         if (isIncome) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
                         contentDescription = null,
                         tint = if (isIncome) themeColors.incomeColor else themeColors.expenseColor,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(22.dp)
                     )
                 }
                 Column {
+                    Text(description, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, maxLines = 1, color = themeColors.onSurface)
                     Text(
-                        description,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium,
-                        maxLines = 1,
-                        color = themeColors.onSurface
-                    )
-                    Text(
-                        java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
-                            .format(java.util.Date(date)),
+                        java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault()).format(java.util.Date(date)),
                         style = MaterialTheme.typography.bodySmall,
-                        color = themeColors.onSurface.copy(alpha = 0.6f)
+                        color = themeColors.onSurface.copy(alpha = 0.5f)
                     )
                 }
             }
@@ -486,36 +440,18 @@ private fun CategoryBreakdownItem(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(14.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .clip(CircleShape)
-                        .background(categoryColor)
-                )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                Box(modifier = Modifier.size(14.dp).clip(CircleShape).background(categoryColor))
                 Column {
-                    Text(
-                        name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = themeColors.onSurface
-                    )
-                    Text(
-                        "${"%.1f".format(percentage)}%",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = themeColors.onSurface.copy(alpha = 0.6f)
-                    )
+                    Text(name, style = MaterialTheme.typography.bodyLarge, color = themeColors.onSurface)
+                    Text("${"%.1f".format(percentage)}%", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.5f))
                 }
             }
             Text(

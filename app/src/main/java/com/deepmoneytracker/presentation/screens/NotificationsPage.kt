@@ -249,7 +249,7 @@ private fun NotificationCard(
             if (!notification.isRead) onRead()
         },
         colors = CardDefaults.cardColors(
-            containerColor = if (isExpired) Color(0xFFFFF3E0) else themeColors.cardBackground
+            containerColor = if (isExpired) themeColors.warning.copy(alpha = 0.12f) else themeColors.cardBackground
         ),
         shape = RoundedCornerShape(14.dp)
     ) {

@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var biometricManager: BiometricManager
 
     private var isAuthenticated by mutableStateOf(false)
+    private var resumeCount by mutableStateOf(0)
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity() {
                 val observer = LifecycleEventObserver { _, event ->
                     if (event == Lifecycle.Event.ON_RESUME) {
                         isAuthenticated = false
+                        resumeCount++
                     }
                 }
                 lifecycleOwner.lifecycle.addObserver(observer)
@@ -82,7 +84,8 @@ class MainActivity : AppCompatActivity() {
                         LockScreen(
                             pinAuthManager = pinAuthManager,
                             biometricManager = biometricManager,
-                            onAuthenticated = { isAuthenticated = true }
+                            onAuthenticated = { isAuthenticated = true },
+                            resumeKey = resumeCount
                         )
                     } else {
                         AppNavigation()
