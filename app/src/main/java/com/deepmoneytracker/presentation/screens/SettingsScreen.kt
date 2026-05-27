@@ -1,9 +1,13 @@
 package com.deepmoneytracker.presentation.screens
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -80,12 +84,35 @@ fun SettingsScreen(
     val currentTheme by viewModel.themeStateHolder.currentTheme.collectAsStateWithLifecycle()
     val isDarkMode by viewModel.themeStateHolder.isDarkMode.collectAsStateWithLifecycle()
     val isSystemTheme by viewModel.themeStateHolder.isSystemTheme.collectAsStateWithLifecycle()
+    val context = androidx.compose.ui.platform.LocalContext.current
     val themeColors = LocalThemeColors.current
     val snackbarHostState = remember { SnackbarHostState() }
     var showAddRule by remember { mutableStateOf(false) }
     var showSetPin by remember { mutableStateOf(false) }
     var senderId by remember { mutableStateOf("") }
     var senderName by remember { mutableStateOf("") }
+
+    // SMS permission launcher — triggers backup after permission granted
+    val smsPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            viewModel.backupSms()
+        }
+    }
+
+    fun requestSmsPermissionAndBackup() {
+        val perms = mutableListOf(Manifest.permission.READ_SMS, Manifest.permission.RECEIVE_SMS)
+        val allGranted = perms.all {
+            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+        }
+        if (allGranted) {
+            viewModel.backupSms()
+        } else {
+            smsPermissionLauncher.launch(perms.toTypedArray())
+        }
+    }
 
     val backupLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -265,7 +292,7 @@ fun SettingsScreen(
 
             item {
                 Button(
-                    onClick = { viewModel.backupSms() },
+                    onClick = { requestSmsPermissionAndBackup() },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.smsBackupInProgress
                 ) {

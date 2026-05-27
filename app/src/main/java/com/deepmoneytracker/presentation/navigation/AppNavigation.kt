@@ -121,7 +121,8 @@ fun AppNavigation() {
                 DashboardScreen(
                     onNavigateToTransactions = { navController.navigate(Screen.Transactions.route) },
                     onNavigateToReports = { navController.navigate(Screen.Reports.route) },
-                    onNavigateToNotifications = { navController.navigate(Screen.Notifications.route) }
+                    onNavigateToNotifications = { navController.navigate(Screen.Notifications.route) },
+                    onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
                 )
             }
 

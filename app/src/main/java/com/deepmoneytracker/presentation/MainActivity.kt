@@ -18,6 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.deepmoneytracker.domain.service.BiometricManager
 import com.deepmoneytracker.domain.service.PinAuthManager
 import com.deepmoneytracker.presentation.navigation.AppNavigation
@@ -52,6 +55,20 @@ class MainActivity : AppCompatActivity() {
 
             val isDark = if (isSystemTheme) isSystemInDarkTheme() else isDarkMode
 
+            // Reset auth when app comes to foreground
+            val lifecycleOwner = LocalLifecycleOwner.current
+            androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
+                val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_RESUME) {
+                        isAuthenticated = false
+                    }
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
+                }
+            }
+
             DeepMoneyTrackerTheme(
                 appTheme = currentTheme,
                 darkTheme = isDark
@@ -60,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val needsAuth = !pinAuthManager.isPinSet() || pinAuthManager.isAppLockEnabled()
+                    val needsAuth = pinAuthManager.isPinSet() && pinAuthManager.isAppLockEnabled()
                     if (needsAuth && !isAuthenticated) {
                         LockScreen(
                             pinAuthManager = pinAuthManager,
@@ -73,11 +90,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        isAuthenticated = false
     }
 
     private fun requestRequiredPermissions() {

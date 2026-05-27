@@ -101,7 +101,7 @@ fun DateAccordionHeader(
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
-            containerColor = if (themeColors.isDark) themeColors.surface else themeColors.primary.copy(alpha = 0.06f)
+            containerColor = themeColors.cardBackground
         ),
         shape = RoundedCornerShape(14.dp)
     ) {
