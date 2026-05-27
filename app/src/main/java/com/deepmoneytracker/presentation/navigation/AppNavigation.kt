@@ -101,12 +101,14 @@ fun AppNavigation() {
                                 indicatorColor = themeColors.primary.copy(alpha = 0.15f)
                             ),
                             onClick = {
-                                navController.navigate(item.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                                if (navController.currentDestination?.route != item.route) {
+                                    navController.navigate(item.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
                             }
                         )

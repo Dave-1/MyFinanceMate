@@ -18,9 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.deepmoneytracker.domain.service.BiometricManager
 import com.deepmoneytracker.domain.service.PinAuthManager
 import com.deepmoneytracker.presentation.navigation.AppNavigation
@@ -38,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var biometricManager: BiometricManager
 
     private var isAuthenticated by mutableStateOf(false)
-    private var resumeCount by mutableStateOf(0)
+    private var lifecycleResumeCount by mutableStateOf(0)
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -56,21 +53,6 @@ class MainActivity : AppCompatActivity() {
 
             val isDark = if (isSystemTheme) isSystemInDarkTheme() else isDarkMode
 
-            // Reset auth when app comes to foreground
-            val lifecycleOwner = LocalLifecycleOwner.current
-            androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
-                val observer = LifecycleEventObserver { _, event ->
-                    if (event == Lifecycle.Event.ON_RESUME) {
-                        isAuthenticated = false
-                        resumeCount++
-                    }
-                }
-                lifecycleOwner.lifecycle.addObserver(observer)
-                onDispose {
-                    lifecycleOwner.lifecycle.removeObserver(observer)
-                }
-            }
-
             DeepMoneyTrackerTheme(
                 appTheme = currentTheme,
                 darkTheme = isDark
@@ -85,7 +67,7 @@ class MainActivity : AppCompatActivity() {
                             pinAuthManager = pinAuthManager,
                             biometricManager = biometricManager,
                             onAuthenticated = { isAuthenticated = true },
-                            resumeKey = resumeCount
+                            resumeKey = lifecycleResumeCount
                         )
                     } else {
                         AppNavigation()
@@ -93,6 +75,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Reset auth every time Activity comes to foreground
+        isAuthenticated = false
+        lifecycleResumeCount++
     }
 
     private fun requestRequiredPermissions() {

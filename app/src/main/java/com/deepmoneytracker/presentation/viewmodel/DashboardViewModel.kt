@@ -42,25 +42,11 @@ class DashboardViewModel @Inject constructor(
     private val smsBackupParser: SmsBackupParser
 ) : ViewModel() {
 
-    private val _showBackupReminder = MutableStateFlow(false)
+    // Check backup status synchronously for initial state
+    private val _showBackupReminder = MutableStateFlow(
+        smsBackupParser.getLastBackupTimestamp() == 0L || smsBackupParser.isBackupNeeded()
+    )
     private val _autoBackupInProgress = MutableStateFlow(false)
-
-    init {
-        checkBackupStatus()
-    }
-
-    private fun checkBackupStatus() {
-        viewModelScope.launch {
-            val isFirstLaunch = smsBackupParser.getLastBackupTimestamp() == 0L
-            if (isFirstLaunch) {
-                // First launch — show backup modal (user must backup to populate app data)
-                _showBackupReminder.value = true
-            } else if (smsBackupParser.isBackupNeeded()) {
-                // Last backup > 2 days ago — show reminder
-                _showBackupReminder.value = true
-            }
-        }
-    }
 
     fun dismissBackupReminder() {
         _showBackupReminder.value = false
