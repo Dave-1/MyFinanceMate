@@ -10,6 +10,7 @@ sealed class Screen(val route: String) {
     object Reminders : Screen("reminders")
     object AddReminder : Screen("add_reminder")
     object Categories : Screen("categories")
+    object Notifications : Screen("notifications")
     object Settings : Screen("settings")
     object Reports : Screen("reports")
     object Lock : Screen("lock")
