@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.deepmoneytracker.domain.repository.SmsRuleRepository
 import com.deepmoneytracker.domain.service.BackupManager
+import com.deepmoneytracker.domain.service.BackupResult
 import com.deepmoneytracker.domain.service.BiometricManager
 import com.deepmoneytracker.domain.service.PinAuthManager
+import com.deepmoneytracker.domain.service.SmsBackupParser
 import com.deepmoneytracker.data.local.entity.SmsRuleEntity
 import com.deepmoneytracker.presentation.theme.AppTheme
 import com.deepmoneytracker.presentation.theme.ThemeStateHolder
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,7 +29,10 @@ data class SettingsState(
     val isPinSet: Boolean = false,
     val backupInProgress: Boolean = false,
     val restoreInProgress: Boolean = false,
-    val message: String? = null
+    val message: String? = null,
+    val smsBackupInProgress: Boolean = false,
+    val smsBackupResult: BackupResult? = null,
+    val smsBackupError: String? = null
 )
 
 @HiltViewModel
@@ -34,6 +40,7 @@ class SettingsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val smsRuleRepository: SmsRuleRepository,
     private val backupManager: BackupManager,
+    private val smsBackupParser: SmsBackupParser,
     private val biometricManager: BiometricManager,
     private val pinAuthManager: PinAuthManager,
     val themeStateHolder: ThemeStateHolder
@@ -137,6 +144,18 @@ class SettingsViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _state.value = _state.value.copy(restoreInProgress = false, message = "Restore failed: ${e.message}")
+            }
+        }
+    }
+
+    fun backupSms() {
+        viewModelScope.launch {
+            _state.update { it.copy(smsBackupInProgress = true, smsBackupError = null, smsBackupResult = null) }
+            try {
+                val result = smsBackupParser.backupAndParse()
+                _state.update { it.copy(smsBackupInProgress = false, smsBackupResult = result) }
+            } catch (e: Exception) {
+                _state.update { it.copy(smsBackupInProgress = false, smsBackupError = e.message) }
             }
         }
     }

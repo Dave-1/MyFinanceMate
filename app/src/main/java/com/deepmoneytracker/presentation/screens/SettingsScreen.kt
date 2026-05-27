@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Lock
@@ -249,6 +250,63 @@ fun SettingsScreen(
                     }
                     OutlinedButton(onClick = { val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "*/*" }; restoreLauncher.launch(intent) }, modifier = Modifier.weight(1f), enabled = !state.restoreInProgress) {
                         if (state.restoreInProgress) CircularProgressIndicator(modifier = Modifier.height(20.dp).width(20.dp), strokeWidth = 2.dp) else Text("Import Restore")
+                    }
+                }
+            }
+
+            // SMS Utilities
+            item {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("SMS Utilities", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
+                Text("Backup and parse SMS messages", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
+            }
+
+            item {
+                Button(
+                    onClick = { viewModel.backupSms() },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.smsBackupInProgress
+                ) {
+                    if (state.smsBackupInProgress) {
+                        CircularProgressIndicator(modifier = Modifier.height(20.dp).width(20.dp), strokeWidth = 2.dp)
+                    } else {
+                        Icon(Icons.Default.Backup, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Backup & Parse SMS")
+                    }
+                }
+            }
+
+            state.smsBackupResult?.let { result ->
+                item {
+                    Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground)) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("Backup Complete", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = themeColors.primary)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("Total SMS: ${result.totalSms}", style = MaterialTheme.typography.bodyMedium)
+                            Text("Bank transactions: ${result.bankTransactions}", style = MaterialTheme.typography.bodyMedium)
+                            Text("Notifications: ${result.notifications}", style = MaterialTheme.typography.bodyMedium)
+                            if (result.bankBreakdown.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text("Bank breakdown:", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+                                result.bankBreakdown.forEach { (bank, count) ->
+                                    Text("  $bank: $count", style = MaterialTheme.typography.bodySmall)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            state.smsBackupError?.let { error ->
+                item {
+                    Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = themeColors.error.copy(alpha = 0.1f))) {
+                        Text(
+                            "Backup failed: $error",
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = themeColors.error
+                        )
                     }
                 }
             }
