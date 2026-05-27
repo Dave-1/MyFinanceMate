@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
@@ -66,6 +67,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationsPage(
+    onNavigateBack: () -> Unit,
     viewModel: NotificationsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -86,7 +88,9 @@ fun NotificationsPage(
                     )
                 },
                 navigationIcon = {
-                    Icon(Icons.Default.Notifications, contentDescription = null)
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(AppStrings.label_back))
+                    }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.clearAllRead() }) {

@@ -360,9 +360,25 @@ fun SettingsScreen(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(file.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                                 Text("${file.date} • ${file.size}", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.6f))
+                                Text(file.path, style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.4f), maxLines = 1)
                             }
-                            IconButton(onClick = { /* share via FileProvider */ }) {
-                                Icon(Icons.Default.Share, contentDescription = "Share")
+                            IconButton(onClick = {
+                                val fileObj = java.io.File(file.path)
+                                if (fileObj.exists()) {
+                                    val uri = androidx.core.content.FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.fileprovider",
+                                        fileObj
+                                    )
+                                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                        type = "application/xml"
+                                        putExtra(Intent.EXTRA_STREAM, uri)
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    context.startActivity(Intent.createChooser(shareIntent, "Share backup file"))
+                                }
+                            }) {
+                                Icon(Icons.Default.Share, contentDescription = "Share", tint = themeColors.primary)
                             }
                         }
                     }

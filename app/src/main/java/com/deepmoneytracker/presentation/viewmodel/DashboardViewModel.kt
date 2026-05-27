@@ -53,18 +53,8 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             val isFirstLaunch = smsBackupParser.getLastBackupTimestamp() == 0L
             if (isFirstLaunch) {
-                // First launch — auto-backup silently
-                _autoBackupInProgress.value = true
-                try {
-                    smsBackupParser.backupAndParse()
-                    smsBackupParser.saveBackupResult(
-                        com.deepmoneytracker.domain.service.BackupResult(
-                            totalSms = 0, bankTransactions = 0, notifications = 0,
-                            bankBreakdown = emptyMap(), filePath = "", timestamp = System.currentTimeMillis()
-                        )
-                    )
-                } catch (_: Exception) {}
-                _autoBackupInProgress.value = false
+                // First launch — show backup modal (user must backup to populate app data)
+                _showBackupReminder.value = true
             } else if (smsBackupParser.isBackupNeeded()) {
                 // Last backup > 2 days ago — show reminder
                 _showBackupReminder.value = true

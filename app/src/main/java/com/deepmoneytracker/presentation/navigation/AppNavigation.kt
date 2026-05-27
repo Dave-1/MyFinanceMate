@@ -62,7 +62,10 @@ fun AppNavigation() {
     val currentDestination = navBackStackEntry?.destination
     val themeColors = LocalThemeColors.current
 
-    val showBottomBar = currentDestination?.route in bottomNavItems.map { it.route }
+    // Show bottom bar on main tabs AND on Notifications (accessible from Dashboard)
+    val mainRoutes = bottomNavItems.map { it.route }
+    val alwaysShowRoutes = mainRoutes + Screen.Notifications.route
+    val showBottomBar = currentDestination?.route in alwaysShowRoutes
 
     Scaffold(
         bottomBar = {
@@ -157,7 +160,9 @@ fun AppNavigation() {
             }
 
             composable(Screen.Notifications.route) {
-                NotificationsPage()
+                NotificationsPage(
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
 
             composable(Screen.AddReminder.route) {

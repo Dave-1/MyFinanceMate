@@ -30,8 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.deepmoneytracker.R
+import com.deepmoneytracker.presentation.theme.AppStrings
 import androidx.fragment.app.FragmentActivity
 import com.deepmoneytracker.domain.service.BiometricManager
 import com.deepmoneytracker.domain.service.PinAuthManager
@@ -52,10 +55,8 @@ fun LockScreen(
 
     val isPinSet = pinAuthManager.isPinSet()
 
-    // Re-trigger on every resume (resumeKey changes each time app comes to foreground)
-    LaunchedEffect(resumeKey) {
-        showSetPin = false
-        showVerifyPin = false
+    // Auto-trigger biometric/PIN on first composition and every resume
+    LaunchedEffect(resumeKey, isPinSet) {
         if (isPinSet) {
             if (pinAuthManager.isBiometricAvailable()) {
                 biometricManager.authenticate(
@@ -100,13 +101,13 @@ fun LockScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = if (isPinSet) "App Locked" else "Set Up Security",
+                text = if (isPinSet) stringResource(AppStrings.pin_locked) else stringResource(AppStrings.pin_setup),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = if (isPinSet) "Authenticate to access your account" else "Create a PIN to secure your app",
+                text = if (isPinSet) stringResource(AppStrings.pin_locked_desc) else stringResource(AppStrings.pin_setup_desc),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center,
