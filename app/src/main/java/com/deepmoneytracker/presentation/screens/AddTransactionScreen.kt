@@ -24,8 +24,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import com.deepmoneytracker.presentation.components.CommonTopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -57,24 +56,10 @@ fun AddTransactionScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        stringResource(AppStrings.add_transaction_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = themeColors.onBackground
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(AppStrings.label_back), tint = themeColors.onBackground)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColors.background,
-                    titleContentColor = themeColors.onBackground
-                )
+            CommonTopAppBar(
+                title = stringResource(AppStrings.add_transaction_title),
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = onNavigateBack
             )
         },
         containerColor = themeColors.background
