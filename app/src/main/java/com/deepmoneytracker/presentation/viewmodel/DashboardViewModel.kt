@@ -48,11 +48,12 @@ class DashboardViewModel @Inject constructor(
 
     // Check backup status synchronously for initial state
     private val _showBackupReminder = MutableStateFlow(
-        pinAuthManager.isWelcomeCompleted() && smsBackupParser.isBackupNeeded()
+        pinAuthManager.isWelcomeCompleted() && !pinAuthManager.isBackupReminderDismissed() && smsBackupParser.isBackupNeeded()
     )
     private val _autoBackupInProgress = MutableStateFlow(false)
 
     fun dismissBackupReminder() {
+        pinAuthManager.dismissBackupReminder()
         _showBackupReminder.value = false
     }
 

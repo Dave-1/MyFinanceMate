@@ -39,6 +39,11 @@ class MainActivity : AppCompatActivity() {
     private val isAuthenticated = mutableStateOf(false)
     private val resumeKey = mutableIntStateOf(0)
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean("isAuthenticated", isAuthenticated.value)
+    }
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { _ -> }
@@ -46,6 +51,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Restore auth state across Activity recreation (e.g., theme change)
+        if (savedInstanceState != null) {
+            isAuthenticated.value = savedInstanceState.getBoolean("isAuthenticated", false)
+        }
         // Permission requests are now handled by the WelcomeSetupSheet on first launch
         // requestRequiredPermissions() — removed, handled by setup flow
 

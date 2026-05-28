@@ -39,6 +39,12 @@ class PinAuthManager @Inject constructor(
         prefs.edit().putBoolean(KEY_WELCOME_COMPLETED, true).apply()
     }
 
+    fun isBackupReminderDismissed(): Boolean = prefs.getBoolean(KEY_BACKUP_REMINDER_DISMISSED, false)
+
+    fun dismissBackupReminder() {
+        prefs.edit().putBoolean(KEY_BACKUP_REMINDER_DISMISSED, true).apply()
+    }
+
     fun setAppLockEnabled(enabled: Boolean) {
         prefs.edit().putBoolean(KEY_APP_LOCK, enabled).apply()
     }
@@ -82,6 +88,7 @@ class PinAuthManager @Inject constructor(
         private const val KEY_APP_LOCK = "app_lock"
         private const val KEY_SETUP_COMPLETED = "setup_completed"
         private const val KEY_WELCOME_COMPLETED = "welcome_completed"
+        private const val KEY_BACKUP_REMINDER_DISMISSED = "backup_reminder_dismissed"
     }
 }
 
