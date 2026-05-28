@@ -15,7 +15,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.deepmoneytracker.domain.service.BiometricManager
+import com.deepmoneytracker.domain.service.PinAuthManager
+import com.deepmoneytracker.presentation.components.WelcomeSetupSheet
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -56,11 +62,29 @@ val bottomNavItems = listOf(
 )
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    showWelcomeSheet: Boolean = false,
+    pinAuthManager: PinAuthManager? = null,
+    biometricManager: BiometricManager? = null
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val themeColors = LocalThemeColors.current
+
+    var welcomeSheetShown by remember { mutableStateOf(false) }
+
+    if (showWelcomeSheet && !welcomeSheetShown && pinAuthManager != null && biometricManager != null) {
+        WelcomeSetupSheet(
+            onDismiss = { welcomeSheetShown = true },
+            onRequestSmsPermission = { /* handled by DashboardScreen */ },
+            onBackupSms = { /* handled by DashboardScreen */ },
+            smsPermissionGranted = false,
+            backupInProgress = false,
+            pinAuthManager = pinAuthManager,
+            biometricManager = biometricManager
+        )
+    }
 
     // Show bottom bar on main tabs AND on Notifications (accessible from Dashboard)
     val mainRoutes = bottomNavItems.map { it.route }
