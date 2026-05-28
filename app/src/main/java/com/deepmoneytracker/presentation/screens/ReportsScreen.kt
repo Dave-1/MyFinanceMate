@@ -27,7 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import com.deepmoneytracker.presentation.components.CommonTopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.data.local.entity.TransactionType
 import com.deepmoneytracker.presentation.theme.ExpenseRed
 import com.deepmoneytracker.presentation.theme.IncomeGreen
+import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.DashboardViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +58,7 @@ fun ReportsScreen(
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val themeColors = LocalThemeColors.current
 
     val last7DaysExpenses = remember(state.recentTransactions) {
         val expenses = state.recentTransactions.filter { it.type == TransactionType.EXPENSE }
@@ -101,15 +103,13 @@ fun ReportsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(AppStrings.reports_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(AppStrings.label_back))
-                    }
-                }
+            CommonTopAppBar(
+                title = stringResource(AppStrings.reports_title),
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = onNavigateBack
             )
-        }
+        },
+        containerColor = themeColors.background
     ) { padding ->
         LazyColumn(
             modifier = Modifier

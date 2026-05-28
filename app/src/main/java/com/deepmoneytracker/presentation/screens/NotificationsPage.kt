@@ -33,8 +33,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import com.deepmoneytracker.presentation.components.CommonTopAppBar
+import com.deepmoneytracker.presentation.components.TopAppBarAction
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
@@ -80,31 +80,12 @@ fun NotificationsPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        stringResource(AppStrings.notifications_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(AppStrings.label_back))
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { viewModel.clearAllRead() }) {
-                        Icon(
-                            Icons.Default.DeleteSweep,
-                            contentDescription = stringResource(AppStrings.notifications_clear_read),
-                            tint = themeColors.onBackground.copy(alpha = 0.6f)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColors.background,
-                    titleContentColor = themeColors.onBackground,
-                    navigationIconContentColor = themeColors.onBackground
+            CommonTopAppBar(
+                title = stringResource(AppStrings.notifications_title),
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = onNavigateBack,
+                actions = listOf(
+                    TopAppBarAction(Icons.Default.DeleteSweep, stringResource(AppStrings.notifications_clear_read)) { viewModel.clearAllRead() }
                 )
             )
         },
