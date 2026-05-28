@@ -1,18 +1,7 @@
 package com.deepmoneytracker.presentation.navigation
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Wallet
-import androidx.compose.material.icons.outlined.Payments
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,12 +10,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.deepmoneytracker.domain.service.BiometricManager
 import com.deepmoneytracker.domain.service.PinAuthManager
+import com.deepmoneytracker.presentation.components.CommonBottomBar
 import com.deepmoneytracker.presentation.components.WelcomeSetupSheet
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavDestination.Companion.hierarchy
+import com.deepmoneytracker.presentation.components.bottomNavItems
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -44,22 +30,6 @@ import com.deepmoneytracker.presentation.screens.RemindersScreen
 import com.deepmoneytracker.presentation.screens.ReportsScreen
 import com.deepmoneytracker.presentation.screens.SettingsScreen
 import com.deepmoneytracker.presentation.screens.TransactionsScreen
-import com.deepmoneytracker.presentation.theme.LocalThemeColors
-import com.deepmoneytracker.presentation.viewmodel.NotificationsViewModel
-
-data class BottomNavItem(
-    val label: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-    val route: String
-)
-
-val bottomNavItems = listOf(
-    BottomNavItem("Home", Icons.Filled.Home, Icons.Filled.Home, Screen.Dashboard.route),
-    BottomNavItem("Transactions", Icons.Outlined.Payments, Icons.Outlined.Payments, Screen.Transactions.route),
-    BottomNavItem("Reminders", Icons.Filled.Notifications, Icons.Filled.Notifications, Screen.Reminders.route),
-    BottomNavItem("Settings", Icons.Filled.Settings, Icons.Filled.Settings, Screen.Settings.route)
-)
 
 @Composable
 fun AppNavigation(
@@ -70,7 +40,6 @@ fun AppNavigation(
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val themeColors = LocalThemeColors.current
 
     var welcomeSheetShown by remember { mutableStateOf(false) }
 
@@ -94,55 +63,24 @@ fun AppNavigation(
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar(
-                    containerColor = themeColors.surface,
-                    contentColor = themeColors.onSurface
-                ) {
-                    bottomNavItems.forEach { item ->
-                        val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
-                        NavigationBarItem(
-                            icon = {
-                                Icon(
-                                    if (selected) item.selectedIcon else item.unselectedIcon,
-                                    contentDescription = item.label
-                                )
-                            },
-                            label = {
-                                Text(
-                                    text = item.label,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    softWrap = false,
-                                    fontSize = 11.sp
-                                )
-                            },
-                            selected = selected,
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = themeColors.primary,
-                                selectedTextColor = themeColors.primary,
-                                unselectedIconColor = themeColors.onSurface.copy(alpha = 0.6f),
-                                unselectedTextColor = themeColors.onSurface.copy(alpha = 0.6f),
-                                indicatorColor = themeColors.primary.copy(alpha = 0.15f)
-                            ),
-                            onClick = {
-                                if (navController.currentDestination?.route != item.route) {
-                                    if (item.route == Screen.Dashboard.route) {
-                                        // Home: pop back to Dashboard in the back stack
-                                        navController.popBackStack(Screen.Dashboard.route, inclusive = false)
-                                    } else {
-                                        navController.navigate(item.route) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
-                                            }
-                                            launchSingleTop = true
-                                            restoreState = true
-                                        }
+                CommonBottomBar(
+                    currentRoute = currentDestination?.route,
+                    onNavigate = { route ->
+                        if (navController.currentDestination?.route != route) {
+                            if (route == Screen.Dashboard.route) {
+                                navController.popBackStack(Screen.Dashboard.route, inclusive = false)
+                            } else {
+                                navController.navigate(route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
                                     }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
                             }
-                        )
+                        }
                     }
-                }
+                )
             }
         }
     ) { innerPadding ->
