@@ -63,19 +63,15 @@ class MainActivity : AppCompatActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val setupRequired = pinAuthManager.isFirstLaunch()
+                    val welcomeCompleted = pinAuthManager.isWelcomeCompleted()
                     val needsAuth = pinAuthManager.isPinSet() && pinAuthManager.isAppLockEnabled()
 
                     when {
-                        setupRequired -> {
-                            LockScreen(
+                        !welcomeCompleted -> {
+                            AppNavigation(
+                                showWelcomeSheet = true,
                                 pinAuthManager = pinAuthManager,
-                                biometricManager = biometricManager,
-                                onAuthenticated = {
-                                    pinAuthManager.completeSetup()
-                                    isAuthenticated.value = true
-                                },
-                                resumeKey = resumeKey.intValue
+                                biometricManager = biometricManager
                             )
                         }
                         needsAuth && !isAuthenticated.value -> {
@@ -87,7 +83,10 @@ class MainActivity : AppCompatActivity() {
                             )
                         }
                         else -> {
-                            AppNavigation()
+                            AppNavigation(
+                                pinAuthManager = pinAuthManager,
+                                biometricManager = biometricManager
+                            )
                         }
                     }
                 }
