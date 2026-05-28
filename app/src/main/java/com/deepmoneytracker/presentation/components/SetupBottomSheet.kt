@@ -292,9 +292,10 @@ fun WelcomeSetupSheet(
     biometricManager: BiometricManager
 ) {
     val context = LocalContext.current
-    val activity = context as FragmentActivity
+    val activity = context as? FragmentActivity
+        ?: throw IllegalStateException("WelcomeSetupSheet must be hosted in a FragmentActivity")
     var showSetPin by remember { mutableStateOf(false) }
-    var pinSet by remember { mutableStateOf(false) }
+    var pinSet by remember { mutableStateOf(pinAuthManager.isPinSet()) }
     var biometricEnabled by remember { mutableStateOf(false) }
 
     SetupBottomSheet(
@@ -344,8 +345,8 @@ fun WelcomeSetupSheet(
                         title = "Enable Biometric",
                         subtitle = "Verify to enable biometric unlock",
                         onSuccess = { biometricEnabled = true },
-                        onError = { /* skip */ },
-                        onFailed = { /* skip */ }
+                        onError = { biometricEnabled = true }, // User can use PIN instead
+                        onFailed = { biometricEnabled = true }, // User can use PIN instead
                     )
                 },
                 onSkip = { biometricEnabled = true }
