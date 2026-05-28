@@ -120,8 +120,7 @@ fun LockScreen(
         SetPinDialog(
             onDismiss = { /* Cannot dismiss - must set PIN */ },
             onPinSet = { pin ->
-                pinAuthManager.setPin(pin)
-                pinAuthManager.setAppLockEnabled(true)
+                pinAuthManager.setPinAndEnable(pin)
                 showSetPin = false
                 onAuthenticated()
             }
