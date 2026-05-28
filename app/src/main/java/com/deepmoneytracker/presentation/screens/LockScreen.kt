@@ -51,13 +51,14 @@ fun LockScreen(
     val context = LocalContext.current
     val activity = context as FragmentActivity
     var showVerifyPin by remember { mutableStateOf(false) }
+    val appName = stringResource(com.deepmoneytracker.R.string.app_name)
 
     // Auto-trigger biometric/PIN on first composition and every resume
     LaunchedEffect(resumeKey) {
         if (pinAuthManager.isBiometricAvailable()) {
             biometricManager.authenticate(
                 activity = activity,
-                title = "Unlock Deep Money Tracker",
+                title = appName,
                 subtitle = "Verify your identity to continue",
                 onSuccess = { onAuthenticated() },
                 onError = { showVerifyPin = true },
