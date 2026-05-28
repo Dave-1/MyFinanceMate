@@ -14,11 +14,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Title
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +31,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.data.local.entity.Recurrence
 import com.deepmoneytracker.data.local.entity.ReminderType
+import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.ReminderViewModel
 import java.util.Calendar
 
@@ -70,15 +73,19 @@ fun AddReminderScreen(
     }
     var triggerTime by remember { mutableStateOf(defaultTime) }
 
+    val themeColors = LocalThemeColors.current
+
     Scaffold(
+        containerColor = themeColors.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(AppStrings.add_reminder_title), fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(AppStrings.add_reminder_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = themeColors.onBackground) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(AppStrings.label_back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(AppStrings.label_back), tint = themeColors.onBackground)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = themeColors.background, titleContentColor = themeColors.onBackground)
             )
         }
     ) { padding ->
@@ -93,14 +100,14 @@ fun AddReminderScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    containerColor = themeColors.cardBackground
                 )
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(stringResource(AppStrings.reminder_type), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(AppStrings.reminder_type), style = MaterialTheme.typography.titleMedium, color = themeColors.primary)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         FilterChip(
                             selected = type == ReminderType.INCOME,
@@ -119,14 +126,14 @@ fun AddReminderScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    containerColor = themeColors.cardBackground
                 )
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(stringResource(AppStrings.reminder_details), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(AppStrings.reminder_details), style = MaterialTheme.typography.titleMedium, color = themeColors.primary)
 
                     OutlinedTextField(
                         value = title,
@@ -163,14 +170,14 @@ fun AddReminderScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    containerColor = themeColors.cardBackground
                 )
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(stringResource(AppStrings.reminder_recurrence), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(AppStrings.reminder_recurrence), style = MaterialTheme.typography.titleMedium, color = themeColors.primary)
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -204,7 +211,8 @@ fun AddReminderScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                enabled = title.isNotBlank()
+                enabled = title.isNotBlank(),
+                colors = ButtonDefaults.buttonColors(containerColor = themeColors.primary)
             ) {
                 Text(stringResource(AppStrings.reminder_save), modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.titleMedium)
             }
