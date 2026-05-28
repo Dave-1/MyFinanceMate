@@ -25,6 +25,14 @@ class PinAuthManager @Inject constructor(
 
     fun isAppLockEnabled(): Boolean = prefs.getBoolean(KEY_APP_LOCK, false)
 
+    fun isFirstLaunch(): Boolean {
+        return prefs.getBoolean(KEY_SETUP_COMPLETED, false).not()
+    }
+
+    fun completeSetup() {
+        prefs.edit().putBoolean(KEY_SETUP_COMPLETED, true).apply()
+    }
+
     fun setAppLockEnabled(enabled: Boolean) {
         prefs.edit().putBoolean(KEY_APP_LOCK, enabled).apply()
     }
@@ -66,6 +74,7 @@ class PinAuthManager @Inject constructor(
     companion object {
         private const val KEY_PIN_HASH = "pin_hash"
         private const val KEY_APP_LOCK = "app_lock"
+        private const val KEY_SETUP_COMPLETED = "setup_completed"
     }
 }
 
