@@ -38,7 +38,7 @@ import com.deepmoneytracker.presentation.theme.AppStrings
 import androidx.fragment.app.FragmentActivity
 import com.deepmoneytracker.domain.service.BiometricManager
 import com.deepmoneytracker.domain.service.PinAuthManager
-import com.deepmoneytracker.presentation.components.SetPinDialog
+
 import com.deepmoneytracker.presentation.components.VerifyPinDialog
 
 @Composable
@@ -50,28 +50,21 @@ fun LockScreen(
 ) {
     val context = LocalContext.current
     val activity = context as FragmentActivity
-    var showSetPin by remember { mutableStateOf(false) }
     var showVerifyPin by remember { mutableStateOf(false) }
 
-    val isPinSet = pinAuthManager.isPinSet()
-
     // Auto-trigger biometric/PIN on first composition and every resume
-    LaunchedEffect(resumeKey, isPinSet) {
-        if (isPinSet) {
-            if (pinAuthManager.isBiometricAvailable()) {
-                biometricManager.authenticate(
-                    activity = activity,
-                    title = "Unlock Deep Money Tracker",
-                    subtitle = "Verify your identity to continue",
-                    onSuccess = { onAuthenticated() },
-                    onError = { showVerifyPin = true },
-                    onFailed = { showVerifyPin = true }
-                )
-            } else {
-                showVerifyPin = true
-            }
+    LaunchedEffect(resumeKey) {
+        if (pinAuthManager.isBiometricAvailable()) {
+            biometricManager.authenticate(
+                activity = activity,
+                title = "Unlock Deep Money Tracker",
+                subtitle = "Verify your identity to continue",
+                onSuccess = { onAuthenticated() },
+                onError = { showVerifyPin = true },
+                onFailed = { showVerifyPin = true }
+            )
         } else {
-            showSetPin = true
+            showVerifyPin = true
         }
     }
 
@@ -101,30 +94,19 @@ fun LockScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = if (isPinSet) stringResource(AppStrings.pin_locked) else stringResource(AppStrings.pin_setup),
+                text = stringResource(AppStrings.pin_locked),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = if (isPinSet) stringResource(AppStrings.pin_locked_desc) else stringResource(AppStrings.pin_setup_desc),
+                text = stringResource(AppStrings.pin_locked_desc),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 32.dp)
             )
         }
-    }
-
-    if (showSetPin) {
-        SetPinDialog(
-            onDismiss = { /* Cannot dismiss - must set PIN */ },
-            onPinSet = { pin ->
-                pinAuthManager.setPinAndEnable(pin)
-                showSetPin = false
-                onAuthenticated()
-            }
-        )
     }
 
     if (showVerifyPin) {
