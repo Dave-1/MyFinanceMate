@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -34,8 +35,8 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var pinAuthManager: PinAuthManager
     @Inject lateinit var biometricManager: BiometricManager
 
-    private var isAuthenticated by mutableStateOf(false)
-    private var lifecycleResumeCount by mutableStateOf(0)
+    private val isAuthenticated = mutableStateOf(false)
+    private val resumeKey = mutableIntStateOf(0)
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -62,27 +63,46 @@ class MainActivity : AppCompatActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    val setupRequired = pinAuthManager.isFirstLaunch()
                     val needsAuth = pinAuthManager.isPinSet() && pinAuthManager.isAppLockEnabled()
-                    if (needsAuth && !isAuthenticated) {
-                        LockScreen(
-                            pinAuthManager = pinAuthManager,
-                            biometricManager = biometricManager,
-                            onAuthenticated = { isAuthenticated = true },
-                            resumeKey = lifecycleResumeCount
-                        )
-                    } else {
-                        AppNavigation()
+
+                    when {
+                        setupRequired -> {
+                            LockScreen(
+                                pinAuthManager = pinAuthManager,
+                                biometricManager = biometricManager,
+                                onAuthenticated = {
+                                    pinAuthManager.completeSetup()
+                                    isAuthenticated.value = true
+                                },
+                                resumeKey = resumeKey.intValue
+                            )
+                        }
+                        needsAuth && !isAuthenticated.value -> {
+                            LockScreen(
+                                pinAuthManager = pinAuthManager,
+                                biometricManager = biometricManager,
+                                onAuthenticated = { isAuthenticated.value = true },
+                                resumeKey = resumeKey.intValue
+                            )
+                        }
+                        else -> {
+                            AppNavigation()
+                        }
                     }
                 }
             }
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        // Reset auth every time Activity comes to foreground
-        isAuthenticated = false
-        lifecycleResumeCount++
+    override fun onResume() {
+        super.onResume()
+        resumeKey.intValue++
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isAuthenticated.value = false
     }
 
     private fun requestRequiredPermissions() {
