@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
@@ -24,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,6 +39,7 @@ import com.deepmoneytracker.presentation.theme.AppStrings
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.data.local.entity.Recurrence
 import com.deepmoneytracker.data.local.entity.ReminderEntity
+import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.ReminderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,14 +49,39 @@ fun RemindersScreen(
     viewModel: ReminderViewModel = hiltViewModel()
 ) {
     val reminders by viewModel.reminders.collectAsStateWithLifecycle()
+    val themeColors = LocalThemeColors.current
 
     Scaffold(
+        containerColor = themeColors.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(AppStrings.reminders_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    Icon(Icons.Default.Notifications, contentDescription = null)
-                }
+                title = {
+                    Column {
+                        Text(
+                            stringResource(AppStrings.reminders_title),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = themeColors.onBackground
+                        )
+                        Text(
+                            "${reminders.size} reminder${if (reminders.size != 1) "s" else ""}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = themeColors.onBackground.copy(alpha = 0.6f)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { /* navigate to notifications */ }) {
+                        Icon(Icons.Default.Notifications, contentDescription = "Notifications", tint = themeColors.onBackground)
+                    }
+                    IconButton(onClick = { /* navigate to reports */ }) {
+                        Icon(Icons.Default.BarChart, contentDescription = "Reports", tint = themeColors.onBackground)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = themeColors.background,
+                    titleContentColor = themeColors.onBackground
+                )
             )
         },
         floatingActionButton = {
