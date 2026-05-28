@@ -30,10 +30,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -51,6 +53,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import com.deepmoneytracker.presentation.components.CommonTopAppBar
+import com.deepmoneytracker.presentation.components.TopAppBarAction
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -78,6 +81,8 @@ import com.deepmoneytracker.presentation.viewmodel.SettingsViewModel
 @Composable
 fun SettingsScreen(
     onNavigateToCategories: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
+    onNavigateToReports: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -151,7 +156,11 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             CommonTopAppBar(
-                title = stringResource(AppStrings.settings_title)
+                title = stringResource(AppStrings.settings_title),
+                actions = listOf(
+                    TopAppBarAction(Icons.Default.Notifications, stringResource(AppStrings.label_notifications), onNavigateToNotifications),
+                    TopAppBarAction(Icons.Default.BarChart, stringResource(AppStrings.label_reports), onNavigateToReports)
+                )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },

@@ -21,8 +21,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CompareArrows
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material3.Card
@@ -58,6 +60,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.data.local.entity.TransactionType
 import com.deepmoneytracker.presentation.components.CommonTopAppBar
+import com.deepmoneytracker.presentation.components.TopAppBarAction
 import com.deepmoneytracker.presentation.components.DateAccordionList
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.TransactionViewModel
@@ -67,6 +70,8 @@ import com.deepmoneytracker.presentation.viewmodel.TransactionViewModel
 fun TransactionsScreen(
     onNavigateToAdd: () -> Unit,
     onNavigateToEdit: (Long) -> Unit,
+    onNavigateToNotifications: () -> Unit,
+    onNavigateToReports: () -> Unit,
     viewModel: TransactionViewModel = hiltViewModel()
 ) {
     val transactions by viewModel.transactions.collectAsStateWithLifecycle()
@@ -100,7 +105,11 @@ fun TransactionsScreen(
     Scaffold(
         topBar = {
             CommonTopAppBar(
-                title = stringResource(AppStrings.transactions_title)
+                title = stringResource(AppStrings.transactions_title),
+                actions = listOf(
+                    TopAppBarAction(Icons.Default.Notifications, stringResource(AppStrings.label_notifications), onNavigateToNotifications),
+                    TopAppBarAction(Icons.Default.BarChart, stringResource(AppStrings.label_reports), onNavigateToReports)
+                )
             )
         },
         floatingActionButton = {

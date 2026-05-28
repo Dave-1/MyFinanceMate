@@ -101,7 +101,9 @@ fun AppNavigation(
             composable(Screen.Transactions.route) {
                 TransactionsScreen(
                     onNavigateToAdd = { navController.navigate(Screen.AddTransaction.route) },
-                    onNavigateToEdit = { id -> navController.navigate(Screen.EditTransaction.createRoute(id)) }
+                    onNavigateToEdit = { id -> navController.navigate(Screen.EditTransaction.createRoute(id)) },
+                    onNavigateToNotifications = { navController.navigate(Screen.Notifications.route) },
+                    onNavigateToReports = { navController.navigate(Screen.Reports.route) }
                 )
             }
 
@@ -150,7 +152,9 @@ fun AppNavigation(
 
             composable(Screen.Settings.route) {
                 SettingsScreen(
-                    onNavigateToCategories = { navController.navigate(Screen.Categories.route) }
+                    onNavigateToCategories = { navController.navigate(Screen.Categories.route) },
+                    onNavigateToNotifications = { navController.navigate(Screen.Notifications.route) },
+                    onNavigateToReports = { navController.navigate(Screen.Reports.route) }
                 )
             }
 
