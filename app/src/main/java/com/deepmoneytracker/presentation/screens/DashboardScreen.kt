@@ -19,15 +19,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -48,19 +45,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.data.local.entity.TransactionType
 import com.deepmoneytracker.presentation.components.CommonTopAppBar
 import com.deepmoneytracker.presentation.components.TopAppBarAction
-import com.deepmoneytracker.presentation.components.WelcomeSetupSheet
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.DashboardViewModel
-import com.deepmoneytracker.domain.service.BiometricManager
-import com.deepmoneytracker.domain.service.PinAuthManager
 
 @Composable
 fun DashboardScreen(
@@ -72,55 +64,6 @@ fun DashboardScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val themeColors = LocalThemeColors.current
-    val context = androidx.compose.ui.platform.LocalContext.current
-    var showSetupSheet by remember { mutableStateOf(false) }
-
-    // Update showSetupSheet when state changes (handles async state loading)
-    androidx.compose.runtime.LaunchedEffect(state.showBackupReminder) {
-        if (state.showBackupReminder) {
-            showSetupSheet = true
-        }
-    }
-
-    // SMS permission launcher — handles permission request directly on Dashboard
-    val smsPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val allGranted = permissions.values.all { it }
-        if (allGranted) {
-            // Permission granted — trigger backup
-            viewModel.backupSms()
-        }
-    }
-
-    val smsPermissionGranted = androidx.core.content.ContextCompat.checkSelfPermission(
-        context, android.Manifest.permission.READ_SMS
-    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-
-    // Welcome setup bottom sheet (first launch or backup needed)
-    if (showSetupSheet) {
-        WelcomeSetupSheet(
-            onDismiss = { showSetupSheet = false; viewModel.dismissBackupReminder() },
-            onRequestSmsPermission = {
-                // Request SMS permission directly — don't navigate away
-                val perms = arrayOf(
-                    android.Manifest.permission.READ_SMS,
-                    android.Manifest.permission.RECEIVE_SMS
-                )
-                smsPermissionLauncher.launch(perms)
-            },
-            onBackupSms = {
-                // Backup directly on Dashboard
-                viewModel.backupSms()
-                showSetupSheet = false
-                viewModel.dismissBackupReminder()
-            },
-            smsPermissionGranted = smsPermissionGranted,
-            backupInProgress = state.autoBackupInProgress,
-            pinAuthManager = viewModel.pinAuthManager,
-            biometricManager = viewModel.biometricManager
-        )
-    }
 
     Scaffold(
         topBar = {
