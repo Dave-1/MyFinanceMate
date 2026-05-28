@@ -50,6 +50,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.ui.platform.LocalContext
+import androidx.fragment.app.FragmentActivity
+import com.deepmoneytracker.domain.service.BiometricManager
+import com.deepmoneytracker.domain.service.PinAuthManager
 import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import kotlinx.coroutines.launch
@@ -281,43 +286,85 @@ fun WelcomeSetupSheet(
     onDismiss: () -> Unit,
     onRequestSmsPermission: () -> Unit,
     onBackupSms: () -> Unit,
-    onSetupPin: () -> Unit,
     smsPermissionGranted: Boolean,
-    backupInProgress: Boolean
+    backupInProgress: Boolean,
+    pinAuthManager: PinAuthManager,
+    biometricManager: BiometricManager
 ) {
+    val context = LocalContext.current
+    val activity = context as FragmentActivity
+    var showSetPin by remember { mutableStateOf(false) }
+    var pinSet by remember { mutableStateOf(false) }
+    var biometricEnabled by remember { mutableStateOf(false) }
+
     SetupBottomSheet(
         title = "Welcome to Deep Money Tracker",
         steps = listOf(
             SetupStep(
                 icon = Icons.Default.Sms,
                 title = "SMS Access",
-                description = "Allow the app to read your SMS messages to automatically track bank transactions and notifications.",
+                description = "Allow the app to read your SMS messages to automatically track bank transactions.",
                 actionLabel = if (smsPermissionGranted) "Permission Granted" else "Grant Permission",
-                skipLabel = "Skip for now",
+                skipLabel = null,
                 isCompleted = { smsPermissionGranted },
-                onAction = onRequestSmsPermission,
-                onSkip = null // Can't skip — needed for backup
+                onAction = onRequestSmsPermission
             ),
             SetupStep(
                 icon = Icons.Default.Backup,
                 title = "Backup SMS",
-                description = "Back up and parse your SMS messages to populate transaction data and notifications.",
+                description = "Back up and parse your SMS messages to populate transaction data.",
                 actionLabel = if (backupInProgress) "Backing up..." else "Backup Now",
-                isCompleted = { false }, // Will be checked after backup
+                skipLabel = "Skip for now",
+                isCompleted = { false },
                 onAction = onBackupSms,
                 onSkip = { /* skip backup */ }
             ),
             SetupStep(
                 icon = Icons.Default.Lock,
-                title = "Secure Your App",
-                description = "Set up a 5-digit PIN to protect your financial data. You can also enable biometric unlock.",
-                actionLabel = "Set Up PIN",
+                title = "Set PIN",
+                description = "Set up a 5-digit PIN to protect your financial data.",
+                actionLabel = if (pinSet) "PIN Set" else "Set PIN",
+                skipLabel = null,
+                isCompleted = { pinSet },
+                onAction = { showSetPin = true }
+            ),
+            SetupStep(
+                icon = Icons.Default.Fingerprint,
+                title = "Enable Biometric",
+                description = if (biometricManager.canAuthenticate())
+                    "Use fingerprint or face recognition for quick unlock."
+                else
+                    "Biometric not available on this device.",
+                actionLabel = if (biometricEnabled) "Enabled" else "Enable Biometric",
                 skipLabel = "Skip for now",
-                isCompleted = { false }, // Will be checked after PIN setup
-                onAction = onSetupPin,
-                onSkip = null
+                isCompleted = { biometricEnabled || !biometricManager.canAuthenticate() },
+                onAction = {
+                    biometricManager.authenticate(
+                        activity = activity,
+                        title = "Enable Biometric",
+                        subtitle = "Verify to enable biometric unlock",
+                        onSuccess = { biometricEnabled = true },
+                        onError = { /* skip */ },
+                        onFailed = { /* skip */ }
+                    )
+                },
+                onSkip = { biometricEnabled = true }
             )
         ),
-        onDismiss = onDismiss
+        onDismiss = {
+            pinAuthManager.completeWelcome()
+            onDismiss()
+        }
     )
+
+    if (showSetPin) {
+        SetPinDialog(
+            onDismiss = { showSetPin = false },
+            onPinSet = { pin ->
+                pinAuthManager.setPinAndEnable(pin)
+                pinSet = true
+                showSetPin = false
+            }
+        )
+    }
 }

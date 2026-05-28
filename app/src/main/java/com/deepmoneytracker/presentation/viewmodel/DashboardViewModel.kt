@@ -7,6 +7,8 @@ import com.deepmoneytracker.data.local.entity.TransactionEntity
 import com.deepmoneytracker.data.local.entity.TransactionType
 import com.deepmoneytracker.domain.repository.CategoryRepository
 import com.deepmoneytracker.domain.repository.TransactionRepository
+import com.deepmoneytracker.domain.service.BiometricManager
+import com.deepmoneytracker.domain.service.PinAuthManager
 import com.deepmoneytracker.domain.service.SmsBackupParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +41,9 @@ data class CategoryTotalUi(
 class DashboardViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
-    private val smsBackupParser: SmsBackupParser
+    private val smsBackupParser: SmsBackupParser,
+    val pinAuthManager: PinAuthManager,
+    val biometricManager: BiometricManager
 ) : ViewModel() {
 
     // Check backup status synchronously for initial state

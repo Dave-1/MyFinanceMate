@@ -60,6 +60,8 @@ import com.deepmoneytracker.data.local.entity.TransactionType
 import com.deepmoneytracker.presentation.components.WelcomeSetupSheet
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.DashboardViewModel
+import com.deepmoneytracker.domain.service.BiometricManager
+import com.deepmoneytracker.domain.service.PinAuthManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,14 +117,10 @@ fun DashboardScreen(
                 showSetupSheet = false
                 viewModel.dismissBackupReminder()
             },
-            onSetupPin = {
-                // Navigate to Settings for PIN setup
-                showSetupSheet = false
-                viewModel.dismissBackupReminder()
-                onNavigateToSettings()
-            },
             smsPermissionGranted = smsPermissionGranted,
-            backupInProgress = state.autoBackupInProgress
+            backupInProgress = state.autoBackupInProgress,
+            pinAuthManager = viewModel.pinAuthManager,
+            biometricManager = viewModel.biometricManager
         )
     }
 
