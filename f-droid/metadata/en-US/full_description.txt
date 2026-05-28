@@ -1,4 +1,4 @@
-DeepMoneyTracker is a privacy-focused, open-source expense tracker for Android that automatically tracks your income and expenses by parsing SMS messages from your bank.
+MyFinanceMate is a privacy-focused, open-source expense tracker for Android that automatically tracks your income and expenses by parsing SMS messages from your bank.
 
 Features:
 • Automatic SMS transaction tracking from bank messages
@@ -7,7 +7,7 @@ Features:
 • Detailed dashboard with income/expense breakdown
 • Category-wise expense analysis with visual charts
 • XML backup and restore functionality
-• Biometric authentication for app security
+• PIN and biometric authentication for app security
 • Material Design 3 with Material You theming
 • Fully offline - no cloud dependencies
 • No Google Play Services required

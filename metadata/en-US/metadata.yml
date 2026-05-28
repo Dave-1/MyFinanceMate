@@ -1,0 +1,42 @@
+Categories:
+  - Finance
+  - Money
+
+License: MIT
+
+SourceCode: https://github.com/Dave-1/MyFinanceMate
+
+IssueTracker: https://github.com/Dave-1/MyFinanceMate/issues
+
+Summary: Track your expenses, income and bank transactions with automatic SMS parsing.
+
+Description: |
+  MyFinanceMate is a privacy-first finance tracker that automatically
+  reads bank SMS messages to log transactions. Features include:
+  
+  * Automatic SMS-based transaction tracking
+  * Manual transaction entry
+  * Category management with smart categorization
+  * Income and expense tracking
+  * Reminders for recurring payments
+  * PIN and biometric security
+  * Material 3 design with theme support
+  * Backup and restore functionality
+  * Fully offline — no data leaves your device
+
+Name: MyFinanceMate
+
+WebSite: https://github.com/Dave-1/MyFinanceMate
+
+Changelog: |
+  ## 1.0.0
+  * Initial release
+  * SMS auto-tracking
+  * PIN/biometric security
+  * Material 3 design
+  * Reports with charts
+  * Reminders
+  * Backup & restore
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
