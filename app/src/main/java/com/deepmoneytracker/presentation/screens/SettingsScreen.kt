@@ -397,8 +397,8 @@ fun SettingsScreen(
                                     Text(stringResource(AppStrings.settings_app_lock), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, color = themeColors.onSurface)
                                     Text(
                                         when {
+                                            state.isPinSet -> "PIN is set — app lock is always enabled"
                                             state.isBiometricAvailable -> "Biometric + PIN available"
-                                            state.isPinSet -> "PIN lock active"
                                             else -> "Set a PIN to lock the app"
                                         },
                                         style = MaterialTheme.typography.bodySmall,
@@ -406,7 +406,11 @@ fun SettingsScreen(
                                     )
                                 }
                             }
-                            Switch(checked = state.isAppLockEnabled, onCheckedChange = { viewModel.setAppLock(it) })
+                            Switch(
+                                checked = state.isAppLockEnabled,
+                                onCheckedChange = { viewModel.setAppLock(it) },
+                                enabled = !state.isPinSet
+                            )
                         }
                         if (state.isAppLockEnabled) {
                             Spacer(modifier = Modifier.height(12.dp))
