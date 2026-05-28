@@ -212,12 +212,13 @@ fun AddReminderScreen(
     }
 }
 
+@Composable
 private fun getRecurrenceLabel(recurrence: Recurrence): String {
     return when (recurrence) {
-        Recurrence.NONE -> "Once"
-        Recurrence.DAILY -> "Daily"
-        Recurrence.WEEKLY -> "Weekly"
-        Recurrence.MONTHLY -> "Monthly"
-        Recurrence.YEARLY -> "Yearly"
+        Recurrence.NONE -> stringResource(AppStrings.recurrence_one_time)
+        Recurrence.DAILY -> stringResource(AppStrings.recurrence_daily)
+        Recurrence.WEEKLY -> stringResource(AppStrings.recurrence_weekly)
+        Recurrence.MONTHLY -> stringResource(AppStrings.recurrence_monthly)
+        Recurrence.YEARLY -> stringResource(AppStrings.recurrence_yearly)
     }
 }

@@ -297,56 +297,58 @@ fun WelcomeSetupSheet(
     var showSetPin by remember { mutableStateOf(false) }
     var pinSet by remember { mutableStateOf(pinAuthManager.isPinSet()) }
     var biometricEnabled by remember { mutableStateOf(false) }
+    val biometricDialogTitle = stringResource(AppStrings.welcome_biometric_title)
+    val biometricDialogSubtitle = stringResource(AppStrings.pin_biometric_subtitle)
 
     SetupBottomSheet(
-        title = "Welcome to Deep Money Tracker",
+        title = stringResource(AppStrings.welcome_title),
         steps = listOf(
             SetupStep(
                 icon = Icons.Default.Sms,
-                title = "SMS Access",
-                description = "Allow the app to read your SMS messages to automatically track bank transactions.",
-                actionLabel = if (smsPermissionGranted) "Permission Granted" else "Grant Permission",
+                title = stringResource(AppStrings.welcome_sms_title),
+                description = stringResource(AppStrings.welcome_sms_desc),
+                actionLabel = if (smsPermissionGranted) stringResource(AppStrings.welcome_sms_granted) else stringResource(AppStrings.welcome_sms_grant),
                 skipLabel = null,
                 isCompleted = { smsPermissionGranted },
                 onAction = onRequestSmsPermission
             ),
             SetupStep(
                 icon = Icons.Default.Backup,
-                title = "Backup SMS",
-                description = "Back up and parse your SMS messages to populate transaction data.",
-                actionLabel = if (backupInProgress) "Backing up..." else "Backup Now",
-                skipLabel = "Skip for now",
+                title = stringResource(AppStrings.welcome_backup_title),
+                description = stringResource(AppStrings.welcome_backup_desc),
+                actionLabel = if (backupInProgress) stringResource(AppStrings.welcome_backup_in_progress) else stringResource(AppStrings.welcome_backup_now),
+                skipLabel = stringResource(AppStrings.welcome_skip),
                 isCompleted = { false },
                 onAction = onBackupSms,
                 onSkip = { /* skip backup */ }
             ),
             SetupStep(
                 icon = Icons.Default.Lock,
-                title = "Set PIN",
-                description = "Set up a 5-digit PIN to protect your financial data.",
-                actionLabel = if (pinSet) "PIN Set" else "Set PIN",
+                title = stringResource(AppStrings.welcome_pin_title),
+                description = stringResource(AppStrings.welcome_pin_desc),
+                actionLabel = if (pinSet) stringResource(AppStrings.welcome_pin_done) else stringResource(AppStrings.welcome_pin_set),
                 skipLabel = null,
                 isCompleted = { pinSet },
                 onAction = { showSetPin = true }
             ),
             SetupStep(
                 icon = Icons.Default.Fingerprint,
-                title = "Enable Biometric",
+                title = stringResource(AppStrings.welcome_biometric_title),
                 description = if (biometricManager.canAuthenticate())
-                    "Use fingerprint or face recognition for quick unlock."
+                    stringResource(AppStrings.welcome_biometric_desc)
                 else
-                    "Biometric not available on this device.",
-                actionLabel = if (biometricEnabled) "Enabled" else "Enable Biometric",
-                skipLabel = "Skip for now",
+                    stringResource(AppStrings.welcome_biometric_unavailable),
+                actionLabel = if (biometricEnabled) stringResource(AppStrings.welcome_biometric_enabled) else stringResource(AppStrings.welcome_biometric_enable),
+                skipLabel = stringResource(AppStrings.welcome_skip),
                 isCompleted = { biometricEnabled || !biometricManager.canAuthenticate() },
                 onAction = {
                     biometricManager.authenticate(
                         activity = activity,
-                        title = "Enable Biometric",
-                        subtitle = "Verify to enable biometric unlock",
+                        title = biometricDialogTitle,
+                        subtitle = biometricDialogSubtitle,
                         onSuccess = { biometricEnabled = true },
-                        onError = { biometricEnabled = true }, // User can use PIN instead
-                        onFailed = { biometricEnabled = true }, // User can use PIN instead
+                        onError = { biometricEnabled = true },
+                        onFailed = { biometricEnabled = true },
                     )
                 },
                 onSkip = { biometricEnabled = true }

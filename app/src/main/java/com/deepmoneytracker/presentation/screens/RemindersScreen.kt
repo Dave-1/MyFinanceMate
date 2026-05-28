@@ -99,12 +99,12 @@ fun RemindersScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    "No reminders yet",
+                    stringResource(AppStrings.reminders_empty),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    "Tap + to add a reminder",
+                    stringResource(AppStrings.reminders_empty_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -170,8 +170,8 @@ private fun ReminderCard(
                     }
                 }
                 Text(
-                    "Next: ${java.text.SimpleDateFormat("dd MMM yyyy HH:mm", java.util.Locale.getDefault())
-                        .format(java.util.Date(reminder.nextTriggerTime))}",
+                    stringResource(AppStrings.reminder_next, java.text.SimpleDateFormat("dd MMM yyyy HH:mm", java.util.Locale.getDefault())
+                        .format(java.util.Date(reminder.nextTriggerTime))),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -184,7 +184,7 @@ private fun ReminderCard(
                 IconButton(onClick = onDelete) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = stringResource(AppStrings.label_delete),
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
@@ -193,12 +193,13 @@ private fun ReminderCard(
     }
 }
 
+@Composable
 private fun getRecurrenceLabel(recurrence: Recurrence): String {
     return when (recurrence) {
-        Recurrence.NONE -> "One-time"
-        Recurrence.DAILY -> "Daily"
-        Recurrence.WEEKLY -> "Weekly"
-        Recurrence.MONTHLY -> "Monthly"
-        Recurrence.YEARLY -> "Yearly"
+        Recurrence.NONE -> stringResource(AppStrings.recurrence_one_time)
+        Recurrence.DAILY -> stringResource(AppStrings.recurrence_daily)
+        Recurrence.WEEKLY -> stringResource(AppStrings.recurrence_weekly)
+        Recurrence.MONTHLY -> stringResource(AppStrings.recurrence_monthly)
+        Recurrence.YEARLY -> stringResource(AppStrings.recurrence_yearly)
     }
 }

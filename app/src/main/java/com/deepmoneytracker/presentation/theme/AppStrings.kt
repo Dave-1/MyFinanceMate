@@ -85,6 +85,10 @@ object AppStrings {
 
     // Reminders
     val reminders_title = R.string.reminders_title
+    val reminders_count = R.string.reminders_count
+    val reminders_count_plural = R.string.reminders_count_plural
+    val reminders_empty = R.string.reminders_empty
+    val reminders_empty_desc = R.string.reminders_empty_desc
     val add_reminder_title = R.string.add_reminder_title
     val reminder_type = R.string.reminder_type
     val reminder_details = R.string.reminder_details
@@ -93,6 +97,14 @@ object AppStrings {
     val reminder_desc_label = R.string.reminder_desc_label
     val reminder_recurrence = R.string.reminder_recurrence
     val reminder_save = R.string.reminder_save
+    val reminder_next = R.string.reminder_next
+    val reminder_delete_title = R.string.reminder_delete_title
+    val reminder_delete_confirm = R.string.reminder_delete_confirm
+    val recurrence_one_time = R.string.recurrence_one_time
+    val recurrence_daily = R.string.recurrence_daily
+    val recurrence_weekly = R.string.recurrence_weekly
+    val recurrence_monthly = R.string.recurrence_monthly
+    val recurrence_yearly = R.string.recurrence_yearly
 
     // Categories
     val category_name_label = R.string.category_name_label
@@ -136,6 +148,27 @@ object AppStrings {
     val settings_about = R.string.settings_about
     val settings_version = R.string.settings_version
     val settings_open_source = R.string.settings_open_source
+
+    // Welcome / Setup
+    val welcome_title = R.string.welcome_title
+    val welcome_sms_title = R.string.welcome_sms_title
+    val welcome_sms_desc = R.string.welcome_sms_desc
+    val welcome_sms_grant = R.string.welcome_sms_grant
+    val welcome_sms_granted = R.string.welcome_sms_granted
+    val welcome_backup_title = R.string.welcome_backup_title
+    val welcome_backup_desc = R.string.welcome_backup_desc
+    val welcome_backup_now = R.string.welcome_backup_now
+    val welcome_backup_in_progress = R.string.welcome_backup_in_progress
+    val welcome_pin_title = R.string.welcome_pin_title
+    val welcome_pin_desc = R.string.welcome_pin_desc
+    val welcome_pin_set = R.string.welcome_pin_set
+    val welcome_pin_done = R.string.welcome_pin_done
+    val welcome_biometric_title = R.string.welcome_biometric_title
+    val welcome_biometric_desc = R.string.welcome_biometric_desc
+    val welcome_biometric_unavailable = R.string.welcome_biometric_unavailable
+    val welcome_biometric_enable = R.string.welcome_biometric_enable
+    val welcome_biometric_enabled = R.string.welcome_biometric_enabled
+    val welcome_skip = R.string.welcome_skip
 
     // Reports
     val reports_title = R.string.reports_title
