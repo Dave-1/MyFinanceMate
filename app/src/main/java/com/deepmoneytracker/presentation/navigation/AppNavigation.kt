@@ -55,10 +55,9 @@ fun AppNavigation(
         )
     }
 
-    // Show bottom bar on main tabs AND on Notifications (accessible from Dashboard)
+    // Show bottom bar on main tabs only
     val mainRoutes = bottomNavItems.map { it.route }
-    val alwaysShowRoutes = mainRoutes + Screen.Notifications.route
-    val showBottomBar = currentDestination?.route in alwaysShowRoutes
+    val showBottomBar = currentDestination?.route in mainRoutes
 
     Scaffold(
         bottomBar = {
