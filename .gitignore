@@ -17,3 +17,6 @@ local.properties
 docs/superpowers/
 .openclaude/
 .kotlin/errors/
+node_modules/
+package.json
+package-lock.json
