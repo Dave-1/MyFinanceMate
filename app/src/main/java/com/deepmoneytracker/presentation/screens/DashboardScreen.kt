@@ -30,7 +30,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,8 +37,6 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,13 +54,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.deepmoneytracker.presentation.theme.AppStrings
 import com.deepmoneytracker.data.local.entity.TransactionType
+import com.deepmoneytracker.presentation.components.CommonTopAppBar
+import com.deepmoneytracker.presentation.components.TopAppBarAction
 import com.deepmoneytracker.presentation.components.WelcomeSetupSheet
 import com.deepmoneytracker.presentation.theme.LocalThemeColors
 import com.deepmoneytracker.presentation.viewmodel.DashboardViewModel
 import com.deepmoneytracker.domain.service.BiometricManager
 import com.deepmoneytracker.domain.service.PinAuthManager
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     onNavigateToTransactions: () -> Unit,
@@ -126,33 +124,12 @@ fun DashboardScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            stringResource(AppStrings.app_name),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = themeColors.onBackground
-                        )
-                        Text(
-                            stringResource(AppStrings.dashboard_subtitle),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = themeColors.onBackground.copy(alpha = 0.6f)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onNavigateToNotifications) {
-                        Icon(Icons.Default.Notifications, contentDescription = stringResource(AppStrings.notifications_title), tint = themeColors.onBackground)
-                    }
-                    IconButton(onClick = onNavigateToReports) {
-                        Icon(Icons.Default.BarChart, contentDescription = stringResource(AppStrings.reports_title), tint = themeColors.onBackground)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColors.background,
-                    titleContentColor = themeColors.onBackground
+            CommonTopAppBar(
+                title = stringResource(AppStrings.app_name),
+                subtitle = stringResource(AppStrings.dashboard_subtitle),
+                actions = listOf(
+                    TopAppBarAction(Icons.Default.Notifications, stringResource(AppStrings.label_notifications), onNavigateToNotifications),
+                    TopAppBarAction(Icons.Default.BarChart, stringResource(AppStrings.label_reports), onNavigateToReports)
                 )
             )
         },
