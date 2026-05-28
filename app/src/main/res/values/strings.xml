@@ -14,6 +14,8 @@
     <string name="label_yes">Yes</string>
     <string name="label_back">Back</string>
     <string name="label_all">All</string>
+    <string name="label_notifications">Notifications</string>
+    <string name="label_reports">Reports</string>
     <string name="currency_symbol">₹</string>
 
     <!-- Dashboard -->

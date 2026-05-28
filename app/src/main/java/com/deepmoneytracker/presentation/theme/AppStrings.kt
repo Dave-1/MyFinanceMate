@@ -23,6 +23,8 @@ object AppStrings {
     val label_yes = R.string.label_yes
     val label_back = R.string.label_back
     val label_all = R.string.label_all
+    val label_notifications = R.string.label_notifications
+    val label_reports = R.string.label_reports
     val currency_symbol = R.string.currency_symbol
 
     // Dashboard

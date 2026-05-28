@@ -58,6 +58,8 @@ import com.deepmoneytracker.presentation.viewmodel.ReminderViewModel
 @Composable
 fun RemindersScreen(
     onNavigateToAdd: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
+    onNavigateToReports: () -> Unit,
     viewModel: ReminderViewModel = hiltViewModel()
 ) {
     val reminders by viewModel.reminders.collectAsStateWithLifecycle()
@@ -83,11 +85,11 @@ fun RemindersScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* navigate to notifications */ }) {
-                        Icon(Icons.Default.Notifications, contentDescription = "Notifications", tint = themeColors.onBackground)
+                    IconButton(onClick = onNavigateToNotifications) {
+                        Icon(Icons.Default.Notifications, contentDescription = stringResource(AppStrings.label_notifications), tint = themeColors.onBackground)
                     }
-                    IconButton(onClick = { /* navigate to reports */ }) {
-                        Icon(Icons.Default.BarChart, contentDescription = "Reports", tint = themeColors.onBackground)
+                    IconButton(onClick = onNavigateToReports) {
+                        Icon(Icons.Default.BarChart, contentDescription = stringResource(AppStrings.label_reports), tint = themeColors.onBackground)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

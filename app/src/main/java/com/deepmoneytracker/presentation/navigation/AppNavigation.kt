@@ -186,7 +186,9 @@ fun AppNavigation(
 
             composable(Screen.Reminders.route) {
                 RemindersScreen(
-                    onNavigateToAdd = { navController.navigate(Screen.AddReminder.route) }
+                    onNavigateToAdd = { navController.navigate(Screen.AddReminder.route) },
+                    onNavigateToNotifications = { navController.navigate(Screen.Notifications.route) },
+                    onNavigateToReports = { navController.navigate(Screen.Reports.route) }
                 )
             }
 
