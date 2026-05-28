@@ -280,16 +280,14 @@ private fun StepContent(
 
 /**
  * Convenience composable for the first-launch welcome setup flow.
+ * Handles SMS permission, backup, PIN, and biometric setup internally.
  */
 @Composable
 fun WelcomeSetupSheet(
     onDismiss: () -> Unit,
-    onRequestSmsPermission: () -> Unit,
-    onBackupSms: () -> Unit,
-    smsPermissionGranted: Boolean,
-    backupInProgress: Boolean,
     pinAuthManager: PinAuthManager,
-    biometricManager: BiometricManager
+    biometricManager: BiometricManager,
+    smsBackupParser: com.deepmoneytracker.domain.service.SmsBackupParser
 ) {
     val context = LocalContext.current
     val activity = context as? FragmentActivity
@@ -297,8 +295,33 @@ fun WelcomeSetupSheet(
     var showSetPin by remember { mutableStateOf(false) }
     var pinSet by remember { mutableStateOf(pinAuthManager.isPinSet()) }
     var biometricEnabled by remember { mutableStateOf(false) }
+    var backupInProgress by remember { mutableStateOf(false) }
     val biometricDialogTitle = stringResource(AppStrings.welcome_biometric_title)
     val biometricDialogSubtitle = stringResource(AppStrings.pin_biometric_subtitle)
+
+    // SMS permission state
+    var smsPermissionGranted by remember {
+        mutableStateOf(
+            androidx.core.content.ContextCompat.checkSelfPermission(
+                context, android.Manifest.permission.READ_SMS
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    // SMS permission launcher
+    val smsPermissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            smsPermissionGranted = true
+        }
+    }
+
+    // Backup launcher (for SAF file picker, not used here — backup is inline)
+    val backupLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { _ -> }
 
     SetupBottomSheet(
         title = stringResource(AppStrings.welcome_title),
@@ -310,7 +333,13 @@ fun WelcomeSetupSheet(
                 actionLabel = if (smsPermissionGranted) stringResource(AppStrings.welcome_sms_granted) else stringResource(AppStrings.welcome_sms_grant),
                 skipLabel = null,
                 isCompleted = { smsPermissionGranted },
-                onAction = onRequestSmsPermission
+                onAction = {
+                    val perms = arrayOf(
+                        android.Manifest.permission.READ_SMS,
+                        android.Manifest.permission.RECEIVE_SMS
+                    )
+                    smsPermissionLauncher.launch(perms)
+                }
             ),
             SetupStep(
                 icon = Icons.Default.Backup,
@@ -319,7 +348,17 @@ fun WelcomeSetupSheet(
                 actionLabel = if (backupInProgress) stringResource(AppStrings.welcome_backup_in_progress) else stringResource(AppStrings.welcome_backup_now),
                 skipLabel = stringResource(AppStrings.welcome_skip),
                 isCompleted = { false },
-                onAction = onBackupSms,
+                onAction = {
+                    backupInProgress = true
+                    kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                        try {
+                            smsBackupParser.backupAndParse()
+                        } catch (_: Exception) {}
+                        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                            backupInProgress = false
+                        }
+                    }
+                },
                 onSkip = { /* skip backup */ }
             ),
             SetupStep(

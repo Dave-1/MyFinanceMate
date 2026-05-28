@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var themeStateHolder: ThemeStateHolder
     @Inject lateinit var pinAuthManager: PinAuthManager
     @Inject lateinit var biometricManager: BiometricManager
+    @Inject lateinit var smsBackupParser: com.deepmoneytracker.domain.service.SmsBackupParser
 
     private val isAuthenticated = mutableStateOf(false)
     private val resumeKey = mutableIntStateOf(0)
@@ -71,7 +72,8 @@ class MainActivity : AppCompatActivity() {
                             AppNavigation(
                                 showWelcomeSheet = true,
                                 pinAuthManager = pinAuthManager,
-                                biometricManager = biometricManager
+                                biometricManager = biometricManager,
+                                smsBackupParser = smsBackupParser
                             )
                         }
                         needsAuth && !isAuthenticated.value -> {

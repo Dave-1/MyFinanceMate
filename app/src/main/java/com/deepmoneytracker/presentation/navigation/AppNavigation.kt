@@ -35,7 +35,8 @@ import com.deepmoneytracker.presentation.screens.TransactionsScreen
 fun AppNavigation(
     showWelcomeSheet: Boolean = false,
     pinAuthManager: PinAuthManager? = null,
-    biometricManager: BiometricManager? = null
+    biometricManager: BiometricManager? = null,
+    smsBackupParser: com.deepmoneytracker.domain.service.SmsBackupParser? = null
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -43,15 +44,12 @@ fun AppNavigation(
 
     var welcomeSheetShown by remember { mutableStateOf(false) }
 
-    if (showWelcomeSheet && !welcomeSheetShown && pinAuthManager != null && biometricManager != null) {
+    if (showWelcomeSheet && !welcomeSheetShown && pinAuthManager != null && biometricManager != null && smsBackupParser != null) {
         WelcomeSetupSheet(
             onDismiss = { welcomeSheetShown = true },
-            onRequestSmsPermission = { /* handled by DashboardScreen */ },
-            onBackupSms = { /* handled by DashboardScreen */ },
-            smsPermissionGranted = false,
-            backupInProgress = false,
             pinAuthManager = pinAuthManager,
-            biometricManager = biometricManager
+            biometricManager = biometricManager,
+            smsBackupParser = smsBackupParser
         )
     }
 
