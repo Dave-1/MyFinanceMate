@@ -76,6 +76,11 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setAppLock(enabled: Boolean) {
+        if (!enabled && pinAuthManager.isPinSet()) {
+            // Cannot disable app lock while PIN is set
+            // User must remove PIN first
+            return
+        }
         pinAuthManager.setAppLockEnabled(enabled)
         _state.value = _state.value.copy(isAppLockEnabled = enabled)
     }
