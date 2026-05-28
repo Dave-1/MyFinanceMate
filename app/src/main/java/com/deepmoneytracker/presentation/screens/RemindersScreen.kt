@@ -33,8 +33,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import com.deepmoneytracker.presentation.components.CommonTopAppBar
+import com.deepmoneytracker.presentation.components.TopAppBarAction
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,33 +68,12 @@ fun RemindersScreen(
     Scaffold(
         containerColor = themeColors.background,
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            stringResource(AppStrings.reminders_title),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = themeColors.onBackground
-                        )
-                        Text(
-                            "${reminders.size} reminder${if (reminders.size != 1) "s" else ""}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = themeColors.onBackground.copy(alpha = 0.6f)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onNavigateToNotifications) {
-                        Icon(Icons.Default.Notifications, contentDescription = stringResource(AppStrings.label_notifications), tint = themeColors.onBackground)
-                    }
-                    IconButton(onClick = onNavigateToReports) {
-                        Icon(Icons.Default.BarChart, contentDescription = stringResource(AppStrings.label_reports), tint = themeColors.onBackground)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColors.background,
-                    titleContentColor = themeColors.onBackground
+            CommonTopAppBar(
+                title = stringResource(AppStrings.reminders_title),
+                subtitle = "${reminders.size} ${stringResource(if (reminders.size != 1) AppStrings.reminders_count_plural else AppStrings.reminders_count)}",
+                actions = listOf(
+                    TopAppBarAction(Icons.Default.Notifications, stringResource(AppStrings.label_notifications), onNavigateToNotifications),
+                    TopAppBarAction(Icons.Default.BarChart, stringResource(AppStrings.label_reports), onNavigateToReports)
                 )
             )
         },
