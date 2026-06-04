@@ -23,7 +23,7 @@ MyFinanceMate is a **privacy‑first, open‑source expense tracking** Android a
 ### From F-Droid
 Search for "MyFinanceMate" on [f-droid.org](https://f-droid.org) or add the repository:
 ```
-https://f-droid.org/packages/com.deepmoneytracker/
+https://f-droid.org/packages/com.myfinancemate/
 ```
 
 ### Build from Source
