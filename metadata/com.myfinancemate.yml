@@ -1,0 +1,33 @@
+Categories:
+  - Finance
+  - Money
+  - System
+
+License: MIT
+
+AuthorName: Dave-1
+SourceCode: https://github.com/Dave-1/MyFinanceMate
+IssueTracker: https://github.com/Dave-1/MyFinanceMate/issues
+Changelog: https://github.com/Dave-1/MyFinanceMate/releases
+
+Name: MyFinanceMate
+Summary: Privacy-first expense tracker via SMS parsing
+Description: |-
+  MyFinanceMate is a privacy-first, open-source expense tracking
+  Android app built with Jetpack Compose. It parses SMS bank alerts,
+  stores data locally with Room, and visualises spending via bar-
+  and pie-charts. Works offline, with no ads or trackers.
+
+RepoType: git
+Repo: https://github.com/Dave-1/MyFinanceMate.git
+
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1
+    commit: v1.0.0
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags

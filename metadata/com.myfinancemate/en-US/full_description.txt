@@ -1,0 +1,15 @@
+MyFinanceMate is a privacy-first, open-source expense tracking
+Android app built with Jetpack Compose. It parses SMS bank alerts,
+stores data locally with Room, and visualises spending via bar-
+and pie-charts. Works offline, with no ads or trackers.
+
+Features:
+  - Automatic SMS-based transaction tracking
+  - Manual transaction entry
+  - Category management with smart categorization
+  - Income and expense tracking
+  - Reminders for recurring payments
+  - PIN and biometric security
+  - Material 3 design with theme support
+  - Backup and restore functionality
+  - Fully offline - no data leaves your device
