@@ -70,7 +70,7 @@ class SmsPermissionHelper @Inject constructor(
             val requestedPerms = packageInfo.requestedPermissions ?: return true
             val smsPerms = SMS_PERMISSIONS.filter { it in requestedPerms }
             smsPerms.all { perm ->
-                context.packageManager.isPermissionRevokedByPolicy(perm) == false
+                context.packageManager.isPermissionRevokedByPolicy(perm, context.packageName) == false
             }
         } catch (_: Exception) {
             true
@@ -111,8 +111,8 @@ class SmsPermissionHelper @Inject constructor(
                 roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
             } else null
         } else {
-            Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT).apply {
-                putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, context.packageName)
+            Intent(Telephony.Sms.ACTION_CHANGE_DEFAULT).apply {
+                putExtra(Telephony.Sms.EXTRA_PACKAGE_NAME, context.packageName)
             }
         }
     }
@@ -158,13 +158,19 @@ private object Telephony {
     object Sms {
         const val ACTION_CHANGE_DEFAULT = "android.provider.Telephony.SMS_INTENT_DEFAULT_SMS_PACKAGE_CHANGED"
 
+        const val EXTRA_PACKAGE_NAME = "package"
+
         fun getDefaultSmsPackage(context: Context): String? {
-            return context.contentResolver.call(
-                Uri.parse("content://sms"),
-                "getdefaultsmspackage",
-                null,
+            return try {
+                context.contentResolver.call(
+                    Uri.parse("content://sms"),
+                    "getdefaultsmspackage",
+                    null,
+                    null
+                )?.getString("result")
+            } catch (_: Exception) {
                 null
-            )?.getString(0)
+            }
         }
     }
 }
