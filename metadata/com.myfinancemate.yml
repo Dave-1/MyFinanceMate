@@ -10,8 +10,6 @@ AutoName: MyFinanceMate
 
 RepoType: git
 Repo: https://github.com/Dave-1/MyFinanceMate.git
-Binaries:
-  https://github.com/Dave-1/MyFinanceMate/releases/download/v%v/MyFinanceMate-release.apk
 
 Builds:
   - versionName: 1.0.0
@@ -20,8 +18,6 @@ Builds:
     subdir: app
     gradle:
       - yes
-
-AllowedAPKSigningKeys: 7693863c0d2cd7940817eb73a95fbb2238f0ecb688cc6905e87c51516dfd07f1
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags

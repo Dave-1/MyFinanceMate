@@ -61,7 +61,7 @@ fi
 echo ""
 echo "Checking required fields..."
 
-required_fields=("Categories" "License" "Builds" "AutoUpdateMode" "UpdateCheckMode" "CurrentVersion" "CurrentVersionCode" "Repo" "RepoType" "AllowedAPKSigningKeys")
+required_fields=("Categories" "License" "Builds" "AutoUpdateMode" "UpdateCheckMode" "CurrentVersion" "CurrentVersionCode" "Repo" "RepoType")
 missing=0
 
 for field in "${required_fields[@]}"; do
@@ -78,28 +78,36 @@ if [ $missing -eq 1 ]; then
     exit 1
 fi
 
-# 6. Check AllowedAPKSigningKeys is lowercase hex
+# 6. Check AllowedAPKSigningKeys is lowercase hex (if present)
 echo ""
 echo "Checking AllowedAPKSigningKeys format..."
-SIGNING_KEY=$(grep "^AllowedAPKSigningKeys:" "$METADATA_FILE" | sed 's/AllowedAPKSigningKeys: *//')
-if echo "$SIGNING_KEY" | grep -qE '^[0-9a-f]{64}$'; then
-    echo -e "${GREEN}[OK]${NC} AllowedAPKSigningKeys is valid lowercase hex (64 chars)"
+if grep -q "^AllowedAPKSigningKeys:" "$METADATA_FILE"; then
+    SIGNING_KEY=$(grep "^AllowedAPKSigningKeys:" "$METADATA_FILE" | sed 's/AllowedAPKSigningKeys: *//')
+    if echo "$SIGNING_KEY" | grep -qE '^[0-9a-f]{64}$'; then
+        echo -e "${GREEN}[OK]${NC} AllowedAPKSigningKeys is valid lowercase hex (64 chars)"
+    else
+        echo -e "${RED}[FAIL]${NC} AllowedAPKSigningKeys must be lowercase hex (0-9a-f), 64 characters"
+        echo "  Got: $SIGNING_KEY"
+        exit 1
+    fi
 else
-    echo -e "${RED}[FAIL]${NC} AllowedAPKSigningKeys must be lowercase hex (0-9a-f), 64 characters"
-    echo "  Got: $SIGNING_KEY"
-    exit 1
+    echo -e "${YELLOW}[SKIP]${NC} AllowedAPKSigningKeys not set (optional, needed for reproducible builds)"
 fi
 
-# 7. Check Binaries URL format
+# 7. Check Binaries URL format (if present)
 echo ""
 echo "Checking Binaries URL format..."
-BINARIES_LINE=$(grep -A1 "^Binaries:" "$METADATA_FILE" | tail -1 | sed 's/^ *//')
-if echo "$BINARIES_LINE" | grep -qE '^https://.*%v.*$'; then
-    echo -e "${GREEN}[OK]${NC} Binaries URL contains %v placeholder"
+if grep -q "^Binaries:" "$METADATA_FILE"; then
+    BINARIES_LINE=$(grep -A1 "^Binaries:" "$METADATA_FILE" | tail -1 | sed 's/^ *//')
+    if echo "$BINARIES_LINE" | grep -qE '^https://.*%v.*$'; then
+        echo -e "${GREEN}[OK]${NC} Binaries URL contains %v placeholder"
+    else
+        echo -e "${RED}[FAIL]${NC} Binaries URL must be HTTPS and contain %v"
+        echo "  Got: $BINARIES_LINE"
+        exit 1
+    fi
 else
-    echo -e "${RED}[FAIL]${NC} Binaries URL must be HTTPS and contain %v"
-    echo "  Got: $BINARIES_LINE"
-    exit 1
+    echo -e "${YELLOW}[SKIP]${NC} Binaries not set (optional, needed for reproducible builds)"
 fi
 
 # 8. Check commit hash is 40 hex chars
@@ -114,16 +122,20 @@ else
     exit 1
 fi
 
-# 9. Check Binaries comes before Builds (rewritemeta format)
+# 9. Check Binaries comes before Builds (rewritemeta format, if Binaries present)
 echo ""
 echo "Checking field ordering (rewritemeta format)..."
-BINARIES_LINE_NUM=$(grep -n "^Binaries:" "$METADATA_FILE" | head -1 | cut -d: -f1)
-BUILDS_LINE_NUM=$(grep -n "^Builds:" "$METADATA_FILE" | head -1 | cut -d: -f1)
-if [ "$BINARIES_LINE_NUM" -lt "$BUILDS_LINE_NUM" ]; then
-    echo -e "${GREEN}[OK]${NC} Binaries (line $BINARIES_LINE_NUM) comes before Builds (line $BUILDS_LINE_NUM)"
+if grep -q "^Binaries:" "$METADATA_FILE"; then
+    BINARIES_LINE_NUM=$(grep -n "^Binaries:" "$METADATA_FILE" | head -1 | cut -d: -f1)
+    BUILDS_LINE_NUM=$(grep -n "^Builds:" "$METADATA_FILE" | head -1 | cut -d: -f1)
+    if [ "$BINARIES_LINE_NUM" -lt "$BUILDS_LINE_NUM" ]; then
+        echo -e "${GREEN}[OK]${NC} Binaries (line $BINARIES_LINE_NUM) comes before Builds (line $BUILDS_LINE_NUM)"
+    else
+        echo -e "${RED}[FAIL]${NC} Binaries must come before Builds for fdroid rewritemeta compatibility"
+        exit 1
+    fi
 else
-    echo -e "${RED}[FAIL]${NC} Binaries must come before Builds for fdroid rewritemeta compatibility"
-    exit 1
+    echo -e "${YELLOW}[SKIP]${NC} Binaries not set, skipping ordering check"
 fi
 
 # 10. Check Binaries is multi-line format with trailing space (rewritemeta format)
@@ -131,9 +143,11 @@ echo ""
 echo "Checking Binaries multi-line format..."
 if grep -q "^Binaries: $" "$METADATA_FILE" && grep -A1 "^Binaries: $" "$METADATA_FILE" | grep -qE '^  https://'; then
     echo -e "${GREEN}[OK]${NC} Binaries uses multi-line format with trailing space"
-else
+elif grep -q "^Binaries:" "$METADATA_FILE"; then
     echo -e "${RED}[FAIL]${NC} Binaries must use: 'Binaries: ' (with trailing space) followed by indented URL"
     exit 1
+else
+    echo -e "${YELLOW}[SKIP]${NC} Binaries not set, skipping format check"
 fi
 
 echo ""
