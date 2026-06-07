@@ -22,7 +22,7 @@ Builds:
       - yes
 
 Binaries: https://github.com/Dave-1/MyFinanceMate/releases/download/v%v/MyFinanceMate-release.apk
-AllowedAPKSigningKeys: 7693863C0D2CD7940817EB73A95FBB2238F0ECB688CC6905E87C51516DFD07F1
+AllowedAPKSigningKeys: 7693863c0d2cd7940817eb73a95fbb2238f0ecb688cc6905e87c51516dfd07f1
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
