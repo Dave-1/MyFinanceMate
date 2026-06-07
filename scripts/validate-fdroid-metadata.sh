@@ -126,13 +126,13 @@ else
     exit 1
 fi
 
-# 10. Check Binaries is multi-line format
+# 10. Check Binaries is multi-line format with trailing space (rewritemeta format)
 echo ""
 echo "Checking Binaries multi-line format..."
-if grep -q "^Binaries:$" "$METADATA_FILE" && grep -A1 "^Binaries:$" "$METADATA_FILE" | grep -qE '^  https://'; then
-    echo -e "${GREEN}[OK]${NC} Binaries uses multi-line format"
+if grep -q "^Binaries: $" "$METADATA_FILE" && grep -A1 "^Binaries: $" "$METADATA_FILE" | grep -qE '^  https://'; then
+    echo -e "${GREEN}[OK]${NC} Binaries uses multi-line format with trailing space"
 else
-    echo -e "${RED}[FAIL]${NC} Binaries must use multi-line format (Binaries:\\n  https://...)"
+    echo -e "${RED}[FAIL]${NC} Binaries must use: 'Binaries: ' (with trailing space) followed by indented URL"
     exit 1
 fi
 
