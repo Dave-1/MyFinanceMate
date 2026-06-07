@@ -20,3 +20,11 @@ docs/superpowers/
 node_modules/
 package.json
 package-lock.json
+
+# temp/build artifacts
+tmp_build/
+*.hprof
+nul
+
+# stray dirs
+%USERPROFILE%/

@@ -1,0 +1,28 @@
+Categories:
+  - Finance Manager
+
+License: MIT
+
+AuthorName: Dave-1
+SourceCode: https://github.com/Dave-1/MyFinanceMate
+IssueTracker: https://github.com/Dave-1/MyFinanceMate/issues
+Changelog: https://github.com/Dave-1/MyFinanceMate/releases
+
+Name: MyFinanceMate
+
+RepoType: git
+Repo: https://github.com/Dave-1/MyFinanceMate.git
+
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1
+    commit: a5ece2831cbd66ef2c893a8e961484d5d188a551
+    subdir: app
+    gradle:
+      - yes
+
+Binaries: https://github.com/Dave-1/MyFinanceMate/releases/download/v%v/MyFinanceMate-release.apk
+AllowedAPKSigningKeys: 7693863c0d2cd7940817eb73a95fbb2238f0ecb688cc6905e87c51516dfd07f1
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
