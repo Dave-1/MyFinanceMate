@@ -1,7 +1,0 @@
- - Initial release
- - SMS auto-tracking
- - PIN/biometric security
- - Material 3 design
- - Reports with charts
- - Reminders
- - Backup & restore
