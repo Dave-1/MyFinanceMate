@@ -6,6 +6,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,11 +30,27 @@ jobs:
       - name: Build release APK
         run: chmod +x gradlew && ./gradlew assembleRelease
 
-      - name: Upload APK to release
-        uses: softprops/action-gh-release@v2
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: v1.0.0
-          files: app/build/outputs/apk/release/app-release.apk
-          asset_name: MyFinanceMate.1.0.0.apk
+          name: release-apk
+          path: app/build/outputs/apk/release/app-release.apk
+
+      - name: Delete old release asset
+        run: |
+          RELEASE_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/tags/v1.0.0 --jq '.id')
+          ASSET_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/$RELEASE_ID/assets --jq '.[] | select(.name=="MyFinanceMate.1.0.0.apk") | .id')
+          if [ -n "$ASSET_ID" ]; then
+            gh api -X DELETE repos/Dave-1/MyFinanceMate/releases/assets/$ASSET_ID
+          fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload APK to release
+        run: |
+          RELEASE_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/tags/v1.0.0 --jq '.id')
+          gh api -X POST repos/Dave-1/MyFinanceMate/releases/$RELEASE_ID/assets?name=MyFinanceMate.1.0.0.apk \
+            -H "Content-Type: application/vnd.android.package-archive" \
+            --field "=@app/build/outputs/apk/release/app-release.apk"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
