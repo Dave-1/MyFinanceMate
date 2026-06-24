@@ -49,8 +49,10 @@ jobs:
       - name: Upload APK to release
         run: |
           RELEASE_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/tags/v1.0.0 --jq '.id')
-          gh api -X POST repos/Dave-1/MyFinanceMate/releases/$RELEASE_ID/assets?name=MyFinanceMate.1.0.0.apk \
+          UPLOAD_URL=$(gh api repos/Dave-1/MyFinanceMate/releases/$RELEASE_ID --jq '.upload_url' | sed 's/{?name,label}//')
+          curl -s -X POST "${UPLOAD_URL}?name=MyFinanceMate.1.0.0.apk" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Content-Type: application/vnd.android.package-archive" \
-            --field "=@app/build/outputs/apk/release/app-release.apk"
+            --data-binary @app/build/outputs/apk/release/app-release.apk
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
