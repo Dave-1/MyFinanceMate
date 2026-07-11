@@ -36,6 +36,12 @@ interface SmsRuleDao {
     @Query("SELECT * FROM sms_rules")
     suspend fun getAllRulesList(): List<SmsRuleEntity>
 
+    @Query("SELECT COUNT(*) FROM sms_rules")
+    suspend fun getCount(): Int
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(rules: List<SmsRuleEntity>)
+
     @Query("DELETE FROM sms_rules")
     suspend fun deleteAll()
 }

@@ -12,5 +12,7 @@ interface SmsRuleRepository {
     suspend fun getActiveRules(): List<SmsRuleEntity>
     suspend fun getBySenderId(senderId: String): SmsRuleEntity?
     suspend fun getAllRulesList(): List<SmsRuleEntity>
+    suspend fun getCount(): Int
+    suspend fun insertAll(rules: List<SmsRuleEntity>)
     suspend fun deleteAll()
 }

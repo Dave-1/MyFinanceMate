@@ -43,7 +43,8 @@ class SmsBackupParser @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categorizationEngine: CategorizationEngine,
     private val smsNotificationRepository: SmsNotificationRepository,
-    private val smsNotificationClassifier: SmsNotificationClassifier
+    private val smsNotificationClassifier: SmsNotificationClassifier,
+    private val reminderFromSmsCreator: ReminderFromSmsCreator
 ) {
     private val backupDir: File
         get() = File(context.getExternalFilesDir(null), "sms_backups").also { it.mkdirs() }
@@ -112,6 +113,12 @@ class SmsBackupParser @Inject constructor(
                             transactionRepository.update(transaction.copy(id = id, categoryId = categoryId))
                         }
                     } catch (_: Exception) {}
+                    reminderFromSmsCreator.maybeCreateReminder(
+                        smsBody = sms.body,
+                        senderId = sms.address,
+                        smsTimestamp = sms.date,
+                        amount = parsed.amount
+                    )
                     bankTransactions++
                     val bankName = senderIdToName[matchedSenderId] ?: sms.address
                     bankBreakdown[bankName] = (bankBreakdown[bankName] ?: 0) + 1
@@ -139,6 +146,11 @@ class SmsBackupParser @Inject constructor(
                 isExpired = isExpired
             )
             smsNotificationRepository.insert(notification)
+            reminderFromSmsCreator.maybeCreateReminder(
+                smsBody = sms.body,
+                senderId = sms.address,
+                smsTimestamp = sms.date
+            )
             notifications++
         }
 

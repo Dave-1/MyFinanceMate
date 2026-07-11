@@ -20,5 +20,7 @@ class SmsRuleRepositoryImpl @Inject constructor(
     override suspend fun getActiveRules(): List<SmsRuleEntity> = dao.getActiveRules()
     override suspend fun getBySenderId(senderId: String): SmsRuleEntity? = dao.getBySenderId(senderId)
     override suspend fun getAllRulesList(): List<SmsRuleEntity> = dao.getAllRulesList()
+    override suspend fun getCount(): Int = dao.getCount()
+    override suspend fun insertAll(rules: List<SmsRuleEntity>) = dao.insertAll(rules)
     override suspend fun deleteAll() = dao.deleteAll()
 }

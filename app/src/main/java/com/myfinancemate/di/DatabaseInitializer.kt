@@ -1,15 +1,23 @@
 package com.myfinancemate.di
 
 import com.myfinancemate.data.local.entity.CategoryEntity
+import com.myfinancemate.data.local.entity.SmsRuleEntity
 import com.myfinancemate.domain.repository.CategoryRepository
+import com.myfinancemate.domain.repository.SmsRuleRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DatabaseInitializer @Inject constructor(
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val smsRuleRepository: SmsRuleRepository
 ) {
     suspend fun initializeDefaults() {
+        initializeCategories()
+        initializeSmsRules()
+    }
+
+    private suspend fun initializeCategories() {
         if (categoryRepository.getCount() > 0) return
 
         val defaultCategories = listOf(
@@ -26,5 +34,34 @@ class DatabaseInitializer @Inject constructor(
         )
 
         categoryRepository.insertAll(defaultCategories)
+    }
+
+    private suspend fun initializeSmsRules() {
+        if (smsRuleRepository.getCount() > 0) return
+
+        val defaultRules = listOf(
+            SmsRuleEntity(senderId = "HDFCBK", senderName = "HDFC Bank"),
+            SmsRuleEntity(senderId = "SBIBANK", senderName = "SBI Bank"),
+            SmsRuleEntity(senderId = "ICICIBK", senderName = "ICICI Bank"),
+            SmsRuleEntity(senderId = "AXISBANK", senderName = "Axis Bank"),
+            SmsRuleEntity(senderId = "YESBANK", senderName = "Yes Bank"),
+            SmsRuleEntity(senderId = "KOTAKB", senderName = "Kotak Mahindra"),
+            SmsRuleEntity(senderId = "INDUSIND", senderName = "IndusInd Bank"),
+            SmsRuleEntity(senderId = "IDBIBK", senderName = "IDBI Bank"),
+            SmsRuleEntity(senderId = "FEDBANK", senderName = "Federal Bank"),
+            SmsRuleEntity(senderId = "PNB", senderName = "Punjab National Bank"),
+            SmsRuleEntity(senderId = "BOB", senderName = "Bank of Baroda"),
+            SmsRuleEntity(senderId = "CANBANK", senderName = "Canara Bank"),
+            SmsRuleEntity(senderId = "UBIBANK", senderName = "Union Bank of India"),
+            SmsRuleEntity(senderId = "RBLBANK", senderName = "RBL Bank"),
+            SmsRuleEntity(senderId = "DBSBANK", senderName = "DBS Bank"),
+            SmsRuleEntity(senderId = "SOIBANK", senderName = "South Indian Bank"),
+            SmsRuleEntity(senderId = "BANDHAN", senderName = "Bandhan Bank"),
+            SmsRuleEntity(senderId = "PAYTM", senderName = "Paytm Payments Bank"),
+            SmsRuleEntity(senderId = "AIRTEL", senderName = "Airtel Payments Bank"),
+            SmsRuleEntity(senderId = "JIOBANK", senderName = "Jio Payments Bank")
+        )
+
+        smsRuleRepository.insertAll(defaultRules)
     }
 }

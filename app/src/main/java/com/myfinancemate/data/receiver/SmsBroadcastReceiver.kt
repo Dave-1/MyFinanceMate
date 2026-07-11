@@ -9,6 +9,7 @@ import com.myfinancemate.data.local.entity.TransactionType
 import com.myfinancemate.domain.repository.SmsRuleRepository
 import com.myfinancemate.domain.repository.TransactionRepository
 import com.myfinancemate.domain.service.CategorizationEngine
+import com.myfinancemate.domain.service.ReminderFromSmsCreator
 import com.myfinancemate.domain.service.SmsParser
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -23,6 +24,7 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
     @Inject lateinit var categorizationEngine: CategorizationEngine
     @Inject lateinit var transactionRepository: TransactionRepository
     @Inject lateinit var smsRuleRepository: SmsRuleRepository
+    @Inject lateinit var reminderFromSmsCreator: ReminderFromSmsCreator
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -48,26 +50,37 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
 
                     if (!isRegistered) continue
 
-                    val parsed = smsParser.parse(body, sender) ?: continue
+                    // Try to parse as transaction
+                    val parsed = smsParser.parse(body, sender)
 
-                    val transaction = TransactionEntity(
-                        amount = parsed.amount,
-                        type = parsed.type,
-                        description = parsed.description,
-                        merchant = parsed.merchant,
-                        senderInfo = parsed.senderInfo,
-                        date = parsed.date,
-                        isFromSms = true,
-                        smsBody = body
-                    )
+                    if (parsed != null) {
+                        val transaction = TransactionEntity(
+                            amount = parsed.amount,
+                            type = parsed.type,
+                            description = parsed.description,
+                            merchant = parsed.merchant,
+                            senderInfo = parsed.senderInfo,
+                            date = parsed.date,
+                            isFromSms = true,
+                            smsBody = body
+                        )
 
-                    val id = transactionRepository.insert(transaction)
+                        val id = transactionRepository.insert(transaction)
 
-                    // Categorize
-                    val categoryId = categorizationEngine.categorize(transaction)
-                    if (categoryId != null) {
-                        transactionRepository.update(transaction.copy(id = id, categoryId = categoryId))
+                        // Categorize
+                        val categoryId = categorizationEngine.categorize(transaction)
+                        if (categoryId != null) {
+                            transactionRepository.update(transaction.copy(id = id, categoryId = categoryId))
+                        }
                     }
+
+                    // Also create reminder if SMS contains due/expiry keywords
+                    reminderFromSmsCreator.maybeCreateReminder(
+                        smsBody = body,
+                        senderId = sender,
+                        smsTimestamp = System.currentTimeMillis(),
+                        amount = parsed?.amount
+                    )
                 }
             } finally {
                 pendingResult.finish()
