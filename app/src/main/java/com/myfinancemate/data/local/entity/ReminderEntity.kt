@@ -14,6 +14,7 @@ data class ReminderEntity(
     val recurrence: Recurrence = Recurrence.NONE,
     val nextTriggerTime: Long,
     val isActive: Boolean = true,
+    val sourceAccountId: Long? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )

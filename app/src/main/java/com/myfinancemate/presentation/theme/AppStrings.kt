@@ -80,6 +80,8 @@ object AppStrings {
     val field_amount = R.string.field_amount
     val field_description = R.string.field_description
     val field_merchant = R.string.field_merchant
+    val field_date = R.string.field_date
+    val field_account = R.string.field_account
 
     // Add/Edit Transaction
     val add_transaction_title = R.string.add_transaction_title
@@ -174,6 +176,7 @@ object AppStrings {
 
     // Reports
     val reports_title = R.string.reports_title
+    val reports_this_month = R.string.reports_this_month
     val reports_weekly_trend = R.string.reports_weekly_trend
     val reports_no_data = R.string.reports_no_data
 }

@@ -124,7 +124,7 @@ fun ReportsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                        containerColor = themeColors.primary
                     )
                 ) {
                     Column(
@@ -132,7 +132,7 @@ fun ReportsScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            "This Month",
+                            stringResource(AppStrings.reports_this_month),
                             style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(modifier = Modifier.height(12.dp))
@@ -176,7 +176,7 @@ fun ReportsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        containerColor = themeColors.surface.copy(alpha = 0.3f)
                     )
                 ) {
                     Column(
@@ -214,13 +214,14 @@ fun ReportsScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp)
+                            .height(200.dp),
+                        backgroundColor = themeColors.background
                     )
                 } else {
                     Text(
                         stringResource(AppStrings.reports_no_data),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = themeColors.onSurface.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -251,7 +252,7 @@ fun ReportsScreen(
                                 Text(
                                     "${"%.1f".format(ct.percentage)}%",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = themeColors.onSurface.copy(alpha = 0.6f)
                                 )
                             }
                         }
@@ -279,7 +280,8 @@ private data class PieChartData(
 @Composable
 private fun PieChart(
     data: List<PieChartData>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = Color.White
 ) {
     val total = data.sumOf { it.value.toDouble() }.toFloat()
 
@@ -308,7 +310,7 @@ private fun PieChart(
 
         // Draw center circle for donut effect
         drawCircle(
-            color = Color.White,
+            color = backgroundColor,
             radius = radius * 0.5f,
             center = center
         )

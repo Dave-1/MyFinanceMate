@@ -19,10 +19,20 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.foundation.clickable
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import androidx.compose.material3.Text
 import com.myfinancemate.presentation.components.CommonTopAppBar
 import androidx.compose.runtime.Composable
@@ -37,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myfinancemate.presentation.theme.AppStrings
 import com.myfinancemate.data.local.entity.TransactionType
 import com.myfinancemate.presentation.theme.LocalThemeColors
@@ -52,7 +63,13 @@ fun AddTransactionScreen(
     var description by remember { mutableStateOf("") }
     var merchant by remember { mutableStateOf("") }
     var type by remember { mutableStateOf(TransactionType.EXPENSE) }
+    var selectedDate by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var selectedAccountId by remember { mutableStateOf<Long?>(null) }
+    var accountMenuExpanded by remember { mutableStateOf(false) }
+    val dateFormat = remember { SimpleDateFormat("dd MMM yyyy", Locale.getDefault()) }
     val themeColors = LocalThemeColors.current
+    val accounts by viewModel.accounts.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -165,6 +182,74 @@ fun AddTransactionScreen(
                 )
             )
 
+            // Account
+            Text(stringResource(AppStrings.field_account), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium, color = themeColors.onBackground)
+            ExposedDropdownMenuBox(
+                expanded = accountMenuExpanded,
+                onExpandedChange = { accountMenuExpanded = it }
+            ) {
+                OutlinedTextField(
+                    value = accounts.firstOrNull { it.id == selectedAccountId }?.name ?: if (accounts.isEmpty()) "No accounts" else "Select account",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(AppStrings.field_account)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = accountMenuExpanded) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor(),
+                    shape = RoundedCornerShape(14.dp),
+                    singleLine = true
+                )
+                ExposedDropdownMenu(
+                    expanded = accountMenuExpanded,
+                    onDismissRequest = { accountMenuExpanded = false }
+                ) {
+                    accounts.forEach { account ->
+                        DropdownMenuItem(
+                            text = { Text(account.name + if (account.isPrimary) " (Primary)" else "") },
+                            onClick = {
+                                selectedAccountId = account.id
+                                accountMenuExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Date
+            Text(stringResource(AppStrings.field_date), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium, color = themeColors.onBackground)
+            Surface(
+                onClick = { showDatePicker = true },
+                shape = RoundedCornerShape(14.dp),
+                color = themeColors.cardBackground,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = dateFormat.format(Date(selectedDate)),
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = themeColors.onSurface
+                )
+            }
+
+            if (showDatePicker) {
+                val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDate)
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        Button(onClick = {
+                            datePickerState.selectedDateMillis?.let { selectedDate = it }
+                            showDatePicker = false
+                        }) { Text("OK") }
+                    },
+                    dismissButton = {
+                        Button(onClick = { showDatePicker = false }) { Text("Cancel") }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             // Save button
@@ -176,7 +261,9 @@ fun AddTransactionScreen(
                             amount = amountValue,
                             type = type,
                             description = description,
-                            merchant = merchant
+                            merchant = merchant,
+                            date = selectedDate,
+                            accountId = selectedAccountId
                         )
                         onNavigateBack()
                     }

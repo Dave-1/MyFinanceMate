@@ -23,4 +23,8 @@ class SmsRuleRepositoryImpl @Inject constructor(
     override suspend fun getCount(): Int = dao.getCount()
     override suspend fun insertAll(rules: List<SmsRuleEntity>) = dao.insertAll(rules)
     override suspend fun deleteAll() = dao.deleteAll()
+
+    override suspend fun getSalaryRules(): List<com.myfinancemate.data.local.entity.SmsRuleEntity> {
+        return dao.getSalaryRules()
+    }
 }

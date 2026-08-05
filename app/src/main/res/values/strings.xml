@@ -92,6 +92,8 @@
     <string name="field_amount">Amount</string>
     <string name="field_description">Description</string>
     <string name="field_merchant">Merchant (optional)</string>
+    <string name="field_date">Date</string>
+    <string name="field_account">Account</string>
 
     <!-- Add/Edit Transaction -->
     <string name="add_transaction_title">Add Transaction</string>
@@ -165,6 +167,7 @@
 
     <!-- Reports -->
     <string name="reports_title">Reports</string>
+    <string name="reports_this_month">This Month</string>
     <string name="reports_weekly_trend">Weekly Spending Trend</string>
     <string name="reports_no_data">No expense data available</string>
 </resources>

@@ -112,48 +112,58 @@ fun DashboardScreen(
             }
 
             // Balance Card — modern gradient style
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = themeColors.primary),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth().padding(28.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+            if (state.totalIncome > 0 || state.totalExpense > 0) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(containerColor = themeColors.primary),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
                     ) {
-                        Text(
-                            stringResource(AppStrings.dashboard_total_balance),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = themeColors.onPrimary.copy(alpha = 0.8f)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            "\u20B9${"%,.2f".format(state.balance)}",
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = themeColors.onPrimary
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(28.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            BalanceStat(
-                                label = stringResource(AppStrings.label_income),
-                                amount = state.totalIncome,
-                                icon = Icons.Default.ArrowUpward,
-                                color = themeColors.incomeColor,
-                                themeColors = themeColors
+                            Text(
+                                stringResource(AppStrings.dashboard_total_balance),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = themeColors.onPrimary.copy(alpha = 0.8f)
                             )
-                            BalanceStat(
-                                label = stringResource(AppStrings.label_expense),
-                                amount = state.totalExpense,
-                                icon = Icons.Default.ArrowDownward,
-                                color = themeColors.expenseColor,
-                                themeColors = themeColors
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                "₹${"%,.2f".format(state.balance)}",
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = themeColors.onPrimary
                             )
+                            if (state.primaryAccountName != null) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    "Primary: ${state.primaryAccountName}",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = themeColors.onPrimary.copy(alpha = 0.7f)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                BalanceStat(
+                                    label = stringResource(AppStrings.label_income),
+                                    amount = state.totalIncome,
+                                    icon = Icons.Default.ArrowUpward,
+                                    color = themeColors.incomeColor,
+                                    themeColors = themeColors
+                                )
+                                BalanceStat(
+                                    label = stringResource(AppStrings.label_expense),
+                                    amount = state.totalExpense,
+                                    icon = Icons.Default.ArrowDownward,
+                                    color = themeColors.expenseColor,
+                                    themeColors = themeColors
+                                )
+                            }
                         }
                     }
                 }

@@ -15,4 +15,6 @@ interface SmsRuleRepository {
     suspend fun getCount(): Int
     suspend fun insertAll(rules: List<SmsRuleEntity>)
     suspend fun deleteAll()
+
+    suspend fun getSalaryRules(): List<com.myfinancemate.data.local.entity.SmsRuleEntity>
 }

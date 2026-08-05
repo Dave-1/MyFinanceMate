@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.SET_NULL
         )
     ],
-    indices = [Index("categoryId"), Index("date"), Index("type")]
+    indices = [Index("categoryId"), Index("date"), Index("type"), Index(value = ["accountId"], name = "idx_transactions_accountId")]
 )
 data class TransactionEntity(
     @PrimaryKey(autoGenerate = true)
@@ -29,6 +29,8 @@ data class TransactionEntity(
     val date: Long,
     val isFromSms: Boolean = false,
     val smsBody: String = "",
+    val accountId: Long? = null,
+    val isSalary: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )

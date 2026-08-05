@@ -33,4 +33,12 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun getRecent(limit: Int): Flow<List<TransactionEntity>> = dao.getRecent(limit)
     override suspend fun getAllTransactionsList(): List<TransactionEntity> = dao.getAllTransactionsList()
     override suspend fun deleteAll() = dao.deleteAll()
+
+    override suspend fun getByAccountMerchantCategory(accountId: Long, type: com.myfinancemate.data.local.entity.TransactionType, merchant: String, categoryId: Long?): List<com.myfinancemate.data.local.entity.TransactionEntity> {
+        return dao.getByAccountMerchantCategory(accountId, type, merchant, categoryId)
+    }
+
+    override suspend fun getLatestSalaryByAccount(accountId: Long): com.myfinancemate.data.local.entity.TransactionEntity? {
+        return dao.getLatestSalaryByAccount(accountId)
+    }
 }

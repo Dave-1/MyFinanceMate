@@ -23,6 +23,19 @@ description: |
   - Fully offline — no data leaves your device
 website: https://github.com/Dave-1/MyFinanceMate
 changelog: |
+  ## 1.2.0
+  - Multi-account support with primary account designation
+  - Salary detection via SMS rules
+  - Fixed-expense auto-detection with configurable thresholds
+  - Account filter on transactions screen
+  - Primary account indicator on dashboard
+  - Account dropdown on transaction entry screens
+  - "AUTO" chip on auto-detected reminders
+
+  ## 1.1.0
+  - Auto-create reminders from recurring SMS
+  - Default bank SMS parsing rules
+
   ## 1.0.0
   - Initial release
   - SMS auto-tracking
@@ -33,6 +46,6 @@ changelog: |
   - Backup & restore
 autoUpdateMode: Version
 updateCheckMode: Tags
-currentVersion: 1.0.0
-currentVersionCode: 1
+currentVersion: 1.2.0
+currentVersionCode: 3
 apk: ../MyFinanceMate-release.apk

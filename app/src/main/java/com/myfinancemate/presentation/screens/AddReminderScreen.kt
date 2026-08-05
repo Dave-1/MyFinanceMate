@@ -29,6 +29,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.foundation.clickable
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import androidx.compose.material3.Text
 import com.myfinancemate.presentation.components.CommonTopAppBar
 import androidx.compose.runtime.Composable
@@ -71,6 +81,9 @@ fun AddReminderScreen(
         }.timeInMillis
     }
     var triggerTime by remember { mutableStateOf(defaultTime) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val dateTimeFormat = remember { SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()) }
 
     val themeColors = LocalThemeColors.current
 
@@ -160,6 +173,83 @@ fun AddReminderScreen(
                         maxLines = 4
                     )
                 }
+            }
+
+            // Trigger Date & Time
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = themeColors.cardBackground
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(stringResource(AppStrings.reminder_recurrence), style = MaterialTheme.typography.titleMedium, color = themeColors.primary)
+                    Text(
+                        dateTimeFormat.format(Date(triggerTime)),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showDatePicker = true }
+                            .padding(12.dp),
+                        color = themeColors.onSurface
+                    )
+                }
+            }
+
+            if (showDatePicker) {
+                val datePickerState = rememberDatePickerState(initialSelectedDateMillis = triggerTime)
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        Button(onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val cal = Calendar.getInstance().apply { timeInMillis = millis }
+                                val timeCal = Calendar.getInstance().apply { timeInMillis = triggerTime }
+                                cal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY))
+                                cal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE))
+                                cal.set(Calendar.SECOND, 0)
+                                triggerTime = cal.timeInMillis
+                            }
+                            showDatePicker = false
+                            showTimePicker = true
+                        }) { Text("Next") }
+                    },
+                    dismissButton = {
+                        Button(onClick = { showDatePicker = false }) { Text(stringResource(AppStrings.label_cancel)) }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
+
+            if (showTimePicker) {
+                val timeCal = Calendar.getInstance().apply { timeInMillis = triggerTime }
+                val timePickerState = rememberTimePickerState(
+                    initialHour = timeCal.get(Calendar.HOUR_OF_DAY),
+                    initialMinute = timeCal.get(Calendar.MINUTE)
+                )
+                AlertDialog(
+                    onDismissRequest = { showTimePicker = false },
+                    confirmButton = {
+                        Button(onClick = {
+                            val cal = Calendar.getInstance().apply { timeInMillis = triggerTime }
+                            cal.set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                            cal.set(Calendar.MINUTE, timePickerState.minute)
+                            cal.set(Calendar.SECOND, 0)
+                            triggerTime = cal.timeInMillis
+                            showTimePicker = false
+                        }) { Text("OK") }
+                    },
+                    dismissButton = {
+                        Button(onClick = { showTimePicker = false }) { Text(stringResource(AppStrings.label_cancel)) }
+                    },
+                    text = {
+                        TimePicker(state = timePickerState)
+                    }
+                )
             }
 
             Card(

@@ -2,9 +2,11 @@ package com.myfinancemate.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.myfinancemate.data.local.entity.AccountEntity
 import com.myfinancemate.data.local.entity.CategoryEntity
 import com.myfinancemate.data.local.entity.TransactionEntity
 import com.myfinancemate.data.local.entity.TransactionType
+import com.myfinancemate.domain.repository.AccountRepository
 import com.myfinancemate.domain.repository.CategoryRepository
 import com.myfinancemate.domain.repository.SmsRuleRepository
 import com.myfinancemate.domain.repository.TransactionRepository
@@ -25,7 +27,8 @@ class TransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
     private val categorizationEngine: CategorizationEngine,
-    private val smsRuleRepository: SmsRuleRepository
+    private val smsRuleRepository: SmsRuleRepository,
+    private val accountRepository: AccountRepository
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -61,6 +64,13 @@ class TransactionViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
+    val accounts: StateFlow<List<AccountEntity>> = accountRepository.getAll()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
@@ -75,7 +85,8 @@ class TransactionViewModel @Inject constructor(
         description: String,
         merchant: String = "",
         categoryId: Long? = null,
-        date: Long = System.currentTimeMillis()
+        date: Long = System.currentTimeMillis(),
+        accountId: Long? = null
     ) {
         viewModelScope.launch {
             val transaction = TransactionEntity(
@@ -83,7 +94,8 @@ class TransactionViewModel @Inject constructor(
                 type = type,
                 description = description,
                 merchant = merchant,
-                date = date
+                date = date,
+                accountId = accountId
             )
             val id = transactionRepository.insert(transaction)
 

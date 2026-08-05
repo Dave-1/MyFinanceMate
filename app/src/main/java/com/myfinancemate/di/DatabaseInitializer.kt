@@ -1,8 +1,10 @@
 package com.myfinancemate.di
 
 import com.myfinancemate.data.local.entity.CategoryEntity
+import com.myfinancemate.data.local.entity.FixedExpenseConfig
 import com.myfinancemate.data.local.entity.SmsRuleEntity
 import com.myfinancemate.domain.repository.CategoryRepository
+import com.myfinancemate.domain.repository.FixedExpenseConfigRepository
 import com.myfinancemate.domain.repository.SmsRuleRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -10,11 +12,18 @@ import javax.inject.Singleton
 @Singleton
 class DatabaseInitializer @Inject constructor(
     private val categoryRepository: CategoryRepository,
-    private val smsRuleRepository: SmsRuleRepository
+    private val smsRuleRepository: SmsRuleRepository,
+    private val fixedExpenseConfigRepository: FixedExpenseConfigRepository
 ) {
     suspend fun initializeDefaults() {
         initializeCategories()
         initializeSmsRules()
+        initializeFixedExpenseConfig()
+    }
+
+    private suspend fun initializeFixedExpenseConfig() {
+        if (fixedExpenseConfigRepository.getSync() != null) return
+        fixedExpenseConfigRepository.insert(FixedExpenseConfig())
     }
 
     private suspend fun initializeCategories() {

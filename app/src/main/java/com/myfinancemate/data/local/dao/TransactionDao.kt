@@ -72,6 +72,15 @@ interface TransactionDao {
 
     @Query("DELETE FROM transactions")
     suspend fun deleteAll()
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE type = :type AND accountId = :accountId AND date BETWEEN :start AND :end")
+    fun getTotalByTypeAndAccountAndDateRange(type: com.myfinancemate.data.local.entity.TransactionType, accountId: Long, start: Long, end: Long): Flow<Double?>
+
+    @Query("SELECT * FROM transactions WHERE accountId = :accountId AND type = :type AND merchant = :merchant AND categoryId = :categoryId ORDER BY date ASC")
+    suspend fun getByAccountMerchantCategory(accountId: Long, type: com.myfinancemate.data.local.entity.TransactionType, merchant: String, categoryId: Long?): List<TransactionEntity>
+
+    @Query("SELECT * FROM transactions WHERE isSalary = 1 AND accountId = :accountId ORDER BY date DESC LIMIT 1")
+    suspend fun getLatestSalaryByAccount(accountId: Long): TransactionEntity?
 }
 
 data class CategoryTotal(
