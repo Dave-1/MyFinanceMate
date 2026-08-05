@@ -1,0 +1,35 @@
+stages:
+  - build
+  - test
+
+# Runner must expose an Android SDK (ANDROID_HOME). Runners with prebuilt
+# Android images are expected; otherwise install the SDK via sdkmanager.
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx3g -Dorg.gradle.daemon=false"
+  ANDROID_HOME: "$HOME/android-sdk"
+
+image: eclipse-temurin:17-jdk
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .gradle/
+    - ~/.gradle/caches/
+
+before_script:
+  - export ANDROID_HOME=${ANDROID_HOME}
+  - echo "Building $CI_COMMIT_REF_NAME"
+
+build-debug:
+  stage: build
+  script:
+    - ./gradlew :app:assembleDebug --stacktrace
+  artifacts:
+    paths:
+      - app/build/outputs/apk/debug/app-debug.apk
+    expire_in: 1 week
+
+unit-tests:
+  stage: test
+  script:
+    - ./gradlew :app:testDebugUnitTest
