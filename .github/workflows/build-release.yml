@@ -36,6 +36,11 @@ jobs:
 
       - name: Build release APK
         run: chmod +x gradlew && ./gradlew assembleRelease
+        env:
+          MYFINANCEMATE_KEYSTORE_PATH: "${{ github.workspace }}/myfinanceMate.keystore"
+          MYFINANCEMATE_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          MYFINANCEMATE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          MYFINANCEMATE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
