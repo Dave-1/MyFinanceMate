@@ -26,11 +26,20 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file("../myfinanceMate.keystore")
-            storePassword = "myfinance123"
-            keyAlias = "myfinanceMate"
-            keyPassword = "myfinance123"
+        // Signing config is created only when keystore credentials are present
+        // in the environment (GitHub Actions / local export). When absent, the
+        // release build is left unsigned so F-Droid can sign it with its own key.
+        val keystorePath = System.getenv("MYFINANCEMATE_KEYSTORE_PATH")
+        val keystorePassword = System.getenv("MYFINANCEMATE_KEYSTORE_PASSWORD")
+        val alias = System.getenv("MYFINANCEMATE_KEY_ALIAS")
+        val aliasPassword = System.getenv("MYFINANCEMATE_KEY_PASSWORD")
+        if (keystorePath != null && keystorePassword != null && alias != null && aliasPassword != null) {
+            create("release") {
+                storeFile = file(keystorePath)
+                storePassword = keystorePassword
+                keyAlias = alias
+                keyPassword = aliasPassword
+            }
         }
     }
 
@@ -39,7 +48,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             isDebuggable = false
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.findByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
