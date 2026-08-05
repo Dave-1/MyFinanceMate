@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.myfinancemate.presentation.screens.AccountsScreen
 import com.myfinancemate.presentation.screens.AddReminderScreen
 import com.myfinancemate.presentation.screens.AddTransactionScreen
 import com.myfinancemate.presentation.screens.CategoriesScreen
@@ -151,7 +152,14 @@ fun AppNavigation(
                 SettingsScreen(
                     onNavigateToCategories = { navController.navigate(Screen.Categories.route) },
                     onNavigateToNotifications = { navController.navigate(Screen.Notifications.route) },
-                    onNavigateToReports = { navController.navigate(Screen.Reports.route) }
+                    onNavigateToReports = { navController.navigate(Screen.Reports.route) },
+                    onNavigateToAccounts = { navController.navigate(Screen.Accounts.route) }
+                )
+            }
+
+            composable(Screen.Accounts.route) {
+                AccountsScreen(
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 

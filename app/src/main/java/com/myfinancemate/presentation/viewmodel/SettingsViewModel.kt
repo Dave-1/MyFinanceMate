@@ -4,6 +4,9 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.myfinancemate.data.local.entity.FixedExpenseConfig
+import com.myfinancemate.domain.repository.AccountRepository
+import com.myfinancemate.domain.repository.FixedExpenseConfigRepository
 import com.myfinancemate.domain.repository.SmsRuleRepository
 import com.myfinancemate.domain.service.BackupManager
 import com.myfinancemate.domain.service.BackupResult
@@ -43,7 +46,10 @@ data class SettingsState(
     val smsBackupInProgress: Boolean = false,
     val smsBackupResult: BackupResult? = null,
     val smsBackupError: String? = null,
-    val backupFiles: List<BackupFileInfo> = emptyList()
+    val backupFiles: List<BackupFileInfo> = emptyList(),
+    val accountCount: Int = 0,
+    val minOccurrences: Int = 3,
+    val variancePercent: Double = 10.0
 )
 
 @HiltViewModel
@@ -54,6 +60,8 @@ class SettingsViewModel @Inject constructor(
     private val smsBackupParser: SmsBackupParser,
     private val biometricManager: BiometricManager,
     private val pinAuthManager: PinAuthManager,
+    private val accountRepository: AccountRepository,
+    private val fixedExpenseConfigRepository: FixedExpenseConfigRepository,
     val themeStateHolder: ThemeStateHolder
 ) : ViewModel() {
 
@@ -72,6 +80,36 @@ class SettingsViewModel @Inject constructor(
             isBiometricAvailable = pinAuthManager.isBiometricAvailable(),
             isAppLockEnabled = pinAuthManager.isAppLockEnabled(),
             isPinSet = pinAuthManager.isPinSet()
+        )
+        viewModelScope.launch {
+            val accountCount = accountRepository.count()
+            val config = fixedExpenseConfigRepository.getSync()
+            _state.value = _state.value.copy(
+                accountCount = accountCount,
+                minOccurrences = config?.minOccurrences ?: 3,
+                variancePercent = config?.variancePercent ?: 10.0
+            )
+        }
+    }
+
+    fun setMinOccurrences(value: Int) {
+        _state.value = _state.value.copy(minOccurrences = value)
+        viewModelScope.launch { saveFixedExpenseConfig() }
+    }
+
+    fun setVariancePercent(value: Double) {
+        _state.value = _state.value.copy(variancePercent = value)
+        viewModelScope.launch { saveFixedExpenseConfig() }
+    }
+
+    private suspend fun saveFixedExpenseConfig() {
+        val current = _state.value
+        fixedExpenseConfigRepository.insert(
+            FixedExpenseConfig(
+                id = 1,
+                minOccurrences = current.minOccurrences,
+                variancePercent = current.variancePercent
+            )
         )
     }
 

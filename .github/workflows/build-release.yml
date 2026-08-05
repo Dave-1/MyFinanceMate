@@ -45,8 +45,9 @@ jobs:
 
       - name: Delete old release asset
         run: |
-          RELEASE_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/tags/v1.0.0 --jq '.id')
-          ASSET_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/$RELEASE_ID/assets --jq '.[] | select(.name=="MyFinanceMate.1.0.0.apk") | .id')
+          TAG="${{ github.ref_name }}"
+          RELEASE_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/tags/${TAG} --jq '.id')
+          ASSET_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/${RELEASE_ID}/assets --jq --arg name "MyFinanceMate.${TAG#v}.apk" '.[] | select(.name==$name) | .id')
           if [ -n "$ASSET_ID" ]; then
             gh api -X DELETE repos/Dave-1/MyFinanceMate/releases/assets/$ASSET_ID
           fi
@@ -55,9 +56,10 @@ jobs:
 
       - name: Upload APK to release
         run: |
-          RELEASE_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/tags/v1.0.0 --jq '.id')
-          UPLOAD_URL=$(gh api repos/Dave-1/MyFinanceMate/releases/$RELEASE_ID --jq '.upload_url' | sed 's/{?name,label}//')
-          curl -s -X POST "${UPLOAD_URL}?name=MyFinanceMate.1.0.0.apk" \
+          TAG="${{ github.ref_name }}"
+          RELEASE_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/tags/${TAG} --jq '.id')
+          UPLOAD_URL=$(gh api repos/Dave-1/MyFinanceMate/releases/${RELEASE_ID} --jq '.upload_url' | sed 's/{?name,label}//')
+          curl -s -X POST "${UPLOAD_URL}?name=MyFinanceMate.${TAG#v}.apk" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Content-Type: application/vnd.android.package-archive" \
             --data-binary @app/build/outputs/apk/release/app-release.apk

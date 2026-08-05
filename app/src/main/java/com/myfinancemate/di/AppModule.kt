@@ -3,16 +3,22 @@ package com.myfinancemate.di
 import android.content.Context
 import androidx.room.Room
 import com.myfinancemate.data.local.AppDatabase
+import com.myfinancemate.data.local.dao.AccountDao
 import com.myfinancemate.data.local.dao.CategoryDao
+import com.myfinancemate.data.local.dao.FixedExpenseConfigDao
 import com.myfinancemate.data.local.dao.ReminderDao
 import com.myfinancemate.data.local.dao.SmsNotificationDao
 import com.myfinancemate.data.local.dao.SmsRuleDao
 import com.myfinancemate.data.local.dao.TransactionDao
+import com.myfinancemate.data.repository.AccountRepositoryImpl
 import com.myfinancemate.data.repository.CategoryRepositoryImpl
+import com.myfinancemate.data.repository.FixedExpenseConfigRepositoryImpl
 import com.myfinancemate.data.repository.ReminderRepositoryImpl
 import com.myfinancemate.data.repository.SmsRuleRepositoryImpl
 import com.myfinancemate.data.repository.TransactionRepositoryImpl
+import com.myfinancemate.domain.repository.AccountRepository
 import com.myfinancemate.domain.repository.CategoryRepository
+import com.myfinancemate.domain.repository.FixedExpenseConfigRepository
 import com.myfinancemate.domain.repository.ReminderRepository
 import com.myfinancemate.domain.repository.SmsRuleRepository
 import com.myfinancemate.domain.repository.TransactionRepository
@@ -34,7 +40,7 @@ object AppModule {
             context,
             AppDatabase::class.java,
             "deep_money_tracker.db"
-        ).fallbackToDestructiveMigration().build()
+        ).addMigrations(AppDatabase.MIGRATION_2_3).fallbackToDestructiveMigration().build()
     }
 
     @Provides
@@ -51,6 +57,12 @@ object AppModule {
 
     @Provides
     fun provideSmsNotificationDao(db: AppDatabase): SmsNotificationDao = db.smsNotificationDao()
+
+    @Provides
+    fun provideAccountDao(db: AppDatabase): AccountDao = db.accountDao()
+
+    @Provides
+    fun provideFixedExpenseConfigDao(db: AppDatabase): FixedExpenseConfigDao = db.fixedExpenseConfigDao()
 
     @Provides
     @Singleton
@@ -71,4 +83,14 @@ object AppModule {
     @Singleton
     fun provideSmsRuleRepository(dao: SmsRuleDao): SmsRuleRepository =
         SmsRuleRepositoryImpl(dao)
+
+    @Provides
+    @Singleton
+    fun provideAccountRepository(dao: AccountDao): AccountRepository =
+        AccountRepositoryImpl(dao)
+
+    @Provides
+    @Singleton
+    fun provideFixedExpenseConfigRepository(dao: FixedExpenseConfigDao): FixedExpenseConfigRepository =
+        FixedExpenseConfigRepositoryImpl(dao)
 }

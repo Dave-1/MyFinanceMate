@@ -25,4 +25,7 @@ interface TransactionRepository {
     fun getRecent(limit: Int): Flow<List<TransactionEntity>>
     suspend fun getAllTransactionsList(): List<TransactionEntity>
     suspend fun deleteAll()
+
+    suspend fun getByAccountMerchantCategory(accountId: Long, type: com.myfinancemate.data.local.entity.TransactionType, merchant: String, categoryId: Long?): List<com.myfinancemate.data.local.entity.TransactionEntity>
+    suspend fun getLatestSalaryByAccount(accountId: Long): com.myfinancemate.data.local.entity.TransactionEntity?
 }

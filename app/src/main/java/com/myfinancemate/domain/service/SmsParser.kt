@@ -39,7 +39,7 @@ class SmsParser @Inject constructor() {
     // Reference number pattern
     private val refPattern = Pattern.compile("(?i)(?:ref|reference|txn|transaction)\\s*(?:no|number|id|#)?[:.\\s]*([A-Za-z0-9]+)")
 
-    fun parse(smsBody: String, senderId: String): ParsedTransaction? {
+    fun parse(smsBody: String, senderId: String, date: Long): ParsedTransaction? {
         val amount = extractAmount(smsBody) ?: return null
         val type = determineType(smsBody)
         val merchant = extractMerchant(smsBody)
@@ -51,7 +51,7 @@ class SmsParser @Inject constructor() {
             description = description,
             merchant = merchant,
             senderInfo = senderId,
-            date = System.currentTimeMillis()
+            date = date
         )
     }
 

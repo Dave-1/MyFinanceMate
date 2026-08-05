@@ -3,6 +3,7 @@ package com.myfinancemate.data.local.converter
 import androidx.room.TypeConverter
 import com.myfinancemate.data.local.entity.Recurrence
 import com.myfinancemate.data.local.entity.ReminderType
+import com.myfinancemate.data.local.entity.SmsRuleType
 import com.myfinancemate.data.local.entity.TransactionType
 
 class Converters {
@@ -24,4 +25,10 @@ class Converters {
 
     @TypeConverter
     fun toRecurrence(value: String): Recurrence = Recurrence.valueOf(value)
+
+    @TypeConverter
+    fun fromSmsRuleType(value: SmsRuleType): String = value.name
+
+    @TypeConverter
+    fun toSmsRuleType(value: String): SmsRuleType = SmsRuleType.valueOf(value)
 }

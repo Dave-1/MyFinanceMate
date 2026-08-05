@@ -47,6 +47,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -83,6 +84,7 @@ fun SettingsScreen(
     onNavigateToCategories: () -> Unit,
     onNavigateToNotifications: () -> Unit,
     onNavigateToReports: () -> Unit,
+    onNavigateToAccounts: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -233,6 +235,82 @@ fun SettingsScreen(
             }
 
             // SMS Rules Section
+            item {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("Accounts", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
+                Text("Manage your bank accounts and primary selection", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
+            }
+
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onNavigateToAccounts),
+                    colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Manage accounts", style = MaterialTheme.typography.bodyLarge, color = themeColors.onBackground)
+                            Text(
+                                if (state.accountCount > 0) "${state.accountCount} account(s) configured"
+                                else "No accounts yet",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = themeColors.onSurface.copy(alpha = 0.6f)
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Open accounts",
+                            tint = themeColors.onSurface.copy(alpha = 0.6f)
+                        )
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Fixed Expense Detection", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)
+                Text("Auto-create reminders for recurring monthly expenses", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
+            }
+
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            "Minimum months: ${state.minOccurrences}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = themeColors.onBackground
+                        )
+                        Slider(
+                            value = state.minOccurrences.toFloat(),
+                            onValueChange = { viewModel.setMinOccurrences(it.toInt()) },
+                            valueRange = 2f..6f,
+                            steps = 3
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "Variance tolerance: ${state.variancePercent.toInt()}%",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = themeColors.onBackground
+                        )
+                        Slider(
+                            value = state.variancePercent.toFloat(),
+                            onValueChange = { viewModel.setVariancePercent(it.toDouble()) },
+                            valueRange = 5f..25f,
+                            steps = 7
+                        )
+                    }
+                }
+            }
+
             item {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(stringResource(AppStrings.settings_sms_rules), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = themeColors.onBackground)

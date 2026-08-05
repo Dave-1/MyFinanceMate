@@ -44,7 +44,10 @@ class SmsBackupParser @Inject constructor(
     private val categorizationEngine: CategorizationEngine,
     private val smsNotificationRepository: SmsNotificationRepository,
     private val smsNotificationClassifier: SmsNotificationClassifier,
-    private val reminderFromSmsCreator: ReminderFromSmsCreator
+    private val reminderFromSmsCreator: ReminderFromSmsCreator,
+    private val accountResolutionService: AccountResolutionService,
+    private val salaryDetector: SalaryDetector,
+    private val fixedExpenseDetector: FixedExpenseDetector
 ) {
     private val backupDir: File
         get() = File(context.getExternalFilesDir(null), "sms_backups").also { it.mkdirs() }
@@ -94,8 +97,11 @@ class SmsBackupParser @Inject constructor(
                     continue
                 }
 
-                val parsed = smsParser.parse(sms.body, sms.address)
+                val parsed = smsParser.parse(sms.body, sms.address, sms.date)
                 if (parsed != null && validateParsedTransaction(parsed)) {
+                    val account = accountResolutionService.resolveWithSuffix(sms.address, sms.body)
+                    val isSalary = parsed.type == TransactionType.INCOME &&
+                        salaryDetector.isSalary(sms.address, parsed.merchant)
                     val transaction = TransactionEntity(
                         amount = parsed.amount,
                         type = parsed.type,
@@ -104,7 +110,9 @@ class SmsBackupParser @Inject constructor(
                         senderInfo = parsed.senderInfo,
                         date = parsed.date,
                         isFromSms = true,
-                        smsBody = sms.body
+                        smsBody = sms.body,
+                        accountId = account?.id,
+                        isSalary = isSalary
                     )
                     val id = transactionRepository.insert(transaction)
                     try {
@@ -127,7 +135,12 @@ class SmsBackupParser @Inject constructor(
             }
         }
 
-        // 5. Second pass — classify non-bank SMS as notifications
+        // 5. Fixed-expense post-processing pass over all transaction groups
+        try {
+            fixedExpenseDetector.runDetection()
+        } catch (_: Exception) {}
+
+        // 6. Second pass — classify non-bank SMS as notifications
         for (sms in allSms) {
             if (sms.body in processedBodies) continue
             if (!validateSms(sms)) continue

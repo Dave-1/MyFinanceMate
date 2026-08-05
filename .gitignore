@@ -26,5 +26,10 @@ tmp_build/
 *.hprof
 nul
 
+# SMS backups — contain real user messages. NEVER commit/push (contains phone numbers, bank alerts, personal data)
+sms_backup_*.xml
+**/sms_backup_*.xml
+*.xml.bak
+
 # stray dirs
 %USERPROFILE%/

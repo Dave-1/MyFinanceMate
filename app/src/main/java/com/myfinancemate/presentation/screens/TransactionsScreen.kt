@@ -65,6 +65,8 @@ import com.myfinancemate.presentation.components.DateAccordionList
 import com.myfinancemate.presentation.theme.LocalThemeColors
 import com.myfinancemate.presentation.viewmodel.TransactionViewModel
 
+private const val ACCOUNT_PREFIX = "Account: "
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen(
@@ -77,6 +79,7 @@ fun TransactionsScreen(
     val transactions by viewModel.transactions.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val bankNames by viewModel.bankNames.collectAsStateWithLifecycle()
+    val accounts by viewModel.accounts.collectAsStateWithLifecycle()
     val themeColors = LocalThemeColors.current
     var selectedFilter by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -90,12 +93,17 @@ fun TransactionsScreen(
         }.timeInMillis
     }
 
-    val filteredTransactions = when (selectedFilter) {
-        "Income" -> transactions.filter { it.type == TransactionType.INCOME }
-        "Expense" -> transactions.filter { it.type == TransactionType.EXPENSE }
-        "SMS" -> transactions.filter { it.isFromSms }
-        "Past SMS" -> transactions.filter { it.isFromSms && it.date < currentMonthStart }
-        null -> transactions
+    val filteredTransactions = when {
+        selectedFilter == null -> transactions
+        selectedFilter == "Income" -> transactions.filter { it.type == TransactionType.INCOME }
+        selectedFilter == "Expense" -> transactions.filter { it.type == TransactionType.EXPENSE }
+        selectedFilter == "SMS" -> transactions.filter { it.isFromSms }
+        selectedFilter == "Past SMS" -> transactions.filter { it.isFromSms && it.date < currentMonthStart }
+        selectedFilter!!.startsWith(ACCOUNT_PREFIX) -> {
+            val accountName = selectedFilter!!.removePrefix(ACCOUNT_PREFIX)
+            val account = accounts.firstOrNull { it.name == accountName }
+            transactions.filter { it.accountId != null && it.accountId == account?.id }
+        }
         else -> {
             // Bank name filter
             transactions.filter { it.senderInfo.contains(selectedFilter ?: "", ignoreCase = true) }
@@ -204,6 +212,15 @@ fun TransactionsScreen(
                         label = bankName,
                         selected = selectedFilter == bankName,
                         onClick = { selectedFilter = if (selectedFilter == bankName) null else bankName },
+                        themeColors = themeColors
+                    )
+                }
+                items(accounts) { account ->
+                    val chipKey = ACCOUNT_PREFIX + account.name
+                    FilterChipCustom(
+                        label = if (account.isPrimary) "${account.name} (Primary)" else account.name,
+                        selected = selectedFilter == chipKey,
+                        onClick = { selectedFilter = if (selectedFilter == chipKey) null else chipKey },
                         themeColors = themeColors
                     )
                 }

@@ -8,8 +8,11 @@ import com.myfinancemate.data.local.entity.TransactionEntity
 import com.myfinancemate.data.local.entity.TransactionType
 import com.myfinancemate.domain.repository.SmsRuleRepository
 import com.myfinancemate.domain.repository.TransactionRepository
+import com.myfinancemate.domain.service.AccountResolutionService
 import com.myfinancemate.domain.service.CategorizationEngine
+import com.myfinancemate.domain.service.FixedExpenseDetector
 import com.myfinancemate.domain.service.ReminderFromSmsCreator
+import com.myfinancemate.domain.service.SalaryDetector
 import com.myfinancemate.domain.service.SmsParser
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +28,9 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
     @Inject lateinit var transactionRepository: TransactionRepository
     @Inject lateinit var smsRuleRepository: SmsRuleRepository
     @Inject lateinit var reminderFromSmsCreator: ReminderFromSmsCreator
+    @Inject lateinit var accountResolutionService: AccountResolutionService
+    @Inject lateinit var salaryDetector: SalaryDetector
+    @Inject lateinit var fixedExpenseDetector: FixedExpenseDetector
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -51,10 +57,13 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
                     if (!isRegistered) continue
 
                     // Try to parse as transaction
-                    val parsed = smsParser.parse(body, sender)
+                    val parsed = smsParser.parse(body, sender, smsMessage.timestampMillis)
 
                     if (parsed != null) {
-                        val transaction = TransactionEntity(
+                        // Resolve/auto-create account for this sender
+                        val account = accountResolutionService.resolveWithSuffix(sender, body)
+
+                        val baseTransaction = TransactionEntity(
                             amount = parsed.amount,
                             type = parsed.type,
                             description = parsed.description,
@@ -62,8 +71,14 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
                             senderInfo = parsed.senderInfo,
                             date = parsed.date,
                             isFromSms = true,
-                            smsBody = body
+                            smsBody = body,
+                            accountId = account?.id
                         )
+
+                        // Salary detection: only INCOME can be salary
+                        val isSalary = parsed.type == TransactionType.INCOME &&
+                            salaryDetector.isSalary(sender, parsed.merchant)
+                        val transaction = baseTransaction.copy(isSalary = isSalary)
 
                         val id = transactionRepository.insert(transaction)
 
@@ -71,6 +86,11 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
                         val categoryId = categorizationEngine.categorize(transaction)
                         if (categoryId != null) {
                             transactionRepository.update(transaction.copy(id = id, categoryId = categoryId))
+                        }
+
+                        // Fixed-expense auto-detection on new EXPENSE
+                        if (parsed.type == TransactionType.EXPENSE) {
+                            fixedExpenseDetector.runDetectionForTransaction(transaction.copy(id = id))
                         }
                     }
 

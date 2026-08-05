@@ -1,10 +1,12 @@
 package com.myfinancemate.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myfinancemate.data.local.entity.CategoryEntity
 import com.myfinancemate.data.local.entity.TransactionEntity
 import com.myfinancemate.data.local.entity.TransactionType
+import com.myfinancemate.domain.repository.AccountRepository
 import com.myfinancemate.domain.repository.CategoryRepository
 import com.myfinancemate.domain.repository.TransactionRepository
 import com.myfinancemate.domain.service.BiometricManager
@@ -26,9 +28,11 @@ data class DashboardState(
     val balance: Double = 0.0,
     val recentTransactions: List<TransactionEntity> = emptyList(),
     val categoryTotals: List<CategoryTotalUi> = emptyList(),
+    val primaryAccountName: String? = null,
     val isLoading: Boolean = true,
     val showBackupReminder: Boolean = false,
-    val autoBackupInProgress: Boolean = false
+    val autoBackupInProgress: Boolean = false,
+    val backupError: String? = null
 )
 
 data class CategoryTotalUi(
@@ -41,6 +45,7 @@ data class CategoryTotalUi(
 class DashboardViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
+    private val accountRepository: AccountRepository,
     private val smsBackupParser: SmsBackupParser,
     val pinAuthManager: PinAuthManager,
     val biometricManager: BiometricManager
@@ -51,6 +56,7 @@ class DashboardViewModel @Inject constructor(
         pinAuthManager.isWelcomeCompleted() && !pinAuthManager.isBackupReminderDismissed() && smsBackupParser.isBackupNeeded()
     )
     private val _autoBackupInProgress = MutableStateFlow(false)
+    private val _backupError = MutableStateFlow<String?>(null)
 
     fun dismissBackupReminder() {
         pinAuthManager.dismissBackupReminder()
@@ -60,10 +66,14 @@ class DashboardViewModel @Inject constructor(
     fun backupSms() {
         viewModelScope.launch {
             _autoBackupInProgress.value = true
+            _backupError.value = null
             try {
                 smsBackupParser.backupAndParse()
                 _showBackupReminder.value = false
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "SMS backup failed", e)
+                _backupError.value = e.message ?: "Backup failed"
+            }
             _autoBackupInProgress.value = false
         }
     }
@@ -96,6 +106,7 @@ class DashboardViewModel @Inject constructor(
         val totalIncome = income ?: 0.0
         val totalExpense = expense ?: 0.0
         val categories = categoryRepository.getAllCategoriesList()
+        val primaryAccount = accountRepository.getPrimary()
         val total = categoryTotals.sumOf { it.total }
 
         DashboardState(
@@ -110,12 +121,15 @@ class DashboardViewModel @Inject constructor(
                     percentage = if (total > 0) (ct.total / total * 100).toFloat() else 0f
                 )
             },
+            primaryAccountName = primaryAccount?.name,
             isLoading = false
         )
     }.combine(_showBackupReminder) { dashboard, showReminder ->
         dashboard.copy(showBackupReminder = showReminder)
     }.combine(_autoBackupInProgress) { dashboard, autoBackup ->
         dashboard.copy(autoBackupInProgress = autoBackup)
+    }.combine(_backupError) { dashboard, error ->
+        dashboard.copy(backupError = error)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

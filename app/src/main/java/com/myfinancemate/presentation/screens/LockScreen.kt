@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.myfinancemate.R
 import com.myfinancemate.presentation.theme.AppStrings
+import com.myfinancemate.presentation.theme.LocalThemeColors
 import androidx.fragment.app.FragmentActivity
 import com.myfinancemate.domain.service.BiometricManager
 import com.myfinancemate.domain.service.PinAuthManager
@@ -48,6 +49,7 @@ fun LockScreen(
     onAuthenticated: () -> Unit,
     resumeKey: Int = 0
 ) {
+    val themeColors = LocalThemeColors.current
     val context = LocalContext.current
     val activity = context as FragmentActivity
     var showVerifyPin by remember { mutableStateOf(false) }
@@ -72,7 +74,7 @@ fun LockScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(themeColors.background),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -83,27 +85,27 @@ fun LockScreen(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .background(themeColors.primary),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Lock,
                     contentDescription = "Lock",
                     modifier = Modifier.size(40.dp),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    tint = themeColors.onPrimary
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = stringResource(AppStrings.pin_locked),
                 style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onBackground
+                color = themeColors.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(AppStrings.pin_locked_desc),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                color = themeColors.onBackground.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 32.dp)
             )

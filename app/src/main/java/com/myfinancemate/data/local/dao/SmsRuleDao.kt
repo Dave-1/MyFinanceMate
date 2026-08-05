@@ -44,4 +44,7 @@ interface SmsRuleDao {
 
     @Query("DELETE FROM sms_rules")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM sms_rules WHERE ruleType = 'SALARY' AND isActive = 1")
+    suspend fun getSalaryRules(): List<SmsRuleEntity>
 }

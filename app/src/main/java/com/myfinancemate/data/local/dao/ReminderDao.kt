@@ -41,4 +41,10 @@ interface ReminderDao {
 
     @Query("DELETE FROM reminders")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM reminders WHERE sourceAccountId = :accountId ORDER BY nextTriggerTime ASC")
+    fun getBySourceAccount(accountId: Long): Flow<List<ReminderEntity>>
+
+    @Query("SELECT * FROM reminders WHERE title LIKE '%' || :keyword || '%' AND sourceAccountId = :accountId LIMIT 1")
+    suspend fun findByKeywordAndAccount(keyword: String, accountId: Long): ReminderEntity?
 }
