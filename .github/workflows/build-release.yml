@@ -47,7 +47,8 @@ jobs:
         run: |
           TAG="${{ github.ref_name }}"
           RELEASE_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/tags/${TAG} --jq '.id')
-          ASSET_ID=$(gh api repos/Dave-1/MyFinanceMate/releases/${RELEASE_ID}/assets --jq --arg name "MyFinanceMate.${TAG#v}.apk" '.[] | select(.name==$name) | .id')
+          ASSET_NAME="MyFinanceMate.${TAG#v}.apk"
+          ASSET_ID=$(gh api "repos/Dave-1/MyFinanceMate/releases/${RELEASE_ID}/assets" --jq ".[] | select(.name == \"${ASSET_NAME}\") | .id")
           if [ -n "$ASSET_ID" ]; then
             gh api -X DELETE repos/Dave-1/MyFinanceMate/releases/assets/$ASSET_ID
           fi
