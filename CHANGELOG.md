@@ -15,7 +15,8 @@ All notable changes to MyFinanceMate are documented here.
 - **JVM unit tests** for `AccountResolutionService`, `SalaryDetector`, `FixedExpenseDetector`.
 
 ### Fixed
-- **Upgrade crash**: v1.1.0 → v1.2.0 upgrade no longer crashes with "Migration didn't properly handle: transactions(TransactionEntity)". Removed explicit Room migration `MIGRATION_2_3`; uses `fallbackToDestructiveMigration()` (tradeoff: DB recreated on upgrade, user data lost).
+- **Upgrade crash**: v1.1.0 → v1.2.0 upgrade no longer crashes. Room migration `MIGRATION_2_3` adds accounts, fixed_expense_config, salary/account columns, and indices while preserving existing user data.
+- **About version**: Settings > About now shows the dynamic app version instead of a hardcoded string.
 - **SMS parser date**: parsed transactions now use the actual SMS timestamp instead of `System.currentTimeMillis()`.
 - **EditTransaction decimals**: amounts like `2435.38` are no longer truncated to `2435`.
 - **Reports pie-chart donut**: center hole now follows the active theme background instead of hardcoded white.

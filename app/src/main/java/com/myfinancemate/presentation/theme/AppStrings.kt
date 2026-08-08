@@ -150,7 +150,6 @@ object AppStrings {
     val settings_change_pin = R.string.settings_change_pin
     val settings_remove_pin = R.string.settings_remove_pin
     val settings_about = R.string.settings_about
-    val settings_version = R.string.settings_version
     val settings_open_source = R.string.settings_open_source
 
     // Welcome / Setup

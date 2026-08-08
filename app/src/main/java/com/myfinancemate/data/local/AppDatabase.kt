@@ -47,17 +47,23 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("CREATE TABLE IF NOT EXISTS accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, bankName TEXT NOT NULL DEFAULT '', senderId TEXT NOT NULL, accountSuffix TEXT NOT NULL DEFAULT '', isPrimary INTEGER NOT NULL DEFAULT 0, createdAt INTEGER NOT NULL)")
+                // Create accounts table for multi-account support
+                db.execSQL("CREATE TABLE IF NOT EXISTS accounts (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, bankName TEXT NOT NULL, senderId TEXT NOT NULL, accountSuffix TEXT NOT NULL, isPrimary INTEGER NOT NULL, createdAt INTEGER NOT NULL)")
                 db.execSQL("CREATE INDEX IF NOT EXISTS index_accounts_senderId ON accounts(senderId)")
                 db.execSQL("CREATE INDEX IF NOT EXISTS index_accounts_isPrimary ON accounts(isPrimary)")
+
+                // Add accountId and isSalary columns to transactions for multi-account support
                 db.execSQL("ALTER TABLE transactions ADD COLUMN accountId INTEGER DEFAULT NULL")
                 db.execSQL("ALTER TABLE transactions ADD COLUMN isSalary INTEGER NOT NULL DEFAULT 0")
                 db.execSQL("CREATE INDEX IF NOT EXISTS index_transactions_accountId ON transactions(accountId)")
-                db.execSQL("CREATE TABLE IF NOT EXISTS fixed_expense_config (id INTEGER PRIMARY KEY, minOccurrences INTEGER NOT NULL DEFAULT 3, variancePercent REAL NOT NULL DEFAULT 10.0)")
+
+                // Create fixed_expense_config table for recurring expense detection
+                db.execSQL("CREATE TABLE IF NOT EXISTS fixed_expense_config (id INTEGER NOT NULL PRIMARY KEY, minOccurrences INTEGER NOT NULL, variancePercent REAL NOT NULL)")
+
+                // Add sourceAccountId to reminders for account linking
                 db.execSQL("ALTER TABLE reminders ADD COLUMN sourceAccountId INTEGER DEFAULT NULL")
-                // SmsRuleEntity gained a ruleType column. Not in the prompt's SQL block,
-                // but required so existing sms_rules rows match the new entity.
-                // Defaults to TRANSACTION so old rules keep working.
+
+                // Add ruleType to sms_rules (defaults to TRANSACTION so old rules keep working)
                 db.execSQL("ALTER TABLE sms_rules ADD COLUMN ruleType TEXT NOT NULL DEFAULT 'TRANSACTION'")
             }
         }

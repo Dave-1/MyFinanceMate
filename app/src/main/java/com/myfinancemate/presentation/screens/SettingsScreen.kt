@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import com.myfinancemate.BuildConfig
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -515,7 +516,7 @@ fun SettingsScreen(
                 Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = themeColors.cardBackground)) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(stringResource(AppStrings.app_name), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = themeColors.onSurface)
-                        Text(stringResource(AppStrings.settings_version), style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
+                        Text("Version ${BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
                         Text(stringResource(AppStrings.settings_open_source), style = MaterialTheme.typography.bodySmall, color = themeColors.onSurface.copy(alpha = 0.7f))
                     }
                 }
