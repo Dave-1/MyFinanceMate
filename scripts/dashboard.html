@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monthly Expense Report</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+.header{background:#fff;border-bottom:1px solid #e2e8f0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header h1{font-size:18px;font-weight:700;color:#0f172a}
+.file-area{display:flex;align-items:center;gap:10px}
+.file-area label{background:#6366f1;color:#fff;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500}
+.file-area label:hover{background:#4f46e5}
+.file-area input{display:none}
+.file-area span{color:#64748b;font-size:12px}
+.status{font-size:12px;color:#64748b}
+
+/* Month nav */
+.month-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:57px;z-index:50}
+.month-nav{display:flex;align-items:center;gap:12px}
+.month-nav button{background:#f1f5f9;border:1px solid #e2e8f0;width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#475569}
+.month-nav button:hover{background:#6366f1;color:#fff;border-color:#6366f1}
+.month-nav button:disabled{opacity:0.3;cursor:default}
+.month-nav button:disabled:hover{background:#f1f5f9;color:#475569;border-color:#e2e8f0}
+.month-nav .cur{font-size:16px;font-weight:600;min-width:130px;text-align:center}
+.month-quick{display:flex;gap:6px;overflow-x:auto}
+.month-quick a{padding:4px 12px;border-radius:4px;font-size:12px;color:#64748b;cursor:pointer;white-space:nowrap;text-decoration:none}
+.month-quick a:hover{background:#f1f5f9;color:#1e293b}
+.month-quick a.act{background:#6366f1;color:#fff}
+
+/* Summary cards */
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;padding:20px 24px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px}
+.card .lbl{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.card .val{font-size:22px;font-weight:700}
+.card .sub{font-size:11px;color:#94a3b8;margin-top:2px}
+.green{color:#16a34a}
+.red{color:#dc2626}
+.blue{color:#6366f1}
+.orange{color:#ea580c}
+
+/* Tabs under month */
+.sub-tabs{display:flex;gap:0;padding:0 24px;background:#fff;border-bottom:1px solid #e2e8f0;position:sticky;top:109px;z-index:49}
+.sub-tab{padding:10px 20px;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;font-size:13px;font-weight:500;transition:.15s}
+.sub-tab:hover{color:#1e293b}
+.sub-tab.act{color:#6366f1;border-bottom-color:#6366f1}
+
+.tc{display:none;padding:20px 24px}
+.tc.act{display:block}
+
+/* Daily accordion */
+.daily-group{margin-bottom:8px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden}
+.daily-h{padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:.1s}
+.daily-h:hover{background:#f8fafc}
+.daily-h .d{font-weight:600;font-size:14px}
+.daily-h .s{font-size:12px;color:#94a3b8}
+.daily-h .a{font-size:13px;font-weight:600}
+.daily-body{display:none;border-top:1px solid #e2e8f0}
+.daily-group.open .daily-body{display:block}
+.daily-item{padding:8px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f5f9;font-size:13px}
+.daily-item:last-child{border-bottom:0}
+.daily-item:hover{background:#f8fafc}
+.daily-item .di-l{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.daily-item .di-r{text-align:right;flex-shrink:0}
+.daily-item .cat-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:500;background:#f1f5f9;color:#64748b}
+.daily-item .merch{color:#64748b;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.daily-item .amt{font-weight:600;font-size:13px}
+.daily-item .sms-preview{font-size:11px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px}
+
+/* Charts */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.cbox{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px}
+.cbox h3{font-size:13px;font-weight:600;color:#64748b;margin-bottom:12px}
+.cbox h3 span{font-weight:400;color:#94a3b8}
+.cbox svg{display:block;overflow:visible}
+.tr-chart{display:flex;align-items:flex-end;gap:3px;height:120px;padding-bottom:20px;position:relative}
+.tr-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+.tr-bar .b{width:100%;border-radius:3px 3px 0 0;min-height:2px;transition:height .5s}
+.tr-bar .lbl{font-size:9px;color:#94a3b8;white-space:nowrap;position:absolute;bottom:-16px}
+.tr-bar .tip{font-size:9px;color:#94a3b8;opacity:0;transition:.2s}
+.tr-bar:hover .tip{opacity:1}
+
+.cat-bar{margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.cat-bar .cat-lbl{width:90px;font-size:12px;color:#475569;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.cat-bar .cat-fill{flex:1;height:18px;background:#f1f5f9;border-radius:4px;overflow:hidden;position:relative}
+.cat-bar .cat-fill .f{height:100%;border-radius:4px;min-width:2px}
+.cat-bar .cat-val{font-size:11px;color:#64748b;min-width:70px;text-align:right}
+
+.comparison{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.comp-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:14px;text-align:center}
+.comp-card .c-lbl{font-size:11px;color:#94a3b8;margin-bottom:4px}
+.comp-card .c-val{font-size:20px;font-weight:700}
+.comp-card .c-diff{font-size:12px;margin-top:2px}
+
+.pag{display:flex;align-items:center;gap:8px;margin:12px 0;justify-content:center}
+.pag button{background:#fff;border:1px solid #e2e8f0;color:#475569;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:12px}
+.pag button:hover{background:#6366f1;color:#fff;border-color:#6366f1}
+.pag button:disabled{opacity:.4;cursor:default}
+.pag button:disabled:hover{background:#fff;color:#475569;border-color:#e2e8f0}
+.pag span{color:#94a3b8;font-size:12px}
+
+.tb-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #f1f5f9}
+th{background:#f8fafc;color:#64748b;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+tr:hover td{background:#f8fafc}
+.empty{text-align:center;padding:30px;color:#94a3b8}
+
+.filter-bar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.filter-bar input{flex:1;min-width:180px;padding:7px 12px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;outline:0;background:#fff}
+.filter-bar input:focus{border-color:#6366f1}
+.filter-bar span{font-size:12px;color:#94a3b8}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Monthly Expense Report</h1>
+  <div class="file-area">
+    <label>📁 Choose XML <input type="file" accept=".xml" id="fileInput"></label>
+    <span id="fname">sms_backup_20260717_111345.xml</span>
+    <span class="status" id="status"></span>
+  </div>
+</div>
+
+<div class="month-bar" id="monthBar"></div>
+<div class="summary" id="summary"></div>
+<div class="sub-tabs" id="subTabs">
+  <div class="sub-tab act" data-st="daily">Daily</div>
+  <div class="sub-tab" data-st="overview">Overview</div>
+  <div class="sub-tab" data-st="income">Income</div>
+  <div class="sub-tab" data-st="duplicates">Duplicates</div>
+  <div class="sub-tab" data-st="all">All Months</div>
+</div>
+
+<div id="tc-daily" class="tc act"></div>
+<div id="tc-overview" class="tc"></div>
+<div id="tc-income" class="tc"></div>
+<div id="tc-duplicates" class="tc"></div>
+<div id="tc-all" class="tc"></div>
+
+<script>
+// ── Regex (SmsParser.kt) ──
+const DR1=/(?:debited|debit|spent|paid|withdrawn|purchase|sent|transferred).*?(?:rs\.?|inr|\u20b9)\s*([\d,]+\.?\d*)/i;
+const DR2=/(?:rs\.?|inr|\u20b9)\s*([\d,]+\.?\d*).*?(?:debited|debit|spent|paid|withdrawn|purchase)/i;
+const CR1=/(?:credited|credit|received|deposited|refund).*?(?:rs\.?|inr|\u20b9)\s*([\d,]+\.?\d*)/i;
+const CR2=/(?:rs\.?|inr|\u20b9)\s*([\d,]+\.?\d*).*?(?:credited|credit|received|deposited|refund)/i;
+const BA=/(?:rs\.?|inr|\u20b9)\s*([\d,]+\.?\d*)/i;
+const MR=[/(?:at|to|from|for|via)\s+([A-Za-z0-9\s&.\'-]+?)(?:\s+(?:on|ref|txn|via|card|a\/c|account|upi|neft|imps|rtgs))/i,/(?:at|to|from)\s+([A-Za-z0-9\s&.\'-]+?)(?:\s+on\s+)/i,/(?:UPI|NEFT|IMPS|RTGS).*?(?:to|from)\s+([A-Za-z0-9\s&.\'-]+?)(?:\s|\.|$)/i];
+const REF=/(?:ref|reference|txn|transaction)\s*(?:no|number|id|#)?[:.\s]*([A-Za-z0-9]+)/i;
+const CAT={Salary:["salary","wages","payroll","stipend","honorarium"],Food:["food","restaurant","cafe","zomato","swiggy","dominos","pizza","burger","meal","lunch","dinner","breakfast","grocery","groceries","supermarket","bigbasket","dmart"],Shopping:["shopping","amazon","flipkart","myntra","ajio","mall","store","mart","clothing","electronics","lifestyle","westside"],Transport:["uber","ola","rapido","metro","bus","train","flight","petrol","diesel","fuel","parking","toll","irctc","makemytrip","redbus","transport"],Bills:["bill","electricity","water","gas","internet","broadband","mobile","recharge","postpaid","prepaid","wifi","dth","airtel","jio","bsnl","vodafone","tata sky","msedcl","mahadiscom"],Entertainment:["netflix","prime","hotstar","spotify","youtube","bookmyshow","pvr","inox","movie","entertainment"],Health:["hospital","doctor","medicine","pharmacy","medical","insurance","apollo","pharmeasy","netmeds","1mg","health"],Transfer:["neft","imps","rtgs","upi","paytm","phonepe","gpay","google pay","bhim","transfer"],Investment:["mutual fund","sip","stocks","shares","trading","zerodha","groww","upstox","angel","fd","fixed deposit","rd","ppf","nps","lic","investment"]};
+const BNK=["AX-","VK-","VM-","JM-","JD-","JX-","JK-","AD-","BP-","CP-","VD-","BZ-","VA-","BH-","AZ-","TM-"];
+const MON={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+const MNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+let S=[],T=[],R=[],M=null,C=0;
+const PS=50;
+
+function q(s){return document.querySelector(s)}
+function qi(i){return document.getElementById(i)}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function fmt(n){return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n)}
+function f2(n){return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(n)}
+function dts(ts){const d=new Date(ts/1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function dtd(ts){const d=new Date(ts/1);return String(d.getDate()).padStart(2,'0')+' '+MNames[d.getMonth()]+' '+d.getFullYear()}
+function yms(ts){const d=new Date(ts/1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function ym(ts){const d=new Date(ts/1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+
+function getAmt(b){
+  let m;if(m=DR1.exec(b))return[+m[1].replace(/,/g,''),'EXPENSE'];
+  if(m=DR2.exec(b))return[+m[1].replace(/,/g,''),'EXPENSE'];
+  if(m=CR1.exec(b))return[+m[1].replace(/,/g,''),'INCOME'];
+  if(m=CR2.exec(b))return[+m[1].replace(/,/g,''),'INCOME'];
+  if(m=BA.exec(b)){const a=+m[1].replace(/,/g,'');if(a>0){if(DR1.test(b)||DR2.test(b)||/(?:upi|neft|imps|rtgs|sent|transferred|paid)/i.test(b))return[a,'EXPENSE'];if(CR1.test(b)||CR2.test(b)||/(?:refund|salary|credited)/i.test(b))return[a,'INCOME'];return[a,null]}}
+  return null}
+function getMer(b){for(const r of MR){const m=r.exec(b);if(m)return m[1].trim()}return''}
+function getCat(b,m){const t=(b+' '+m).toLowerCase();for(const[c,kws]of Object.entries(CAT))for(const kw of kws)if(t.includes(kw))return c;return'Other'}
+function isBank(s){return BNK.some(p=>s.startsWith(p))||/[bB]ank|icici|sbi|hdfc|axis|kotak|mahabank/i.test(s)}
+
+function isPromotional(b,s){
+  const l=b.toLowerCase();
+  // SmsNotificationClassifier.kt promotion keywords
+  const promo=["offer","cashback","discount","coupon","sale","win","congratulations","lucky","reward","bonus","flat rs","off on","get up to","limited time","hurry","shop now","exclusive deal","special offer","save rs","free","trial","subscribe","subscription offer"];
+  if(promo.some(k=>l.includes(k))&&!l.includes('debited')&&!l.includes('credited')&&!l.includes('salary'))return true;
+  // Stock broker balance reports (not transactions)
+  if(l.includes('reported your fund bal')||l.includes('securities bal')||l.includes('at eod'))return true;
+  // Loan offers / sanctioned messages
+  if((l.includes('loan')||l.includes('sanctioned'))&&(l.includes('congratulations')||l.includes('offering')||l.includes('upto')||l.includes('up to')))return true;
+  // TRAI / RBI / regulatory
+  if(s.startsWith('AD-TRAIND')||s.startsWith('AD-RBISAY')||s.startsWith('VK-RBISAY')||s.startsWith('AD-ARWGOV'))return true;
+  // Investor e-voting
+  if(l.includes('e-voting')||l.includes('evoting'))return true;
+  // OTP / verification delivery messages
+  if(l.includes('otp')||l.includes('one time password')||l.includes('verification code'))return true;
+  // Appointment / booking confirmations
+  if(l.includes('appointment')||l.includes('booking confirmed')||l.includes('scheduled visit'))return true;
+  return false;
+}
+
+function parseXML(text){
+  const doc=new DOMParser().parseFromString(text,'text/xml');
+  const els=doc.querySelectorAll('sms');S=[];T=[];R=[];let promoSkipped=0;
+  for(const el of els){
+    const s=el.getAttribute('address')||'',b=el.getAttribute('body')||'',ts=+el.getAttribute('date')||0;
+    S.push({sender:s,body:b.slice(0,200),date:ts,dateStr:dts(ts)});
+    if(isPromotional(b,s)){promoSkipped++;continue}
+    const r=getAmt(b);if(r){const[amt,ty]=r,mer=getMer(b);T.push({amount:amt,type:ty||'UNKNOWN',merchant:mer,description:mer||b.slice(0,100),sender:s,date:ts,dateStr:dts(ts),dateStrLong:dtd(ts),smsBody:b,category:getCat(b,mer),isBank:isBank(s),confidence:ty?'high':'low',monthKey:yms(ts)})}
+    // Reminder check
+    const l=b.toLowerCase();
+    if(!(l.includes('otp')||l.includes('one time password'))){
+      const rk=["due date","payment due","due on","due by","expiry","expire","expiring","expires","will expire","renewal","renew","emi","insurance due","overdue","subscription"];
+      const kw=rk.find(k=>l.includes(k));
+      if(kw){
+        const mk=["emi","monthly"];
+        let t;if(l.includes('emi'))t='EMI Due - '+s;else if(l.includes('renew'))t='Renewal Due - '+s;else if(l.includes('expir'))t='Expiry Alert - '+s;else if(l.includes('subscription'))t='Subscription Due - '+s;else t='Payment Due - '+s;
+        const rc=mk.some(k=>l.includes(k))?'MONTHLY':'NONE';let am=null;const amt=BA.exec(b);if(amt)am=+amt[1].replace(/,/g,'');
+        const rd=/(?:due\s+(?:on|by|date)\s*[:.]?\s*|expires?\s+on\s+|expiry\s*[:.]?\s*)(\d{1,2})(?:st|nd|rd|th)?\s*[-/]\s*([a-zA-Z]{3,9}|\d{1,2})\s*[-/]\s*(\d{4})/i.exec(b);
+        let tr=null;if(rd){const d=+rd[1],ms=rd[2],y=+rd[3];const mo=ms.length<=2?+ms:MON[ms.toLowerCase().slice(0,3)];if(mo)tr=new Date(y,mo-1,d).getTime()}
+        if(!tr)tr=ts+3*864e5;
+        R.push({title:t,amount:am,recurrence:rc,triggerTime:tr,triggerDate:dts(tr),matchedKeyword:kw,sender:s,smsDate:ts,smsDateStr:dts(ts),smsBody:b,monthKey:yms(ts)})}}}
+  // Dedup
+  const seen={};T.forEach(t=>{const k=t.sender+'|'+ym(t.date)+'|'+t.amount.toFixed(2);if(!seen[k])seen[k]=[];seen[k].push(t)})
+  T.forEach(t=>{const k=t.sender+'|'+ym(t.date)+'|'+t.amount.toFixed(2);t.isDuplicate=seen[k].length>1})
+  T.sort((a,b)=>b.date-a.date)
+  buildMonths();return promoSkipped}
+
+function buildMonths(){
+  const mm={};T.forEach(t=>{const mk=ym(t.date);if(!mm[mk])mm[mk]={i:0,e:0,ic:0,ec:0,n:0};if(t.type==='INCOME'){mm[mk].i+=t.amount;mm[mk].ic++}else if(t.type==='EXPENSE'){mm[mk].e+=t.amount;mm[mk].ec++}mm[mk].n++})
+  M=Object.entries(mm).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>({month:k,income:v.i,expense:v.e,countIncome:v.ic,countExpense:v.ec,count:v.n}))
+  if(!C||!M.some(m=>m.month===C))C=M.length?M[M.length-1].month:null
+  renderAll()}
+
+function renderAll(){renderMonthBar();renderSummary();renderDaily();renderOverview();renderIncome();renderDups();renderAllMonths()}
+
+function renderMonthBar(){
+  const months=M.map(m=>m.month);
+  qi('monthBar').innerHTML=`
+    <div class="month-nav">
+      <button${!C||months.indexOf(C)<=0?' disabled':''} onclick="navMonth(-1)">◀</button>
+      <span class="cur">${C?MNames[+C.split('-')[1]-1]+' '+C.split('-')[0]:'Loading...'}</span>
+      <button${!C||months.indexOf(C)>=months.length-1?' disabled':''} onclick="navMonth(1)">▶</button>
+    </div>
+    <div class="month-quick">${months.map(m=>`<a class="${m===C?'act':''}" onclick="goMonth('${m}')">${MNames[+m.split('-')[1]-1]}${m.split('-')[0].slice(2)}</a>`).join('')}</div>`
+}
+
+function navMonth(d){const ms=M.map(m=>m.month),i=ms.indexOf(C);if(i+d>=0&&i+d<ms.length){C=ms[i+d];renderAll()}}
+function goMonth(m){C=m;renderAll()}
+
+function renderSummary(){
+  const md=C?M.find(m=>m.month===C):null,mi=T.filter(t=>t.monthKey===C&&t.type==='INCOME'&&!t.isDuplicate),me=T.filter(t=>t.monthKey===C&&t.type==='EXPENSE'&&!t.isDuplicate),mr=R.filter(r=>r.monthKey===C);
+  const ti=mi.reduce((s,t)=>s+t.amount,0),te=me.reduce((s,t)=>s+t.amount,0),tr=mr.reduce((s,r)=>s+(r.amount||0),0);
+  qi('summary').innerHTML=`
+    <div class="card"><div class="lbl">Income</div><div class="val green">${fmt(ti)}</div><div class="sub">${mi.length} txns</div></div>
+    <div class="card"><div class="lbl">Expenses</div><div class="val red">${fmt(te)}</div><div class="sub">${me.length} txns</div></div>
+    <div class="card"><div class="lbl">Net</div><div class="val ${ti>=te?'green':'red'}">${fmt(ti-te)}</div></div>
+    <div class="card"><div class="lbl">Avg/Day</div><div class="val">${fmt(me.length?te/me.length:0)}</div><div class="sub">per txn</div></div>
+    <div class="card"><div class="lbl">Reminders</div><div class="val orange">${mr.length}</div><div class="sub">${fmt(tr)}</div></div>`
+}
+
+// ── Daily tab (accordion by date) ──
+function renderDaily(){
+  if(!C){qi('tc-daily').innerHTML='<div class="empty">No data</div>';return}
+  const items=T.filter(t=>t.monthKey===C&&!t.isDuplicate);
+  const grp={};items.forEach(t=>{const k=dtd(t.date);if(!grp[k])grp[k]={date:k,ts:t.date,items:[],ti:0,te:0};grp[k].items.push(t);if(t.type==='INCOME')grp[k].ti+=t.amount;else if(t.type==='EXPENSE')grp[k].te+=t.amount});
+  const days=Object.values(grp).sort((a,b)=>b.ts-a.ts);
+  qi('tc-daily').innerHTML=`<div class="filter-bar"><input placeholder="Search transactions..." oninput="fDaily(this.value)"><span>${items.length} txns | ${days.length} days</span></div><div id="daily-list">${days.map(d=>`<div class="daily-group">
+    <div class="daily-h" onclick="this.parentElement.classList.toggle('open')">
+      <div><div class="d">${d.date}</div><div class="s">${d.items.length} transaction${d.items.length>1?'s':''}</div></div>
+      <div><span class="green">+${fmt(d.ti)}</span> <span class="red">-${fmt(d.te)}</span></div>
+    </div>
+    <div class="daily-body">${d.items.map(t=>`<div class="daily-item">
+      <div class="di-l"><span class="cat-badge">${esc(t.category)}</span><span class="merch" title="${esc(t.merchant||'')}">${esc(t.merchant||'-')}</span><span class="sms-preview" title="${esc(t.smsBody)}">${esc(t.smsBody)}</span></div>
+      <div class="di-r"><span class="amt ${t.type==='INCOME'?'green':'red'}">${t.type==='INCOME'?'+':'-'}${f2(t.amount)}</span><br><span style="font-size:10px;color:#94a3b8">${esc(t.sender)}</span></div>
+    </div>`).join('')}</div></div>`).join('')}`;
+}
+
+function fDaily(q){
+  const items=T.filter(t=>t.monthKey===C&&!t.isDuplicate&&(t.smsBody+' '+t.sender+' '+t.merchant).toLowerCase().includes(q.toLowerCase()));
+  const grp={};items.forEach(t=>{const k=dtd(t.date);if(!grp[k])grp[k]={date:k,ts:t.date,items:[],ti:0,te:0};grp[k].items.push(t);if(t.type==='INCOME')grp[k].ti+=t.amount;else if(t.type==='EXPENSE')grp[k].te+=t.amount});
+  const days=Object.values(grp).sort((a,b)=>b.ts-a.ts);
+  qi('daily-list').innerHTML=days.map(d=>`<div class="daily-group">
+    <div class="daily-h" onclick="this.parentElement.classList.toggle('open')">
+      <div><div class="d">${d.date}</div><div class="s">${d.items.length} txn${d.items.length>1?'s':''}</div></div>
+      <div><span class="green">+${fmt(d.ti)}</span> <span class="red">-${fmt(d.te)}</span></div>
+    </div>
+    <div class="daily-body">${d.items.map(t=>`<div class="daily-item">
+      <div class="di-l"><span class="cat-badge">${esc(t.category)}</span><span class="merch" title="${esc(t.merchant||'')}">${esc(t.merchant||'-')}</span><span class="sms-preview" title="${esc(t.smsBody)}">${esc(t.smsBody)}</span></div>
+      <div class="di-r"><span class="amt ${t.type==='INCOME'?'green':'red'}">${t.type==='INCOME'?'+':'-'}${f2(t.amount)}</span><br><span style="font-size:10px;color:#94a3b8">${esc(t.sender)}</span></div>
+    </div>`).join('')}</div></div>`).join('')||'<div class="empty">No results</div>'
+}
+
+// ── Overview tab (line chart, category breakdown, comparison, print report) ──
+function lineChart(points,color,max){
+  const w=600,h=180,pad=24;
+  if(points.length<2)return'<div class="empty">Need &ge;2 months</div>';
+  const step=(w-pad*2)/(points.length-1);
+  const pts=points.map((p,i)=>`${(pad+i*step).toFixed(1)},${(h-pad-(p.v/max)*(h-pad*2)).toFixed(1)}`);
+  const area=`${pad},${(h-pad).toFixed(1)} ${pts.join(' ')} ${(w-pad).toFixed(1)},${(h-pad).toFixed(1)}`;
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.25"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    <polygon points="${area}" fill="url(#g)"/>
+    <polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="2"/>
+    ${points.map((p,i)=>`<circle cx="${(pad+i*step).toFixed(1)}" cy="${(h-pad-(p.v/max)*(h-pad*2)).toFixed(1)}" r="3" fill="${color}"><title>${p.l}: ${fmt(p.v)}</title></circle><text x="${(pad+i*step).toFixed(1)}" y="${h-6}" font-size="9" fill="#94a3b8" text-anchor="middle">${p.l}</text>`).join('')}
+  </svg>`;
+}
+
+function renderOverview(){
+  if(!C||!M.length){qi('tc-overview').innerHTML='<div class="empty">No data</div>';return}
+  const ci=M.findIndex(m=>m.month===C),prev=M[ci-1],cur=M[ci];
+  // Cumulative expense trend (article's signature)
+  let cum=0;const cumPts=M.map(m=>{cum+=m.expense;return{l:MNames[+m.month.split('-')[1]-1],v:cum}});
+  const mxCum=Math.max(...cumPts.map(p=>p.v),1);
+  const lineHtml=lineChart(cumPts,'#dc2626',mxCum);
+
+  // Monthly expense vs income trend (last 12)
+  const trend=M.slice(Math.max(0,M.length-12));
+  const mxTr=Math.max(...trend.map(m=>Math.max(m.income,m.expense)),1);
+  const trHtml=trend.map(m=>`<div class="tr-bar"><div class="b" style="height:${(m.income/mxTr*100).toFixed(1)}%;background:#16a34a" title="Income: ${fmt(m.income)}"></div><div class="b" style="height:${(m.expense/mxTr*100).toFixed(1)}%;background:#dc2626" title="Expense: ${fmt(m.expense)}"></div><div class="tip">${fmt(m.income)}/${fmt(m.expense)}</div><div class="lbl">${MNames[+m.month.split('-')[1]-1]}</div></div>`).join('');
+
+  // Comparison with prev month
+  const compHtml=prev?`<div class="comparison">
+    <div class="comp-card"><div class="c-lbl">${MNames[+prev.month.split('-')[1]-1]} ${prev.month.split('-')[0]} (prev)</div><div class="c-val red">${fmt(prev.expense)}</div><div class="c-diff">${prev.countExpense} txns</div></div>
+    <div class="comp-card"><div class="c-lbl">${MNames[+cur.month.split('-')[1]-1]} ${cur.month.split('-')[0]} (cur)</div><div class="c-val green">${fmt(cur.expense)}</div><div class="c-diff ${cur.expense>prev.expense?'red':'green'}">${cur.expense>prev.expense?'▲ +'+fmt(cur.expense-prev.expense):'▼ -'+fmt(prev.expense-cur.expense)}</div></div>
+  </div>`:'<div class="empty">Need previous month for comparison</div>';
+
+  const exp=T.filter(t=>t.monthKey===C&&t.type==='EXPENSE'&&!t.isDuplicate);
+  const catTot={};exp.forEach(t=>{const c=t.category;catTot[c]=(catTot[c]||0)+t.amount});
+  const catArr=Object.entries(catTot).sort((a,b)=>b[1]-a[1]),mxCat=catArr.length?catArr[0][1]:1;
+  const catHtml=catArr.map(([c,am])=>`<div class="cat-bar"><div class="cat-lbl">${esc(c)}</div><div class="cat-fill"><div class="f" style="width:${(am/mxCat*100).toFixed(1)}%;background:${['#6366f1','#16a34a','#dc2626','#ea580c','#2563eb','#7c3aed','#0891b2','#ca8a04','#be185d'][catArr.findIndex(x=>x[0]===c)%9]}"></div></div><div class="cat-val">${fmt(am)} (${(am/cur.expense*100).toFixed(1)}%)</div></div>`).join('')||'<div class="empty">No expenses</div>';
+
+  const merTot={};exp.forEach(t=>{const m=t.merchant||'Unknown';merTot[m]=(merTot[m]||0)+t.amount});
+  const merArr=Object.entries(merTot).sort((a,b)=>b[1]-a[1]).slice(0,10),mxMer=merArr.length?merArr[0][1]:1;
+  const merHtml=merArr.map(([m,am])=>`<div class="cat-bar"><div class="cat-lbl" title="${esc(m)}">${esc(m)}</div><div class="cat-fill"><div class="f" style="width:${(am/mxMer*100).toFixed(1)}%;background:#6366f1"></div></div><div class="cat-val">${fmt(am)}</div></div>`).join('')||'<div class="empty">None</div>';
+
+  const sdTot={};T.filter(t=>t.monthKey===C).forEach(t=>{if(!sdTot[t.sender])sdTot[t.sender]={i:0,e:0,c:0,b:t.isBank};sdTot[t.sender][t.type==='INCOME'?'i':'e']+=t.amount;sdTot[t.sender].c++});
+  const sdArr=Object.entries(sdTot).sort((a,b)=>b[1].c-a[1].c).slice(0,10);
+  const sdHtml=sdArr.map(([s,d])=>`<tr><td>${esc(s)} ${d.b?'🔵':''}</td><td class="green">${fmt(d.i)}</td><td class="red">${fmt(d.e)}</td><td>${d.c}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">None</td></tr>';
+
+  qi('tc-overview').innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button onclick="printReport()" style="background:#6366f1;color:#fff;border:0;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px">🖨️ Print / Export PDF Report</button></div>
+    ${compHtml}
+    <div class="grid2">
+      <div class="cbox"><h3>Cumulative Expense Trend <span>(all months)</span></h3>${lineHtml}</div>
+      <div class="cbox"><h3>Monthly Trend <span>(Income green / Expense red)</span></h3><div class="tr-chart">${trHtml}</div></div>
+    </div>
+    <div class="grid2">
+      <div class="cbox"><h3>Category Breakdown</h3>${catHtml}</div>
+      <div class="cbox"><h3>Top Merchants</h3>${merHtml}</div>
+    </div>
+    <div class="grid2">
+      <div class="cbox" style="grid-column:1/-1"><h3>Top Senders</h3><div style="max-height:300px;overflow-y:auto"><table><thead><tr><th>Sender</th><th>Income</th><th>Expense</th><th>#</th></tr></thead><tbody>${sdHtml}</tbody></table></div></div>
+    </div>`;
+}
+
+function printReport(){
+  const md=M.find(m=>m.month===C);if(!md)return;
+  const mi=T.filter(t=>t.monthKey===C&&t.type==='INCOME'&&!t.isDuplicate),me=T.filter(t=>t.monthKey===C&&t.type==='EXPENSE'&&!t.isDuplicate),mr=R.filter(r=>r.monthKey===C);
+  const ti=mi.reduce((s,t)=>s+t.amount,0),te=me.reduce((s,t)=>s+t.amount,0),tr=mr.reduce((s,r)=>s+(r.amount||0),0);
+  const catTot={};me.forEach(t=>{const c=t.category;catTot[c]=(catTot[c]||0)+t.amount});
+  const catRows=Object.entries(catTot).sort((a,b)=>b[1]-a[1]).map(([c,am])=>`<tr><td>${esc(c)}</td><td>₹${am.toLocaleString('en-IN',{maximumFractionDigits:2})}</td><td>${(am/te*100).toFixed(1)}%</td></tr>`).join('');
+  const incRows=mi.map(t=>`<tr><td>${t.dateStr}</td><td>${esc(t.category)}</td><td>${esc(t.merchant||'-')}</td><td>₹${t.amount.toLocaleString('en-IN',{maximumFractionDigits:2})}</td></tr>`).join('');
+  const expRows=me.map(t=>`<tr><td>${t.dateStr}</td><td>${esc(t.category)}</td><td>${esc(t.merchant||'-')}</td><td>₹${t.amount.toLocaleString('en-IN',{maximumFractionDigits:2})}</td></tr>`).join('');
+  const remRows=mr.map(r=>`<tr><td>${esc(r.title)}</td><td>${r.amount?('₹'+r.amount.toLocaleString('en-IN',{maximumFractionDigits:2})):'-'}</td><td>${r.recurrence}</td><td>${r.triggerDate}</td></tr>`).join('');
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Monthly Report - ${MNames[+md.month.split('-')[1]-1]} ${md.month.split('-')[0]}</title>
+  <style>body{font-family:system-ui,sans-serif;padding:32px;color:#1e293b}h1{font-size:22px}table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0 20px}th,td{border-bottom:1px solid #e2e8f0;padding:6px;text-align:left}.g{color:#16a34a}.r{color:#dc2626}.sum{display:flex;gap:24px;margin:16px 0}.sum div{background:#f8fafc;padding:12px 20px;border-radius:8px}h2{font-size:16px;margin-top:24px}</style></head>
+  <body><h1>Monthly Expense Report — ${MNames[+md.month.split('-')[1]-1]} ${md.month.split('-')[0]}</h1>
+  <div class="sum"><div><b>Income</b><br><span class="g">₹${ti.toLocaleString('en-IN',{maximumFractionDigits:2})}</span> (${mi.length})</div>
+  <div><b>Expense</b><br><span class="r">₹${te.toLocaleString('en-IN',{maximumFractionDigits:2})}</span> (${me.length})</div>
+  <div><b>Net</b><br>₹${(ti-te).toLocaleString('en-IN',{maximumFractionDigits:2})}</div>
+  <div><b>Reminders</b><br>${mr.length}</div></div>
+  <h2>Category Breakdown</h2><table><thead><tr><th>Category</th><th>Amount</th><th>%</th></tr></thead><tbody>${catRows||'<tr><td colspan="3">None</td></tr>'}</tbody></table>
+  <h2>Income (${mi.length})</h2><table><thead><tr><th>Date</th><th>Category</th><th>Merchant</th><th>Amount</th></tr></thead><tbody>${incRows}</tbody></table>
+  <h2>Expenses (${me.length})</h2><table><thead><tr><th>Date</th><th>Category</th><th>Merchant</th><th>Amount</th></tr></thead><tbody>${expRows}</tbody></table>
+  <h2>Reminders (${mr.length})</h2><table><thead><tr><th>Title</th><th>Amount</th><th>Recurrence</th><th>Due</th></tr></thead><tbody>${remRows||'<tr><td colspan="4">None</td></tr>'}</tbody></table>
+  <p style="color:#94a3b8;font-size:11px;margin-top:24px">Generated from ${qi('fname').textContent} • MyFinanceMate SMS Dashboard</p>
+  <script>window.onload=()=>{setTimeout(()=>window.print(),300)}<\/script></body></html>`);
+  w.document.close();
+}
+
+// ── Income tab ──
+function renderIncome(){
+  if(!C){qi('tc-income').innerHTML='<div class="empty">No data</div>';return}
+  const inc=T.filter(t=>t.monthKey===C&&t.type==='INCOME'&&!t.isDuplicate);
+  const p=pg(inc,0);qi('tc-income').innerHTML=`<div class="filter-bar"><input placeholder="Search income..." oninput="fIncome(this.value)"><span>${inc.length} income txns</span></div><div class="tb-wrap"><table><thead><tr><th>Date</th><th>Amount</th><th>Category</th><th>Merchant</th><th>Sender</th><th>SMS</th></tr></thead><tbody>${p.items.map(t=>`<tr><td>${t.dateStr}</td><td class="green" style="font-weight:600">${f2(t.amount)}</td><td><span class="cat-badge">${esc(t.category)}</span></td><td>${esc(t.merchant||'-')}</td><td>${esc(t.sender)}</td><td style="font-size:11px;color:#94a3b8;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(t.smsBody)}">${esc(t.smsBody)}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">None</td></tr>'}</tbody></table></div>`}
+function fIncome(q){const f=T.filter(t=>t.monthKey===C&&t.type==='INCOME'&&!t.isDuplicate&&(t.smsBody+' '+t.sender+' '+t.merchant).toLowerCase().includes(q.toLowerCase()));const p=pg(f,0);qi('tc-income tbody').innerHTML=p.items.map(t=>`<tr><td>${t.dateStr}</td><td class="green" style="font-weight:600">${f2(t.amount)}</td><td><span class="cat-badge">${esc(t.category)}</span></td><td>${esc(t.merchant||'-')}</td><td>${esc(t.sender)}</td><td style="font-size:11px;color:#94a3b8;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(t.smsBody)}">${esc(t.smsBody)}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">No results</td></tr>'}
+
+// ── Duplicates tab ──
+function renderDups(){
+  if(!C){qi('tc-duplicates').innerHTML='<div class="empty">No data</div>';return}
+  const dups=T.filter(t=>t.monthKey===C&&t.isDuplicate);
+  const gr={};dups.forEach(t=>{const k=t.sender+'|'+t.amount.toFixed(2);if(!gr[k])gr[k]={sender:t.sender,amount:t.amount,items:[]};gr[k].items.push(t)});
+  const gs=Object.values(gr).sort((a,b)=>b.items.length-a.items.length);
+  qi('tc-duplicates').innerHTML=gs.map(g=>`<div class="daily-group">
+    <div class="daily-h" onclick="this.parentElement.classList.toggle('open')">
+      <div><div class="d">${f2(g.amount)} × ${g.items.length}</div><div class="s">${esc(g.sender)}</div></div>
+      <div><span class="cat-badge ${g.items[0].type==='INCOME'?'green':'red'}">${g.items[0].type}</span></div>
+    </div>
+    <div class="daily-body">${g.items.map(t=>`<div class="daily-item">
+      <div class="di-l"><span>${t.dateStr}</span><span class="sms-preview" title="${esc(t.smsBody)}">${esc(t.smsBody)}</span></div>
+      <div class="di-r"><span class="amt ${t.type==='INCOME'?'green':'red'}">${f2(t.amount)}</span></div>
+    </div>`).join('')}</div></div>`).join('')||'<div class="empty">No duplicates in this month</div>'
+}
+
+// ── All Months tab ──
+function renderAllMonths(){
+  const p=pg(T.filter(t=>!t.isDuplicate),0);
+  let tbl='<div class="filter-bar"><input placeholder="Search all transactions..." oninput="fAll(this.value)"><span>'+T.filter(t=>!t.isDuplicate).length+' total</span></div><div class="tb-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Category</th><th>Merchant</th><th>Sender</th><th>SMS</th></tr></thead><tbody id="all-body">'+
+    p.items.map(t=>`<tr><td>${t.dateStr}</td><td><span class="cat-badge ${t.type==='INCOME'?'green':'red'}">${t.type}</span></td><td class="${t.type==='INCOME'?'green':'red'}" style="font-weight:600">${f2(t.amount)}</td><td><span class="cat-badge">${esc(t.category)}</span></td><td>${esc(t.merchant||'-')}</td><td>${esc(t.sender)}</td><td style="font-size:11px;color:#94a3b8;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(t.smsBody)}">${esc(t.smsBody)}</td></tr>`).join('')+
+    '</tbody></table></div>'+ph('all',p);
+  qi('tc-all').innerHTML=tbl;
+}
+function fAll(q){const f=T.filter(t=>!t.isDuplicate&&(t.smsBody+' '+t.sender+' '+t.merchant||'').toLowerCase().includes(q.toLowerCase()));const p=pg(f,0);qi('all-body').innerHTML=p.items.map(t=>`<tr><td>${t.dateStr}</td><td><span class="cat-badge ${t.type==='INCOME'?'green':'red'}">${t.type}</span></td><td class="${t.type==='INCOME'?'green':'red'}" style="font-weight:600">${f2(t.amount)}</td><td><span class="cat-badge">${esc(t.category)}</span></td><td>${esc(t.merchant||'-')}</td><td>${esc(t.sender)}</td><td style="font-size:11px;color:#94a3b8;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(t.smsBody)}">${esc(t.smsBody)}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">No results</td></tr>'}
+
+function pg(a,p){const s=p*PS;return{items:a.slice(s,s+PS),total:a.length,pages:Math.ceil(a.length/PS)||1,page:p}}
+function ph(k,p){return`<div class="pag"><button${p.page===0?' disabled':''} onclick="cp2('${k}',-1)">Prev</button><span>Page ${p.page+1}/${p.pages}</span><button${p.page>=p.pages-1?' disabled':''} onclick="cp2('${k}',1)">Next</button></div>`}
+function cp2(k,d){renderAllMonths()}
+
+// Sub-tab switching
+document.querySelectorAll('.sub-tab').forEach(t=>{t.addEventListener('click',()=>{
+  document.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('act'))
+  document.querySelectorAll('.tc').forEach(x=>x.classList.remove('act'))
+  t.classList.add('act');qi('tc-'+t.dataset.st).classList.add('act')})})
+
+// File handling
+qi('fileInput').addEventListener('change',e=>{if(e.target.files[0])loadFile(e.target.files[0])})
+
+function loadFile(file){
+  qi('fname').textContent=file.name;qi('status').textContent='Parsing...';
+  const r=new FileReader();
+    r.onload=()=>{const t1=performance.now();const ps=parseXML(r.result);qi('status').textContent=`${S.length} SMS, ${ps} promo skipped, ${T.length} txns, ${R.length} reminders in ${((performance.now()-t1)/1000).toFixed(1)}s`}
+  r.readAsText(file)}
+
+async function loadDefault(){
+  try{
+    const r=await fetch('sms_backup_20260717_111345.xml');
+    if(!r.ok)throw Error('not found');
+    const t1=performance.now();const ps=parseXML(await r.text());
+    qi('status').textContent=`${S.length} SMS, ${ps} promo skipped, ${T.length} txns, ${R.length} reminders in ${((performance.now()-t1)/1000).toFixed(1)}s`
+  }catch(e){qi('status').textContent='Select an XML file'}
+}
+loadDefault();
+</script>
+</body>
+</html>

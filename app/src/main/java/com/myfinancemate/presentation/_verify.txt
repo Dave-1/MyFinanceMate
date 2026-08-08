@@ -1,0 +1,8 @@
+strings.xml: OK
+AppStrings.kt: OK
+AddTransactionScreen.kt: OK
+EditTransactionScreen.kt: OK
+AddReminderScreen.kt: OK
+ReportsScreen.kt: OK
+DashboardScreen.kt: OK
+All checks complete
