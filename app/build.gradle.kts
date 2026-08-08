@@ -27,10 +27,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("../myfinanceMate.keystore")
-            storePassword = "myfinance123"
-            keyAlias = "myfinanceMate"
-            keyPassword = "myfinance123"
+            storeFile = file(System.getenv("MYFINANCEMATE_KEYSTORE_PATH") ?: "../myfinanceMate.keystore")
+            storePassword = System.getenv("MYFINANCEMATE_KEYSTORE_PASSWORD") ?: error("MYFINANCEMATE_KEYSTORE_PASSWORD not set")
+            keyAlias = System.getenv("MYFINANCEMATE_KEY_ALIAS") ?: error("MYFINANCEMATE_KEY_ALIAS not set")
+            keyPassword = System.getenv("MYFINANCEMATE_KEY_PASSWORD") ?: error("MYFINANCEMATE_KEY_PASSWORD not set")
         }
     }
 
