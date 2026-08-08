@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.myfinancemate.data.local.entity.AccountEntity
 import kotlinx.coroutines.flow.Flow
@@ -37,6 +38,12 @@ interface AccountDao {
 
     @Query("UPDATE accounts SET isPrimary = 0")
     suspend fun clearAllPrimary()
+
+    @Transaction
+    suspend fun setPrimary(id: Long) {
+        clearAllPrimary()
+        getById(id)?.let { update(it.copy(isPrimary = true)) }
+    }
 
     @Query("SELECT COUNT(*) FROM accounts")
     suspend fun count(): Int

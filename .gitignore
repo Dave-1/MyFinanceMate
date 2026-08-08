@@ -33,3 +33,4 @@ sms_backup_*.xml
 
 # stray dirs
 %USERPROFILE%/
+keystore.credentials.local

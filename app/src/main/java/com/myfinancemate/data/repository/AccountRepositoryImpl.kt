@@ -23,10 +23,5 @@ class AccountRepositoryImpl @Inject constructor(
     override suspend fun clearAllPrimary() = accountDao.clearAllPrimary()
     override suspend fun count(): Int = accountDao.count()
 
-    override suspend fun setPrimary(id: Long) {
-        accountDao.clearAllPrimary()
-        accountDao.getById(id)?.let { account ->
-            accountDao.update(account.copy(isPrimary = true))
-        }
-    }
+    override suspend fun setPrimary(id: Long) = accountDao.setPrimary(id)
 }

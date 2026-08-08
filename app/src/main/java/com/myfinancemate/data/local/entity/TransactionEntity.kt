@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.SET_NULL
         )
     ],
-    indices = [Index("categoryId"), Index("date"), Index("type"), Index(value = ["accountId"], name = "idx_transactions_accountId")]
+    indices = [Index("categoryId"), Index("date"), Index("type"), Index(value = ["accountId"], name = "index_transactions_accountId")]
 )
 data class TransactionEntity(
     @PrimaryKey(autoGenerate = true)
