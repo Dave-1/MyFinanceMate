@@ -21,6 +21,12 @@ import com.myfinancemate.data.local.entity.SmsNotificationEntity
 import com.myfinancemate.data.local.entity.SmsRuleEntity
 import com.myfinancemate.data.local.entity.TransactionEntity
 
+// Schema is exported to app/schemas/ for auto-migration support.
+// For version 4+, use @AutoMigration instead of manual Migration objects:
+//   @Database(..., autoMigrations = [AutoMigration(from = 3, to = 4)])
+// Room will generate the migration SQL from the schema diff automatically.
+// Only use manual Migration for complex transformations Room can't handle.
+
 @Database(
     entities = [
         TransactionEntity::class,
@@ -32,7 +38,7 @@ import com.myfinancemate.data.local.entity.TransactionEntity
         FixedExpenseConfig::class
     ],
     version = 3,
-    exportSchema = false
+    exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
