@@ -48,11 +48,11 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("CREATE TABLE IF NOT EXISTS accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, bankName TEXT NOT NULL DEFAULT '', senderId TEXT NOT NULL, accountSuffix TEXT NOT NULL DEFAULT '', isPrimary INTEGER NOT NULL DEFAULT 0, createdAt INTEGER NOT NULL)")
-                db.execSQL("CREATE INDEX IF NOT EXISTS idx_accounts_senderId ON accounts(senderId)")
-                db.execSQL("CREATE INDEX IF NOT EXISTS idx_accounts_isPrimary ON accounts(isPrimary)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_accounts_senderId ON accounts(senderId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_accounts_isPrimary ON accounts(isPrimary)")
                 db.execSQL("ALTER TABLE transactions ADD COLUMN accountId INTEGER DEFAULT NULL")
                 db.execSQL("ALTER TABLE transactions ADD COLUMN isSalary INTEGER NOT NULL DEFAULT 0")
-                db.execSQL("CREATE INDEX IF NOT EXISTS idx_transactions_accountId ON transactions(accountId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_transactions_accountId ON transactions(accountId)")
                 db.execSQL("CREATE TABLE IF NOT EXISTS fixed_expense_config (id INTEGER PRIMARY KEY, minOccurrences INTEGER NOT NULL DEFAULT 3, variancePercent REAL NOT NULL DEFAULT 10.0)")
                 db.execSQL("ALTER TABLE reminders ADD COLUMN sourceAccountId INTEGER DEFAULT NULL")
                 // SmsRuleEntity gained a ruleType column. Not in the prompt's SQL block,

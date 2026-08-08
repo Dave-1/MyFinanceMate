@@ -40,7 +40,7 @@ object AppModule {
             context,
             AppDatabase::class.java,
             "deep_money_tracker.db"
-        ).addMigrations(AppDatabase.MIGRATION_2_3).fallbackToDestructiveMigration().build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides
